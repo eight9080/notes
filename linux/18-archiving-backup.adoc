@@ -1,0 +1,25 @@
+:toc:
+:imagesdir: ./images
+
+[[archiving-backup]]
+= Archiving and backup
+
+=== File compression files
+gzip - compress or expand a file
+bzip2 - a block sorting file compressor
+
+=== Archiving programs
+tar - tape archiving utility
+zip - package and compress files
+
+=== Synchronization programs
+rsync - remote file and directory synchronization
+
+==== Compressing files
+Compression algorithms
+* Lossless - preserves all the data contained in the original.
+This means that when a file is restored from a compressed version, the restored file is exactly the same as the original, uncompressed version.
+* Lossy - removes data as the compression is performed to allow more compression to be applied.
+When a lossy file is restored, it does not match the original version; rather, it is a close approximation.
+Examples of lossy compression are JPEG (for images) and MP3 (for music).
+
