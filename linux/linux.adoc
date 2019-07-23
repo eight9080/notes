@@ -1,5 +1,6 @@
 :toc:
 :imagesdir: ./images
+Table of contents
 
 link:18-archiving-backup.adoc#archiving-backup[Archiving and backup]
 
