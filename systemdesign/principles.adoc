@@ -1,0 +1,42 @@
+= CAP Theorem
+When we design a distributed system, trading off among CAP (consistency, availability, and partition tolerance) is almost the first thing we want to consider.
+
+* Consistency: all nodes see the same data at the same time
+* Availability: a guarantee that every request receives a response about whether it succeeded or failed
+* Partition tolerance: system continues to operate despite arbitrary message loss or failure of part of the system
+
+In a distributed context, the choice is between CP and AP.
+Unfortunately, CA is just a joke, because single point of failure is a red flag in the real distributed systems world.
+
+To ensure consistency, there are some popular protocols to consider: 2PC, eventual consistency (vector clock + RWN), Paxos, In-Sync Replica, etc.
+
+To ensure availability, we can add replicas for the data. As to components of the whole system, people usually do cold standby, warm standby, hot standby, and active-active to handle the failover.
+
+Source: https://www.puncsky.com/blog/2016/02/14/crack-the-system-design-interview/
+
+
+High Availability - Cold, Warm, Hot
+
+Clustering is the most common technique to achieve High availability for any services by introducing redundancy in software, hardware and data.
+In a failure the clustering software immediately start the application on the standby system without requiring administrative intervention.
+Depending on the type of redundancy in software to be provided for High Availability, clusters can be configured in any of the following configurations:
+
+* Cold Standby: The secondary node acts as backup of another identical primary system. It will be installed and configured only when the primary node breaks down for the first time.
+Subsequently, In the case of a failure in the primary the secondary node is powered on and the data restored before finally starting the failed component.
+Data from primary system can be backed up on a storage system and restored on secondary system as and when required.
+This generally provides a recovery time of a few hours.
+* Warm Standby: The software component is installed and available on the secondary node.
+The secondary node is up and running. In the case of a failure on the primary node, these software components are started on the secondary node.
+This process is usually automated using a cluster manager.Data is regularly mirrored to secondary system using disk based replication or shared disk.
+This generally provides a recovery time of a few minutes.
+* Hot Standby: Software components are installed and available on both primary and secondary nodes.
+The software components on the secondary system are up but will not process data or requests.
+
+Data is mirrored in near real time and both systems will have identical data.
+Data replication is typically done through the software’s capabilities.
+This generally provides a recovery time of a few seconds.
+
+* Active-Active (Load Balanced): In this method both the primary and secondary systems are active and processing requests in parallel.
+Data replication happens through software capabilities and would be bi-directional.
+This generally provides a recovery time that is instantaneous.
+

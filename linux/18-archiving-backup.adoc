@@ -4,18 +4,18 @@
 [[archiving-backup]]
 = Archiving and backup
 
-=== File compression files
+== File compression files
 gzip - compress or expand a file. +
 bzip2 - a block sorting file compressor.
 
-=== Archiving programs
+== Archiving programs
 tar - tape archiving utility +
 zip - package and compress files
 
-=== Synchronization programs
+== Synchronization programs
 rsync - remote file and directory synchronization
 
-==== Compressing files
+=== Compressing files
 Compression algorithms +
 
 * Lossless
@@ -24,3 +24,36 @@ Compression algorithms +
     - removes data as the compression is performed to allow more compression to be applied.
     - When a lossy file is restored, it does not match the original version; rather, it is a close approximation.
     - Examples of lossy compression are JPEG (for images) and MP3 (for music).
+
+==== gzip
+When executed, it replaces the original file with a compressed version of the original.  gunzip program - to restore compressed files to their original, uncompressed form.
+[source,bash]
+----
+[as@linux ~]$ ls -l /etc > foo.txt
+[as@linux ~]$ ls -l abc.*
+-rw-r--r-- 1 as    as    15738 2019-10-14 07:15 abc.txt
+[as@linux ~]$ gzip abc.txt
+[as@linux ~]$ ls -l abc.*
+-rw-r--r-- 1 as    as    3230 2019-10-14 07:15 abc.txt.gz
+[as@linux ~]$ gunzip abc.txt
+[as@linux ~]$ ls -l abc.*
+-rw-r--r-- 1 as    as    15738 2019-10-14 07:15 abc.txt
+----
+
+gzip Options
+-c
+
+--stdout
+
+--to-stdout
+
+Write output to standard output and keep the original files.
+
+-d
+
+--decompress
+
+--uncompress
+
+Decompress. This causes gzip to act like gunzip.
+
