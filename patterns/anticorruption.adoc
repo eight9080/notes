@@ -1,4 +1,4 @@
-:imagesdir: ./images
+ifndef::imagesdir[:imagesdir: ../images]
 == Anti-Corruption Layer pattern
 
 Implement a façade or adapter layer between different subsystems that don't share the same semantics.

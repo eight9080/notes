@@ -1,3 +1,5 @@
+:imagesdir: ./images
+
 # Git 
 ## Git branches
 ### basic branching
