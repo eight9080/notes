@@ -23,3 +23,4 @@ The anti-corruption layer contains all of the logic necessary to translate betwe
 * Consider whether the anti-corruption layer needs to handle all communication between different subsystems, or just a subset of features.
 * If the anti-corruption layer is part of an application migration strategy, consider whether it will be permanent, or will be retired after all legacy functionality has been migrated.
 
+Source: https://docs.microsoft.com/en-us/azure/architecture/patterns/anti-corruption-layer[anti-corruption-layer]
