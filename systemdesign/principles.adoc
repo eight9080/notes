@@ -1,4 +1,5 @@
 = CAP Theorem
+
 When we design a distributed system, trading off among CAP (consistency, availability, and partition tolerance) is almost the first thing we want to consider.
 
 * Consistency: all nodes see the same data at the same time

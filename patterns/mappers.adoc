@@ -1,0 +1,12 @@
+== Active Record
+
+Active Record style ORMs map an object to a database row.
+One of the benefits of the Active Record style is that you can simple call the save() method on the object to update the database. Each model object inherits from a base Active Record object and so you have access to all the methods relating to persistence.
+
+== Data Mapper
+
+the Data Mapper style completely separates your domain from the persistence layer. This means none of your model objects know anything about the database.
+We can’t call the save() method on the object to persist it to the database because it doesn’t exist.
+Instead we need to use a completely different service known as an *Entity Manager.
+The big benefit of the Data Mapper pattern is, your domain objects don’t need to know anything about how they are stored in the database.
+
