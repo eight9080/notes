@@ -1,0 +1,104 @@
+= How to distribute self-signed certificates for a known community
+There are several steps required to distribute a self-signed certificate to users so that they will properly trust it. These steps are:
+
+* Creating a public/private key pair for signing.
+* Exporting your public certificate for others
+* Importing your certificate onto machines that should trust you
+* Verify work on a different machine
+
+== Creating a public/private key pair for signing
+Having a public/private key pair will give you the ability both to sign items yourself and issue a Certificate Signing Request (CSR) to a certificate authority.
+
+Create your public/private key pair by following the instructions for creating key pairs.
+Every Certificate Authority that I looked at provided similar instructions, but for the sake of cohesiveness I will include the commands that I used here:
+
+1. Generate the key pair.
+
+```
+keytool -genkeypair -alias erikcostlow -keyalg EC -keysize 571 -validity 730 -keystore javakeystore_keepsecret.jks
+```
+
+Provide a good password for this file.
+The alias "erikcostlow" is my name and therefore easy to remember. Substitute your name of something like "mykey."
+The sigalg of EC (Elliptical Curve) and keysize of 571 will give your key a good strong lifetime.
+All keys are set to expire. Two years or 730 days is a reasonable compromise between not-long-enough and too-long. Most public Certificate Authorities will sign something for one to five years.
+You will be placing your keys in javakeystore_keepsecret.jks -- this file will contain private keys and therefore should not be shared. If someone else gets these private keys, they can impersonate your signature. Please be cautious about automated cloud backup systems and private key stores.
+
+2. Answer all the questions. It is important to provide good answers because you will stick with them for the "-validity" days that you specified above.
+
+What is your first and last name?
+[Unknown]: First Last
+What is the name of your organizational unit?
+[Unknown]: Line of Business
+What is the name of your organization?
+[Unknown]: MyCompany
+What is the name of your City or Locality?
+[Unknown]: City Name
+What is the name of your State or Province?
+[Unknown]: CA
+What is the two-letter country code for this unit?
+[Unknown]: US
+Is CN=First Last, OU=Line of Business, O=MyCompany, L=City, ST=CA, C=US correct?
+[no]: yes
+Enter key password for <erikcostlow>
+(RETURN if same as keystore password):
+3. Verify your work:
+```
+keytool -list -keystore javakeystore_keepsecret.jks
+```
+You should see your new key pair.
+
+== Exporting your public certificate for others
+Public Key Infrastructure relies on two simple concepts: the public key may be made public and the private key must be private. By exporting your public certificate, you are able to share it with others who can then import the certificate to trust you.
+
+```
+keytool -exportcert -keystore javakeystore_keepsecret.jks -alias erikcostlow -file erikcostlow.cer
+```
+To verify this, you can open the .cer file by double-clicking it on most operating systems. It should show the information that you entered during the creation prompts.
+
+This is the file that you will share with others. They will use this certificate to prove that artifacts signed by this certificate came from you. If you do not manage machines directly, place the certificate file on an area that people within the known community should trust, such as an intranet page.
+
+Import the certificate onto machines that should trust you
+In order to trust the certificate, people within your known network must import your certificate into their keystores. The first step is to verify that the certificate is actually yours, which can be done through any band: email, phone, in-person, etc. Known networks can usually do this
+
+Determine the right keystore:
+
+* For an individual user looking to trust another, the correct file is within that user’s directory.
+e.g. USER_HOME\AppData\LocalLow\Sun\Java\Deployment\security\trusted.certs
+The default password for trusted.certs is an empty string.
+* For system-wide installations, Java’s Certificate Authorities are in JAVA_HOME
+e.g. C:\Program Files\Java\jre8\lib\security\cacerts
+The default password for cacerts is "changeit" as described in the keytool documentation.
+
+Follow the instructions to import the certificate into the keystore.
+```
+keytool -importcert -keystore THEKEYSTOREFROMABOVE -alias erikcostlow -file erikcostlow.cer
+```
+In this case, I am still using my name for the alias because it’s easy for me to remember. You may also use an alias of your company name.
+
+Scaling distribution of the import
+The easiest way to apply your certificate across many machines is to just push the .certs or cacerts file onto them. When doing this, watch out for any changes that people would have made to this file on their machines.
+
+Trusted.certs: When publishing into user directories, your file will overwrite any keys that the user has added since last update.
+
+CACerts: It is best to re-run the import command with each installation rather than just overwriting the file. If you just keep the same cacerts file between upgrades, you will overwrite any CAs that have been added or removed. By re-importing, you stay up to date with changes.
+
+There is a -storepass argument for specifying the password on the command-line. On secure systems, admins typically hide passwords through redirection operators but that's outside the scope of this post.
+
+== Verify work on a different machine
+Verification is a way of checking on the client machine to ensure that it properly trusts signed artifacts after you have added your signing certificate. Many people have started using deployment rule sets. You can validate the deployment rule set by:
+
+Create and sign the deployment rule set on the computer that holds the private key.
+Copy the deployment rule set on to the different machine where you have imported the signing certificate.
+
+== Verify that the Java Control Panel’s security tab shows your deployment rule set.
+Verifying an individual JAR file or multiple JAR files
+You can test a certificate chain by using the jarsigner command.
+
+```
+jarsigner -verify filename.jar
+```
+If the output does not say "jar verified" then run the following command to see why:
+```
+jarsigner -verify -verbose -certs filename.jar
+```
