@@ -1,0 +1,16 @@
+= SSL certificate
+
+SSL stands for Secure Sockets Layer, a global standard security technology that enables encrypted communication between a web browser and a web server.
+
+
+To create this secure connection, an SSL certificate is installed on a web server and serves two functions:
+
+* It authenticates the identity of the website
+* It encrypts the data that’s being transmitted
+
+SSL certificates are issued by Certificate Authorities (CAs), organizations that are trusted to verify the identity and legitimacy of any entity requesting a certificate.
+
+The CA’s role is to accept certificate applications, authenticate applications, issue certificates, and maintain status information on certificates issued.
+
+Source https://www.verisign.com/en_US/website-presence/online/ssl-certificates/index.xhtml[verisign]
+
