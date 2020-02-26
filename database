@@ -1,0 +1,7 @@
+Chane password oracle
+export ORACLE_SID=DBNAME
+
+sqlplus / as sysdba
+select name from v$database;
+SELECT ACCOUNT_STATUS from dba_users where username = 'GDPR_ADMIN';
+ALTER USER GDPR_ADMIN IDENTIFIED BY GDPR_Admin1;
