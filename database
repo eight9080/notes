@@ -1,0 +1,12 @@
+Chane password oracle
+export ORACLE_SID=DBNAME
+
+sqlplus / as sysdba
+select name from v$database;
+SELECT ACCOUNT_STATUS, profile, EXPIRY_DATE  from dba_users where username = 'userXX';
+ALTER USER userXX IDENTIFIED BY GDPR_Admin1;
+ALTER USER YourUser ACCOUNT UNLOCK;
+
+alter profile DEFAULT limit PASSWORD_REUSE_TIME unlimited;
+alter profile DEFAULT limit PASSWORD_LIFE_TIME  unlimited;
+
