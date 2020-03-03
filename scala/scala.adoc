@@ -8,3 +8,45 @@ Everything is an object
 
 RichInt
 SpringOps
+
+---
+
+String immutable
+concatenate +
+
+Adding variables in the middle of the string
+```
+s"If i insert something $a here will print"
+```
+
+String interpolation
+
+```
+s"$a is bigger than $b with: ${b-a}"
+```
+
+Escaping
+
+```
+raw"This is the new world\n beautiful word"
+```
+
+Iterate through string
+```
+val text1 = raw"This is the new world\n beautiful word"
+  text1.foreach(a => println(a))
+```
+
+=== Numbers
+
+Int 52
+Double 52.3
+
+MinValue MaxValue
+
+
+
+
+
+
+
