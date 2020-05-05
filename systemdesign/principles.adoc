@@ -41,3 +41,20 @@ This generally provides a recovery time of a few seconds.
 Data replication happens through software capabilities and would be bi-directional.
 This generally provides a recovery time that is instantaneous.
 
+= Sharding
+
+Sharding is a very important concept which helps the system to keep data into different resources according to the sharding process.
+
+= Scaling
+== Horizontal and Vertical Scaling In Databases
+
+The scaling operation can be achieved by adding resources to meet the smaller expectation in the current system, or by adding a new system in the existing one, or both.
+
+image::scaleDB.png[Scale DB]
+
+Source: https://www.geeksforgeeks.org/horizontal-and-vertical-scaling-in-databases/
+
+Vertical Scaling: When new resources are added in the existing system to meet the expectation, it is known as vertical scaling.
+
+Horizontal Scaling: When new server racks are added in the existing system to meet the higher expectation, it is known as horizontal scaling.
+
