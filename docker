@@ -1,0 +1,30 @@
+Docker
+
+Remove volumes if no space left on device
+Cleanup:
+
+$ docker volume rm $(docker volume ls -qf dangling=true)
+Additional commands:
+
+List dangling volumes:
+
+$ docker volume ls -qf dangling=true
+List all volumes:
+
+$ docker volume ls
+
+docker system prune
+This will remove:
+
+- all stopped containers
+- all volumes not used by at least one container
+- all networks not used by at least one container
+- all dangling images
+As below, this is nuclear.
+
+To clean your system, first remove containers
+
+$ docker rm $(docker ps -aq)
+then remove images
+
+$ docker rmi $(docker images -q)
