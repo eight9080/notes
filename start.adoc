@@ -1,0 +1,15 @@
+Cache
+https://docs.microsoft.com/en-us/azure/architecture/patterns/cache-aside
+
+Scalability
+https://github.com/binhnguyennus/awesome-scalability
+
+System design
+https://tianpan.co/notes/2018-07-22-b-tree-vs-b-plus-tree
+
+HTTP design
+https://geemus.gitbooks.io/http-api-design/content/en/foundations/separate-concerns.html
+
+
+Problems
+https://tenderleo.gitbooks.io/leetcode-solutions-/content/GoogleMedium/380.html
