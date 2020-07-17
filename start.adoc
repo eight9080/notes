@@ -23,3 +23,6 @@ https://www.geeksforgeeks.org/architecture-of-apache-cassandra/
 
 Sharding
 https://medium.com/@jeeyoungk/how-sharding-works-b4dec46b3f6
+
+Consistent caching
+https://www.toptal.com/big-data/consistent-hashing
