@@ -13,3 +13,7 @@ https://geemus.gitbooks.io/http-api-design/content/en/foundations/separate-conce
 
 Problems
 https://tenderleo.gitbooks.io/leetcode-solutions-/content/GoogleMedium/380.html
+
+
+Summary
+https://www.geeksforgeeks.org/gate-cs-notes-gq/
