@@ -1,0 +1,71 @@
+ifndef::imagesdir[:imagesdir: ../images]
+= Cryptography
+
+== Purpose
+- Nonrepudiation - can't claim it was not send by you
+- Integrity - is the data you sent
+- Authentication
+- Confidentiality
+
+=== Process
+Plaintext + Encryption = Chiphertext
+Chipertext + Descryption = Plaintext
+
+== Types of Cryptography
+=== Symmetric
+Pro
+
+- both parties use the same key
+- super fast
+- easy to implement
+- key isn't transmitted with data
+
+Not good
+
+- key has to be distributed to all parties
+- manageability
+- look out for Dictionary Attacks
+- hard to prove authenticity
+
+=== Asymmetric
+Pro
+
+- two keys required (public and private)
+- digital signature
+- better security
+
+Not good
+
+- slower and more CPU power
+- not good id the private key is exposed
+- MiTM and Brute force attacks
+- No decryption if the private key is lost
+
+Government Access to Key (GAK)
+
+== Ciphers
+
+Types: Classical and Modern
+
+Classical: Substitution, Transposition
+
+Modern: Symmetric, Asymmetric, Block, Stream
+
+Algorithms:
+
+DES Data Encryption Standard
+64-bit blocks, 56-bit key for encryption/decryption
+
+3DES - 3 des with 3 keys (K1, K2, K3)
+
+AES - Advanced Encryption Standard - symmetric key algorithm
+128-bit blocks , 128/192/256 bit keys
+- encrypting data that is not classified
+
+RC4 - variable key size, symmetric
+- not that good, was used part of wep
+
+
+== Standards and Protocols
+
+
