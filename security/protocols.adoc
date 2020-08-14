@@ -1,5 +1,9 @@
-Networking protocols
-IP - Internet Protocol
+= Networking protocols
+
+* IP - Internet Protocol
 connectionless protocol - responsible for networking addressing, provides routing of packets between networks
-TCP - Transmission Control Protocol
+
+* TCP - Transmission Control Protocol
 connection oriented that establishes connections between endpoints, provides guaranteed delivery of packets
+
+
