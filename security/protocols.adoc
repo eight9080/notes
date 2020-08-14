@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: ../images]
 = Networking protocols
 
 * IP - Internet Protocol
@@ -5,5 +6,78 @@ connectionless protocol - responsible for networking addressing, provides routin
 
 * TCP - Transmission Control Protocol
 connection oriented that establishes connections between endpoints, provides guaranteed delivery of packets
+
+* UDP - User Datagram Protocol
+connectionless oriented protocol with no guarantee of delivery (best effort)
+
+== TCP Three way handshake
+- A client node sends a SYN data packet over an IP network to a server to determine if the server is open for a new connection
+- The target server must have open ports that can accept and initiate new connections. Server responds and returns a confirmation receipt (SYN/ACK packet)
+- The client receives the SYN/ACK from the server and responds with an ACK packet and establishes a connection
+
+[.left.text-center]
+image::TCP-3wh.PNG[TCP three way handshake pattern]
+Source https://www.geeksforgeeks.org/tcp-3-way-handshake-process/[TCP Handshake]
+
+== Protocols
+
+=== DNS Security Extensions - DNSSEC
+- Adds security to the original DNS (hierarchical naming system to URLSs to IP addresses)
+- All responses from DNSSEC servers (protected zones) are digitally signed, authenticating their origin
+- Does not provide confidentiality
+
+=== Main security issues
+- DNS Hijacking
+- DNS Cache Poisoning
+
+=== SSH Secure Shell
+- logging into remote hosts
+- TCP Port 22
+
+=== S/MIME Secure/Multipurpose Internet Mail Extensions
+- Public key encryption and signing of MIME data
+- Sending/receiving users - should obtain a key/certificate
+- end-to-end encryption defeat malware scanners
+
+=== SRTP Secure Real-Time Transport Protocol
+- adds confidentiality, message authentication and replay protection
+- to secure VoIP traffic
+
+=== LDAPS Lightweight Directory Access protocol (LDAP) over SSL
+- TCP/UDP POrt 636
+- secures traffic over SSL/TLS
+
+=== FTPS File Transfer over SSL
+- secure file transfers that use SSL for encryption
+- encryption can be turned off if other encryption is in user (e.g. IPSec)
+- TCP ports 989 and 990
+
+=== SFTP Secure FTP
+- SSH File Transfer Protocol
+- provides remote file transfer, access and management
+- Ftp over SSH is FTP tunneled through SSH connection
+- TCP port 115
+
+=== SNMPv3 Simple Network Management Protocol
+- remote management and reporting od IP devices
+- UDP port 161
+
+=== SSL/TLS Secure Sockets Layer/Transport Layer Security
+- TCL new, SSL old
+- adds confidentiality and data integrity by encapsulating other protocols
+- initiates stateful session with handshake
+
+=== HTTPS HTTP Secure via SSL or TLS
+- authentication, privacy/integrity of the data exchange
+- protects against eavesdropping an MiTM attacks
+- bidirectional encryption client/server
+- TCP Port 443
+
+=== Secure POP/IMAP
+-  Accessing webmail securely using SSL/TLS
+- POP3 TCP Port 110/995 (ssl)
+- IMAP4 TCP Port 143/ 993 (ssl)
+
+
 
 
