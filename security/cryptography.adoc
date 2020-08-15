@@ -87,7 +87,22 @@ AES - Advanced Encryption Standard - symmetric key algorithm
 Rounds include key expansion, XORing the round key, substitution, shifting rows, and mixing columns. +
 
 ===== Java Cryptography Extensions JCE
-KeyGenerator -> SecretKey
+*KeyGenerator* generates *SecretKeys* +
+SecretKeys are used for symmetric encryption algorithms like AES.
+
+On the asymmetric side -> *KeyPairGenerator* gives a *PublicKey and a PrivateKey*.
+
+Also at this generative level we have *SecureRandom* - a cryptographically strong random number generator and *IvParameterSpec* - an initialization vector for block ciphers. +
+The keys in the initialization vectors go into creating *Cipher* and *Signature* classes - perform the work of the symmetric or asymmetric encryption and signatures +
+CipherInputStream and CipherOutputStream -  Java input and output stream pipeline in order to pass an entire message through a block cipher.
+
+image::SymmetricEncrypt.PNG[Symmetric encryption]
+Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-java-dotnet-developers[Symmetric encryption]
+
+image::SymmetricDecrypt.PNG[Symmetric decryption]
+Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-java-dotnet-developers[Symmetric decryption]
+
+
 
 RC4 - variable key size, symmetric
 - not that good, was used part of wep
