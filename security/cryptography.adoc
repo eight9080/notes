@@ -11,6 +11,16 @@ ifndef::imagesdir[:imagesdir: ../images]
 Plaintext + Encryption = Chiphertext
 Chipertext + Descryption = Plaintext
 
+Entropy - how random is a number
+
+- One-time Pad
+Truly random, used only once, maximum entropy +
+hard to use
+
+Diffie Hellman -  is a method of securely exchanging cryptographic keys over a public channel
+Large primes - 2048 bits +
+Man in the Middle attack
+
 == Types of Cryptography
 === Symmetric
 Pro
@@ -33,6 +43,8 @@ Pro
 - two keys required (public and private)
 - digital signature
 - better security
+- private key - proves your identity
+- public key - sends you encrypted data
 
 Not good
 
@@ -45,6 +57,14 @@ Government Access to Key (GAK)
 
 == Ciphers
 
+Block ciphers - divides message into blocks (same size) - encrypts each block individual. +
+Whereas confusion serves to hide the key, diffusion serves to hide patterns within the original message.
+
+=== Initialization vector
+to initialize the cipher block chain with a *random* vector each time we encrypt a message. +
+This initialization vector is the *same size as our block size* and gives us a random starting point for our cipher block chaining.
+
+
 Types: Classical and Modern
 
 Classical: Substitution, Transposition
@@ -53,14 +73,20 @@ Modern: Symmetric, Asymmetric, Block, Stream
 
 Algorithms:
 
-DES Data Encryption Standard
+DES - Data Encryption Standard
 64-bit blocks, 56-bit key for encryption/decryption
+
 
 3DES - 3 des with 3 keys (K1, K2, K3)
 
+==== AES - Advanced Encryption Standard
 AES - Advanced Encryption Standard - symmetric key algorithm
-128-bit blocks , 128/192/256 bit keys
-- encrypting data that is not classified
+128-bit(16 bytes) blocks , 128/192/256 bit keys
+- encrypting data that is not classified +
+Rounds include key expansion, XORing the round key, substitution, shifting rows, and mixing columns. +
+
+===== Java Cryptography Extensions JCE
+KeyGenerator -> SecretKey
 
 RC4 - variable key size, symmetric
 - not that good, was used part of wep
@@ -73,6 +99,9 @@ Blowfish - symmetric block
 Twofish - 128-bit block
 - 256-bit key
 - single key
+
+Compression and Error Correction
+
 
 == Standards and Protocols
 
@@ -149,12 +178,37 @@ Verify an email was send by the real person.
 The email is signed with the private key of the sender,
 and is verified with the public key of the sender by the receiver.
 
+Confidentiality.
+- encrypt a message and then send the secret key that we used to encrypt the message to just the person that we want to be able to read it.
+- encrypt symmetric key with public key
+- confidence that only recipient can read it
+
+Authenticity
+- guarantee that the message came from a particular source.
+- to take a digest of the original message.
+- *A digest* is simply a *hash*, a smaller number computed from the larger message.
+- Using our private key, we can encrypt the digest, which digitally signs the original message.
+- The recipient can compute the same digest using the hash function and then decrypt our signature using our public key.
+- If the two match, then the signature is valid. So in order for this to work, we have to choose an *appropriate hashing function*.
+
+- CRC-32* - CRC is Cyclic Redundancy Check
+- 32 means that this hash produces a 32 bit number.
+- CRC-32 is a polynomial on 33 bits, but only 32 bits of the result are stored.
+- this polynomial is easily reversible.
+
+==== Hashing Algorithms
+Both the SHA-2 and the SHA-3 family are considered cryptographically secure.
+
+
+
+
 === SSL Secure Sockets Layer
 - private channel
 - authenticated channel
 - reliable channel
 - uses asymmetric and symmetric
 
+[%hardbreaks]
 Client sends Client Hello + random number + cipher alg supported
 Server replies Server Hello + select alg + random number (ask certificate from the client)
 Client - creates a random pre master secret and encrypts with the public key of the server
@@ -203,7 +257,7 @@ Integral
 ==== Code breaking methods
 - Frequency analysis
 - Brute force
-- One-time Pad
+
 - Trickery and deceit
 
 === Best practice
@@ -213,7 +267,6 @@ Integral
 - Message authentication should be done
 - Asymmetric algorithms use 1536 or 2048 bits
 - Hash algorithms use 168 or 256 bits
-
 
 
 
