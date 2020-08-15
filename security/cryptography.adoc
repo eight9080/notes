@@ -158,6 +158,65 @@ and is verified with the public key of the sender by the receiver.
 Client sends Client Hello + random number + cipher alg supported
 Server replies Server Hello + select alg + random number (ask certificate from the client)
 Client - creates a random pre master secret and encrypts with the public key of the server
+Client + server - generate a new master secret and session id based on the pre master secret
+Client - send change cipher spec based on the master secret
+Server - symmetric encryption based on the new master secret
+Secure channel established
+
+OpenSSL
+
+- open source
+- private/public keys
+- certificates
+- S/MIME
+- Time stamps
+
+The Heartbleed Bug is a serious vulnerability in the popular OpenSSL cryptographic software library. This weakness allows stealing the information protected, under normal conditions, by the SSL/TLS encryption used to secure the Internet.
+
+Pretty Good Privacy (PGP)
+
+- encrypting messages and files
+- signing
+- deleting files
+- compression
+
+1. User encrypts data -> PGP uses compression
+2. PGP creates a random key and encrypts the plaintext
+3. Random key is encrypted with the recipient's public key
+4. Random key is attached and sent to the recipient
+
+
+=== Cryptanalysis methods
+
+Linear
+- block ciphers, plaintext attack, more pairs = better successful
+
+Differential
+- symmetric key algorithms
+- looks at the differences of input and output
+
+
+Integral
+- block ciphers
+- looks at pairs of input that differ a bit
+
+==== Code breaking methods
+- Frequency analysis
+- Brute force
+- One-time Pad
+- Trickery and deceit
+
+=== Best practice
+- No keys inside the source code
+- Do not transfer keys
+- Symmetric algorithms use 168 or 265 bits
+- Message authentication should be done
+- Asymmetric algorithms use 1536 or 2048 bits
+- Hash algorithms use 168 or 256 bits
+
+
+
+
 
 
 
