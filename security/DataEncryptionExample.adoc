@@ -1,4 +1,9 @@
-= Symmetric Encryption
+:toc:
+
+= Types of Encryption
+
+[[sym-encrypt]]
+== Symmetric Encryption
 
 Crypto classes
 
@@ -15,4 +20,210 @@ import javax.crypto.spec.SecretKeySpec;
 
 ----
 
+Bouncy Castle Provider
+[source,java]
+----
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+public class SymmetricExample {
+static {
+		Security.addProvider(new BouncyCastleProvider());
+	}
+}
+----
+
 Security Classes
+
+[source,java]
+----
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.Security;
+----
+
+=== Generate Random AES Key
+----
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES", "BC");
+		keyGenerator.init(256);
+		SecretKey key = keyGenerator.generateKey();
+
+		assertEquals("AES", key.getAlgorithm());
+		assertEquals(32, key.getEncoded().length);
+----
+
+=== Encrypt a message
+----
+        String message = "PLAINTEXT";
+
+		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES", "BC");
+		keyGenerator.init(256);
+		SecretKey key = keyGenerator.generateKey();
+
+		SecureRandom random = new SecureRandom();
+		byte[] buffer = new byte[16];
+		random.nextBytes(buffer);
+		IvParameterSpec iv = new IvParameterSpec(buffer);
+
+		byte[] cipertext = encryptWithAes(message, key, iv);
+		String actualMessage = decryptWithAes(cipertext, key, iv);
+
+		assertEquals(message, actualMessage);
+----
+
+----
+private byte[] encryptWithAes(String message, SecretKey key, IvParameterSpec iv)
+		throws Exception {
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
+		aes.init(Cipher.ENCRYPT_MODE, key, iv);
+		CipherOutputStream cipherOut = new CipherOutputStream(out, aes);
+		OutputStreamWriter writer = new OutputStreamWriter(cipherOut);
+
+		try {
+			writer.write(message);
+		}
+		finally {
+			writer.close();
+		}
+
+		return out.toByteArray();
+	}
+----
+
+=== Decrypt a message
+----
+private String decryptWithAes(byte[] cipertext, SecretKey key, IvParameterSpec iv)
+		throws Exception {
+
+		ByteArrayInputStream in = new ByteArrayInputStream(cipertext);
+		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
+		aes.init(Cipher.DECRYPT_MODE, key, iv);
+		CipherInputStream cipherIn = new CipherInputStream(in, aes);
+		InputStreamReader reader = new InputStreamReader(cipherIn);
+		BufferedReader bufferedReader = new BufferedReader(reader);
+
+		try {
+			return bufferedReader.readLine();
+		}
+		finally {
+			bufferedReader.close();
+		}
+	}
+----
+
+[[asym-encrypt]]
+== Asymmetric Encryption
+
+Crypto classes
+----
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+----
+
+Security Classes
+----
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+----
+
+=== Generate RSA key pair
+
+----
+        KeyPair keyPair = generateRsaKey();
+
+		assertEquals("RSA", keyPair.getPublic().getAlgorithm());
+		assertTrue(keyPair.getPublic().getEncoded().length > 2048 / 8);
+		assertTrue(keyPair.getPrivate().getEncoded().length > 2048 / 8);
+
+    private KeyPair generateRsaKey() throws NoSuchAlgorithmException {
+		KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+		generator.initialize(2048);
+		return generator.generateKeyPair();
+	}
+----
+
+=== Encrypt a symmetric key
+----
+	KeyPair keyPair = generateRsaKey();
+
+		PublicKey publicKey = keyPair.getPublic();
+		PrivateKey privateKey = keyPair.getPrivate();
+
+		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+		keyGenerator.init(256);
+		SecretKey key = keyGenerator.generateKey();
+
+		byte[] encryptedKey = encryptWithRsa(publicKey, key);
+		byte[] decryptedKey = decryptWithRsa(privateKey, encryptedKey);
+
+		assertArrayEquals(key.getEncoded(), decryptedKey);
+----
+
+----
+private byte[] encryptWithRsa(PublicKey publicKey, SecretKey key)
+			throws Exception {
+
+		Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+		rsa.init(Cipher.ENCRYPT_MODE, publicKey);
+		return rsa.doFinal(key.getEncoded());
+	}
+----
+
+=== Decrypt a symmetric key
+
+----
+    private byte[] decryptWithRsa(PrivateKey privateKey, byte[] encryptedKey)
+			throws Exception {
+
+		Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+		rsa.init(Cipher.DECRYPT_MODE, privateKey);
+		return rsa.doFinal(encryptedKey);
+	}
+----
+
+=== Sign a message
+
+----
+        KeyPair keyPair = generateRsaKey();
+
+		PublicKey publicKey = keyPair.getPublic();
+		PrivateKey privateKey = keyPair.getPrivate();
+
+		String message = "Alice knows Bob's secret.";
+		byte[] messageBytes = message.getBytes();
+
+		byte[] signatureBytes = signMessage(privateKey, messageBytes);
+		boolean verified = verifySignature(publicKey, messageBytes, signatureBytes);
+
+		assertTrue(verified);
+
+    private byte[] signMessage(PrivateKey privateKey, byte[] messageBytes)
+			throws Exception {
+
+		Signature signature = Signature.getInstance("SHA256withRSA");
+		signature.initSign(privateKey);
+		signature.update(messageBytes);
+		return signature.sign();
+	}
+
+	private boolean verifySignature(PublicKey publicKey, byte[] messageBytes,
+			byte[] signatureBytes) throws Exception {
+
+		Signature signature = Signature.getInstance("SHA256withRSA");
+		signature.initVerify(publicKey);
+		signature.update(messageBytes);
+		return signature.verify(signatureBytes);
+	}
+----
