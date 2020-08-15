@@ -76,17 +76,11 @@ Twofish - 128-bit block
 
 == Standards and Protocols
 
-DSA
+DSA - 320-bit for signatures/512-1024 bit for security/ Private-Public keys
 
-320-bit for signatures/512-1024 bit for security/ Private-Public keys
+RSA - Uses two large prime numbers
 
-RSA
-
-Uses two large prime numbers
-
-Deffie-Hellman
-
-Allows two parties to form a shared key over a public network
+Deffie-Hellman - Allows two parties to form a shared key over a public network
 
 == Hashes
 - check a document was not changed
@@ -105,11 +99,66 @@ EAP - Passwords, One-Time passwords(OTP), ID cards, Smart Tokens
 
 == Cryptography tools
 
-== MD5 Hash Calculators
+=== MD5 Hash Calculators
 - bullzip.com
 - nirsoft.net
 - onlinemd5.com
 - Microsoft FCIV
+
+=== Folder/Files
+- EFS - from windows
+- 7zip
+- GnuPG -- Windows Kleopatra, create new key pair
+- AxCrypt
+
+=== Drives
+- BitLocker
+- VeraCrypt
+- FileVault
+- GNOME Disk Utility
+
+=== Mobile devices
+- MD5 Checker
+- Hash Droid
+- Last Pass
+
+== PKI Public Key Infrastructure
+- Asymmetric Using Two keys
+- Certificate management System - CMS
+- Digital certificates
+- Validation Authority (VA)
+- Certificate Authority (CA) - issues/verifies certificates
+- Registration Authority (RA) - verifies the CAs
+
+Encrypt a message with a public key of the receiver.
+Receiver uses the private key to decrypt the email and read it.
+
+CA - issues digital certificates - trusted 3rd party
+Verisign, thawte, Entrust, GoDady, DigiCert
+- issues, revoking, distributes certificates
+
+Certificate - identifying a user/org, public key, alg, issuer, subject name
+
+Signed certificate - signed by a public CA, private key is kept secret by the CA
+Self-signed certificate - signed by the same org
+
+== Encrypting Emails, File and Disk drives
+
+=== Digital Signatures
+Verify an email was send by the real person.
+The email is signed with the private key of the sender,
+and is verified with the public key of the sender by the receiver.
+
+=== SSL Secure Sockets Layer
+- private channel
+- authenticated channel
+- reliable channel
+- uses asymmetric and symmetric
+
+Client sends Client Hello + random number + cipher alg supported
+Server replies Server Hello + select alg + random number (ask certificate from the client)
+Client - creates a random pre master secret and encrypts with the public key of the server
+
 
 
 
