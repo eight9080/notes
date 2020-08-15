@@ -199,10 +199,6 @@ Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-jav
 
 link:DataEncryptionExample.adoc#asym-encrypt[Asymmetric encryption]
 
-
-
-
-
 === Digital Signatures
 Verify an email was send by the real person.
 The email is signed with the private key of the sender,
@@ -257,7 +253,10 @@ OpenSSL
 
 The Heartbleed Bug is a serious vulnerability in the popular OpenSSL cryptographic software library. This weakness allows stealing the information protected, under normal conditions, by the SSL/TLS encryption used to secure the Internet.
 
-Pretty Good Privacy (PGP)
+==== X.509 Certificate
+
+
+==== Pretty Good Privacy (PGP)
 
 - encrypting messages and files
 - signing
