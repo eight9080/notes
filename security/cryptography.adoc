@@ -86,6 +86,8 @@ AES - Advanced Encryption Standard - symmetric key algorithm
 - encrypting data that is not classified +
 Rounds include key expansion, XORing the round key, substitution, shifting rows, and mixing columns. +
 
+AES with Electronic Code Book - week block cypher mode
+AES with Cypher Block Chaining - improvement
 
 RC4 - variable key size, symmetric
 - not that good, was used part of wep
@@ -249,7 +251,8 @@ OpenSSL
 - S/MIME
 - Time stamps
 
-The Heartbleed Bug is a serious vulnerability in the popular OpenSSL cryptographic software library. This weakness allows stealing the information protected, under normal conditions, by the SSL/TLS encryption used to secure the Internet.
+The _Heartbleed_ Bug is a serious vulnerability in the popular OpenSSL cryptographic software library. This weakness allows stealing the information protected, under normal conditions, by the SSL/TLS encryption used to secure the Internet.
+
 
 ==== X.509 Certificate
  An X. 509 certificate has: a subject, a Validity range, and a *public key*, and it's signed by a CA certificate authority. The certificate authority vouches for my identity.
@@ -322,7 +325,7 @@ pfx - is binary format
 2. PGP creates a random key and encrypts the plaintext
 3. Random key is encrypted with the recipient's public key
 4. Random key is attached and sent to the recipient
-
+5. Sign the message with the private key of the sender
 
 
 
@@ -462,6 +465,15 @@ Integral
 - Message authentication should be done
 - Asymmetric algorithms use 1536 or 2048 bits
 - Hash algorithms use 168 or 256 bits
+
+==== Don't
+- Use hard-coded symmetric keys
+- Embed keys in mobile apps
+
+==== Do
+- Generate a new key for each message
+- Use asymmetric algorithms to securely exchange keys
+- Digitally sign messages to identify the sender
 
 
 
