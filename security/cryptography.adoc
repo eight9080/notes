@@ -160,6 +160,11 @@ EAP - Passwords, One-Time passwords(OTP), ID cards, Smart Tokens
 - Certificate Authority (CA) - issues/verifies certificates
 - Registration Authority (RA) - verifies the CAs
 
+image:PKICertificate.PNG[PKI]
+Source https://app.pluralsight.com/library/courses/secure-coding-preventing-sensitive-data-exposure[PKI]
+
+
+
 Encrypt a message with a public key of the receiver.
 Receiver uses the private key to decrypt the email and read it.
 
@@ -172,9 +177,17 @@ Certificate - identifying a user/org, public key, alg, issuer, subject name
 Signed certificate - signed by a public CA, private key is kept secret by the CA
 Self-signed certificate - signed by the same org
 
+ When a certificate authority issues a certificate, it *signs it with its private key*.
+
+Certificate authorities hierarchy: root certificate authorities and intermediate certificate authorities, or subcertificate authorities
+
+* the certificate chain, or certificate path - the web browser must be able to build a certificate chain that starts from the web application certificate until it reaches a root certificate
+
+Each X.509 certificate has an issuer field, which is used to find the certificate of the issuing authority. The certificate of the issuing authority contains the public key of the authority, which is used to verify the signature on the issued certificate. When a matching certificate is found, the chain grows one more knot. The process repeats itself until a trusted root certificate is reached.
+
 == Encrypting Emails, File and Disk drives
 
-== Java Cryptography Extensions JCE
+=== Java Cryptography Extensions JCE
 *KeyGenerator* generates *SecretKeys* +
 SecretKeys are used for symmetric encryption algorithms like AES.
 
@@ -243,6 +256,39 @@ Client - send change cipher spec based on the master secret
 Server - symmetric encryption based on the new master secret
 Secure channel established
 
+HTTPS - Http over TLS - combination provides is that all HTTP requests are first passed to the TLS layer where it gets protected before it is passed to the TCP layer to be sent to the network and finally to the web application.
+
+ TLS meets this gap by asking the web application to provide as part of the *handshake an artifact called X.509 certificate* +
+*X.509 certificates* contain a subject, a validity period, and allowed usages, the web application public asymmetric key, which is basically the public portion of the key pair that the web application holds and uses to identify itself.
+
+Checks performed by the browser to check authentication
+
+- the name of the web application matches the subject field in the certificate.
+- this certificate has not expired
+- the certificate contains a usage field that allows the web application to use it to authenticate itself to clients. This usage field is called server authentication.
+- the certificate was issued by a trusted authority.
+
+If a check fails on the provided X.509 certificate, the web browser will immediately notify the user that the browser is not sure whether it is communicating with the intended web application.
+
+To protect sensitive data from exposure - the TLS protocol requires that the web browser:
+- *generate a random secret*
+- encrypt that secret with the asymmetric public key in the provided web application X.509 certificate
+- send it to the web application +
+ Now both the web browser and the web application have *a short secret which they will use to generate a common symmetric encryption key*, which will later be used to encrypt all the traffic that passes between the web browser and the web application. In our case, all HTTP requests that pass the TLS layer will get encrypted with this symmetric key.
+
+*OWASP Recommendations*
+
+* Keep sensitive data out of the URL
+** Web browsers cache the URL history +
+** Referrer header
+* TLS everywhere
+** Never rely on network access control
+** All authenticated pages served over TLS - No parts make HTTP requests
+* Strong protocols
+** Never use SSL 1, 2 or 3
+** Use strong ciphers
+
+
 OpenSSL
 
 - open source
@@ -273,6 +319,8 @@ At the lowest level with the certificate for the site itself - signed by a certi
 The certificate authority has a certificate with a subject that has a certain validity date, their own public key different from mine and their certificate is signed by a *root certificate authority*. +
 The *root certificate authority* is going to have their own certificate. The Root CA will be the subject, with its own validity range, own separate public key, but the *root certificate authority's certificate is signed by itself* - *a self-signed certificate*. The root certificate - comes pre-installed in my browser. So the browser vendor has a list of root certificate authorities that they themselves trust. *They trust these certificate authorities to vouch for the identity of other certificate authorities.* These other certificate authorities, or *intermediate CAs*, can then vouch for the identity of other websites on the web.
 So a certificate acb be obtained from an intermediate certificate authority, but not from a root certificate authority.  not sign anybody else's certificate in order to vouch for their identity(only CAs can). -  strict chain of trust.
+
+
 
 ==== Cryptography standards - RSA Security
 The public Key cryptography standards - a set of *standard formats for files* that you could use to exchange keys with other people.
@@ -421,6 +469,124 @@ Source https://www.samltool.com/generic_sso_res.php[SAML TOOL]
 XML Signature Wrapping Attacks
 Move assertions inside body, and in the header reference the valid assertion in the body.
 
+
+=== Password management
+- Salted hashes
+Precomputed tables will not practically work Hide two identical passwords +
+Use unique salt per credential +
+- Use cryptographically strong random data generator +
+Never depend on hiding or obscurity of salts +
+*OWASP* recommends using the following hashing functions configured with the right work factor:
+Argon2 -  first choice for new applications - the winner of the password hashing competition. +
+PBKDF2 - Password-based key derivation function 2 should be used when FIPS certification or enterprise support on many platforms is required. +
+Scrypt should be used when resisting any or all hardware accelerated attacks is necessary. +
+Bcrypt should be used when support for password-based key derivation function 2 or Scrypt is not available.
+
+OWASP also recommends using *keyed hash functions*, or HMACs, which are hash functions that use a private key to calculate the results. +
+Password length and character variety, OWASP suggests setting:
+
+- a maximum length for passwords - a reasonable long password length of 160 characters
+- without limiting the character set because limited character sets facilitate brute-force attacks.
+
+OWASP suggests hashing the password as one of several steps before storing it.
+very large passwords - a performance bottleneck.
+But when hashed, the size of the password will be reduced to the output size of the hashing function. +
+Finally, OWASP recommends designing password storage with eventual compromise in mind, or designing for failure, in other words.
+
+
+
+=== JWT JSON Web Token
+Security tokens are (protected) data structures
+- contain information about issuer and subject (claims)
+- signed (tamper proof & authenticity)
+- typically contain an expiration time
+
+ A client requests a token
+ An issuer issues a token
+ A resource consumes a token - has a trust relationship with the issuer
+
+==== JWT Structure and Format
+* Header: metadata and algorithms & keys used
+* Claims
+** Issuer (iss)
+** Audience (aud)
+** IssuedAt(iat)
+** Expiration (exp)
+** Subject (sub)
+** Application defined claims
+
+JSON Web Tokens consist of three parts separated by dots (.), which are:
+- Header
+- Payload
+- Signature
+
+ a JWT typically looks like the following - `xxxxx.yyyyy.zzzzz`
+
+Header:
+
+the signing algorithm being used, such as HMAC SHA256 or RSA
+----
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+----
+this JSON is Base64Url encoded to form the first part of the JWT.
+
+Payload:
+
+three types of claims: registered, public, and private claims.
+----
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "admin": true
+}
+----
+The payload is then Base64Url encoded to form the second part of the JSON Web Token.
+
+Signature
+
+To create the signature part you have to take the encoded header, the encoded payload, a secret, the algorithm specified in the header, and sign that.
+
+For example if you want to use the HMAC SHA256 algorithm, the signature will be created in the following way:
+----
+HMACSHA256(
+base64UrlEncode(header) + "." +
+base64UrlEncode(payload),
+secret)
+----
+The signature is used to verify the message wasn't changed along the way, and, in the case of tokens signed with a private key, it can also verify that the sender of the JWT is who it says it is.
+The output is three Base64-URL strings separated by dots that can be easily passed in HTML and HTTP environments.
+
+Source https://jwt.io/introduction/[JWT.io]
+
+==== Producing and Consuming JWTs
+JJWT is a Java library providing end-to-end JSON Web Token creation and verification
+Creating +
+----
+String jwt = Jwts.builder()
+  .setSubject("users/TzMUocMF4p")
+  .setExpiration(new Date(1300819380))
+  .claim("name", "Robert Token Man")
+  .claim("scope", "self groups/admins")
+  .signWith(
+    SignatureAlgorithm.HS256,
+    "secret".getBytes("UTF-8")
+  )
+  .compact();
+----
+Validating +
+----
+String jwt = <jwt passed in from above>
+Jws<Claims> claims = Jwts.parser()
+  .setSigningKey("secret".getBytes("UTF-8"))
+  .parseClaimsJws(jwt)
+String scope = claims.getBody().get("scope")
+assertEquals(scope, "self groups/admins");
+----
+Source https://stormpath.com/blog/beginners-guide-jwts-in-java [guide jwt]
+
 === OAuth - Authorization
 - delegate access to services
 
@@ -433,6 +599,7 @@ Client is redirected to login to the Service Provider
 
 image::OAuth2.PNG[OAuth]
 Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-java-dotnet-developers[OAuth]
+
 
 Sequence diagram - user request a token
 
