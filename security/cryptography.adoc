@@ -281,9 +281,9 @@ The public Key cryptography standards - a set of *standard formats for files* th
 - PKCS #10 - a way of exchanging certificate requests.
 - PKCS #12 - a way of storing personal information - *private keys*.
 
-Private Key Commonly stored in files with extensions e.g. *.key for an RSA key*. Command `openssl genrsa` in order to create a key file.
-File *.csr* - *a certificate signing request*. Command `openssl req` to generate such a request.
-File *.cer* - the certificate authority gives us after the certificate signing request is granted. - contains an actual certificate.
+Private Key Commonly stored in files with extensions e.g. *.key for an RSA key*. Command `openssl genrsa` in order to create a key file. +
+File *.csr* - *a certificate signing request*. Command `openssl req` to generate such a request. +
+File *.cer* - the certificate authority gives us after the certificate signing request is granted. - contains an actual certificate. +
 
 All three of these file formats are usually stored in a *pem format* - *Privacy Enhanced Mail* and was a text-based format for exchanging keys that the PKCS built upon.
 Format *.pfx* - a pkcs12 file sorted as binary. A pfx file stores a certificate and the private key associated with that certificate. Command `openssl pkcs12` in order to combine those two into a .pfx file.
@@ -423,18 +423,25 @@ Move assertions inside body, and in the header reference the valid assertion in 
 
 === OAuth - Authorization
 - delegate access to services
+
 Client connects to Agent which connects to Service Provider
+
 image::OAuth1.PNG[OAuth]
 Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-java-dotnet-developers[OAuth]
+
 Client is redirected to login to the Service Provider
+
 image::OAuth2.PNG[OAuth]
 Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-java-dotnet-developers[OAuth]
+
 Sequence diagram - user request a token
+
 image::authorization-code.png[Authorization code]
 Source https://developers.google.com/identity/protocols/oauth2[OAuth]
 
 === Open ID Connect - Authentication
 OpenID grants authority for the app to know your identity
+
 image::OpenID Connect.png[Open id connect]
 Source https://blog.payara.fish/openid-connect-in-the-payara-platform-5.183[Open ID Connect]
 
