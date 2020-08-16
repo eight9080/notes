@@ -226,9 +226,7 @@ Authenticity
 Both the SHA-2 and the SHA-3 family are considered cryptographically secure.
 
 
-
-
-=== SSL Secure Sockets Layer
+=== SSL Secure Sockets Layer/ TLS Transport Layer Security
 - private channel
 - authenticated channel
 - reliable channel
@@ -254,6 +252,63 @@ OpenSSL
 The Heartbleed Bug is a serious vulnerability in the popular OpenSSL cryptographic software library. This weakness allows stealing the information protected, under normal conditions, by the SSL/TLS encryption used to secure the Internet.
 
 ==== X.509 Certificate
+ An X. 509 certificate has: a subject, a Validity range, and a *public key*, and it's signed by a CA certificate authority. The certificate authority vouches for my identity.
+
+The subject of an X. 509 certificate - *distinguished name*. +
+A hierarchy:
+
+- country (C)
+- state (ST)
+- Locality or city within that state (L)
+- organization within that city (O)
+- organizational unit within that organization (OU)
+- *common name* (CN)
+e.g. In the case of a certificate identifying a site, the common name has to be the *domain name* of that site.
+
+To create a *chain of trust* - a browser to will confirm this certificate is from me. +
+At the lowest level with the certificate for the site itself - signed by a certificate authority or CA. +
+The certificate authority has a certificate with a subject that has a certain validity date, their own public key different from mine and their certificate is signed by a *root certificate authority*. +
+The *root certificate authority* is going to have their own certificate. The Root CA will be the subject, with its own validity range, own separate public key, but the *root certificate authority's certificate is signed by itself* - *a self-signed certificate*. The root certificate - comes pre-installed in my browser. So the browser vendor has a list of root certificate authorities that they themselves trust. *They trust these certificate authorities to vouch for the identity of other certificate authorities.* These other certificate authorities, or *intermediate CAs*, can then vouch for the identity of other websites on the web.
+So a certificate acb be obtained from an intermediate certificate authority, but not from a root certificate authority.  not sign anybody else's certificate in order to vouch for their identity(only CAs can). -  strict chain of trust.
+
+==== Cryptography standards - RSA Security
+The public Key cryptography standards - a set of *standard formats for files* that you could use to exchange keys with other people.
+
+- PKCS #7 - Cryptographic Message Syntax, - a way of exchanging certificates.
+- PKCS #10 - a way of exchanging certificate requests.
+- PKCS #12 - a way of storing personal information - *private keys*.
+
+Private Key Commonly stored in files with extensions e.g. *.key for an RSA key*. Command `openssl genrsa` in order to create a key file.
+File *.csr* - *a certificate signing request*. Command `openssl req` to generate such a request.
+File *.cer* - the certificate authority gives us after the certificate signing request is granted. - contains an actual certificate.
+
+All three of these file formats are usually stored in a *pem format* - *Privacy Enhanced Mail* and was a text-based format for exchanging keys that the PKCS built upon.
+Format *.pfx* - a pkcs12 file sorted as binary. A pfx file stores a certificate and the private key associated with that certificate. Command `openssl pkcs12` in order to combine those two into a .pfx file.
+
+==== RSA Key Pair
+Generate a private key with a 2048 bit modulus- encrypted with an aes256 key generated from the passphrase entered.
+`openssl genrsa -aes256 -out site.key 2048`
+Naked key - without being encrypted - no pass needed - should only be on the server what will use the key
+`openssl rsa -in site.key -out rawsite.key`
+
+==== Certificate Signing Request
+Generate a CSR
+`openssl req -new -key site.key -days 365 -out site.csr`
+Provide the distinguish name -> country, state, locality, organization name, organization unit name, *Common name* -> domain name www.site.com
+Read the csr
+`openssl req -text -in site.csr`
+Contains: subject, public key, signature algorithm (sha1withRSAEncryption), contents of PEM format
+File - printed out in pem format with BEGIN CERTIFICATE REQUEST and END CERTIFICATE REQUEST delimiters.
+Base64 encoded block of binary.
+
+==== Certificate
+CA will send the cer - certificate - a PEM-encoded certificate - contains a Base64 encoded version of my certificate.
+Command `openssl x509 -in site.cer -text`
+Contains: distinguish name of the issuer, validity dates, subject of the certificate - CN is the same, public key,  certificate signing authority signature(sha1withRSAEncryption)
+
+To generate a file for IIS/Tomcat
+Command `openssl pks12 -export -in site.cer -inkey site.key -out site.pfx`
+pfx - is binary format
 
 
 ==== Pretty Good Privacy (PGP)
@@ -268,6 +323,117 @@ The Heartbleed Bug is a serious vulnerability in the popular OpenSSL cryptograph
 3. Random key is encrypted with the recipient's public key
 4. Random key is attached and sent to the recipient
 
+
+
+
+=== Authentication and Authorization
+- Hashed passwords - hash function - one way digest of the passwords
+Precomputed hashes - dictionary attack
+
+Rainbow table
+Hash(text) -> binary SHA-1
+Retry(binary) -> text - not the inverse function
+
+- Salted Hashed passwords: random input to hash function
+
+Entropy
+H=Llog2N
+L length of the message
+N size of alphabet
+
+- Password Based Key Derivation Functions
+----
+SecretKeyFactory f = SecretKeyFactory.getInstance( "PBKDF2WithHmacSHA1");
+KeySpec ks = new PBEKeySpec( password, salt, 10000, 128);
+SecretKey s = f.generateSecret(ks);
+Key k = new SecretKeySpec(s.getEncoded(), "AES");
+----
+
+- Progressive Salted Hashed Passwords
+Store the algorithm - hash alg and number of iterations
+
+- Federation removes the responsibility of identity from applications and gives that to other providers.
+It separates the authentication of users from their authorization. Federation is based on a trust relationship established among multiple parties. +
+Federation roles:
+- Identity provider - IP - centralize identity management
+- Secure Token Service - STS - sigle repository of roles and responsibilities
+- Relying Party - RP - consumes the tokens and acts upon those claims
+
+Kerberos - authentication and authorization
+User makes a Token Request, Server sends a Ticket Granting Ticket (TGT) - encrypted by the user symmetric key (established from the user password - created when the user first register)
+
+WS-Trust and WS-Federation - XML protocols for SOAP web services to exchange security tokens +
+Active federation - client provides proof of identity (proof key), client signs a message to prove is the holder of a key pair +
+Passive federation - browser redirects exchange tokens through cookies (no proof key), password- based authentication +
+Bearer token signed by STS and encrypted for a specific RP
+WS-Trust and WS-Federation exchange claims in the form of secure Assertion Markup Language, or *SAML*. +
+SAML is an XML schema designed for use in web services, which *encodes both authentication and authorization claims*.
+In SAML parlance they're called assertions. These assertions are signed by the STS so that they can be trusted by the relying parties. The signature is usually enveloped within the assertion and contains a reference to the assertion, usually by ID.
+[source, xml]
+----
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_8e8dc5f69a98cc4c1ff3427e5ce34606fd672f91e6" Version="2.0" IssueInstant="2014-07-17T01:01:48Z" Destination="http://sp.example.com/demo1/index.php?acs" InResponseTo="ONELOGIN_4fee3b046395c4e751011e97f8900b5273d56685">
+  <saml:Issuer>http://idp.example.com/metadata.php</saml:Issuer>
+  <samlp:Status>
+    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+  </samlp:Status>
+  <saml:Assertion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" ID="pfx729c5fb2-ea27-1f34-bb14-dd7c8bbe6288" Version="2.0" IssueInstant="2014-07-17T01:01:48Z">
+    <saml:Issuer>http://idp.example.com/metadata.php</saml:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+  <ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+    <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+  <ds:Reference URI="#pfx729c5fb2-ea27-1f34-bb14-dd7c8bbe6288"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>Pg7jUVTP7+vx6oAiWfM9NKfN5Hk=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>yJXbnCD4u/EavkCjsshKlTl4Cvyrqb1hYFIAX9Xxt4uLwl+tImtEI8dxh/EV37V86z/kYw11OCPCp1ttq/jn/+B8FcENKLZ6c9VsWhKsIJPYhv/9K9NeAOLLvPwECovwbFcj6Wo7FP8/i2jMMuyVQLVXPSv4AYzUTtfQv9sfVzA=</ds:SignatureValue>
+<ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIICajCCAdOgAwIBAgIBADANBgkqhkiG9w0BAQ0FADBSMQswCQYDVQQGEwJ1czETMBEGA1UECAwKQ2FsaWZvcm5pYTEVMBMGA1UECgwMT25lbG9naW4gSW5jMRcwFQYDVQQDDA5zcC5leGFtcGxlLmNvbTAeFw0xNDA3MTcxNDEyNTZaFw0xNTA3MTcxNDEyNTZaMFIxCzAJBgNVBAYTAnVzMRMwEQYDVQQIDApDYWxpZm9ybmlhMRUwEwYDVQQKDAxPbmVsb2dpbiBJbmMxFzAVBgNVBAMMDnNwLmV4YW1wbGUuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZx+ON4IUoIWxgukTb1tOiX3bMYzYQiwWPUNMp+Fq82xoNogso2bykZG0yiJm5o8zv/sd6pGouayMgkx/2FSOdc36T0jGbCHuRSbtia0PEzNIRtmViMrt3AeoWBidRXmZsxCNLwgIV6dn2WpuE5Az0bHgpZnQxTKFek0BMKU/d8wIDAQABo1AwTjAdBgNVHQ4EFgQUGHxYqZYyX7cTxKVODVgZwSTdCnwwHwYDVR0jBBgwFoAUGHxYqZYyX7cTxKVODVgZwSTdCnwwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQ0FAAOBgQByFOl+hMFICbd3DJfnp2Rgd/dqttsZG/tyhILWvErbio/DEe98mXpowhTkC04ENprOyXi7ZbUqiicF89uAGyt1oqgTUCD1VsLahqIcmrzgumNyTwLGWo17WDAa1/usDhetWAMhgzF/Cnf5ek0nK00m0YZGyc4LzgD0CROMASTWNg==</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature>
+    <saml:Subject>
+      <saml:NameID SPNameQualifier="http://sp.example.com/demo1/metadata.php" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">_ce3d2948b4cf20146dee0a0b3dd6f69b6cf86f62d7</saml:NameID>
+      <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+        <saml:SubjectConfirmationData NotOnOrAfter="2024-01-18T06:21:48Z" Recipient="http://sp.example.com/demo1/index.php?acs" InResponseTo="ONELOGIN_4fee3b046395c4e751011e97f8900b5273d56685"/>
+      </saml:SubjectConfirmation>
+    </saml:Subject>
+    <saml:Conditions NotBefore="2014-07-17T01:01:18Z" NotOnOrAfter="2024-01-18T06:21:48Z">
+      <saml:AudienceRestriction>
+        <saml:Audience>http://sp.example.com/demo1/metadata.php</saml:Audience>
+      </saml:AudienceRestriction>
+    </saml:Conditions>
+    <saml:AuthnStatement AuthnInstant="2014-07-17T01:01:48Z" SessionNotOnOrAfter="2024-07-17T09:01:48Z" SessionIndex="_be9967abd904ddcae3c0eb4189adbe3f71e327cf93">
+      <saml:AuthnContext>
+        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
+      </saml:AuthnContext>
+    </saml:AuthnStatement>
+    <saml:AttributeStatement>
+      <saml:Attribute Name="uid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        <saml:AttributeValue xsi:type="xs:string">test</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="mail" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        <saml:AttributeValue xsi:type="xs:string">test@example.com</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="eduPersonAffiliation" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        <saml:AttributeValue xsi:type="xs:string">users</saml:AttributeValue>
+        <saml:AttributeValue xsi:type="xs:string">examplerole1</saml:AttributeValue>
+      </saml:Attribute>
+    </saml:AttributeStatement>
+  </saml:Assertion>
+</samlp:Response>
+----
+Source https://www.samltool.com/generic_sso_res.php[SAML TOOL]
+
+XML Signature Wrapping Attacks
+Move assertions inside body, and in the header reference the valid assertion in the body.
+
+=== OAuth - Authorization
+- delegate access to services
+Client connects to Agent which connects to Service Provider
+image::OAuth1.PNG[OAuth]
+Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-java-dotnet-developers[OAuth]
+Client is redirected to login to the Service Provider
+image::OAuth2.PNG[OAuth]
+Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-java-dotnet-developers[OAuth]
+Sequence diagram - user request a token
+image::authorization-code.png[Authorization code]
+Source https://developers.google.com/identity/protocols/oauth2[OAuth]
+
+=== Open ID Connect - Authentication
+OpenID grants authority for the app to know your identity
+image::OpenID Connect.png[Open id connect]
+Source https://blog.payara.fish/openid-connect-in-the-payara-platform-5.183[Open ID Connect]
 
 === Cryptanalysis methods
 
