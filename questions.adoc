@@ -185,3 +185,65 @@ Thus, in the face of concurrent modification, the iterator fails quickly and cle
     ListIterator allows to perform iteration both ways (first-->last and last-->first)
     From JavaDoc: ListIterator is an iterator for lists that allows the programmer to traverse the list in either direction, modify the list during iteration, and obtain the iterator's current position in the list
 
+
+Security
+Sqlinjection
+Q #4) What is “SQL Injection”?
+
+Answer: SQL Injection is one of the common attacking techniques used by hackers to get critical data.
+
+Hackers check for any loophole in the system through which they can pass SQL queries, bypass the security checks, and return back the critical data. This is known as SQL injection. It can allow hackers to steal critical data or even crash a system.
+
+SQL injections are very critical and need to be avoided. Periodic security testing can prevent this kind of attack. SQL database security needs to be defined correctly and input boxes and special characters should be handled properly.
+Directory traversal
+security headers
+
+ List the attributes of Security Testing?
+
+Answer: There are following seven attributes of Security Testing:
+
+Authentication
+Authorization
+Confidentiality
+Availability
+Integrity
+Non-repudiation
+Resilience
+
+Q #6) What is XSS or Cross-Site Scripting?
+
+Answer: XSS or cross-site scripting is a type of vulnerability that hackers used to attack web applications.
+
+It allows hackers to inject HTML or JAVASCRIPT code into a web page that can steal the confidential information from the cookies and returns to the hackers. It is one of the most critical and common techniques which needs to be prevented.
+
+Q #7) What are the SSL connections and an SSL session?
+
+Answer: SSL or Secured Socket Layer connection is a transient peer-to-peer communications link where each connection is associated with one SSL Session.
+
+SSL session can be defined as an association between client and server generally created by the handshake protocol. There are a set of parameters defined and it may be shared by multiple SSL connections.
+
+
+Q #10)  Name the two common techniques used to protect a password file?
+
+Answer: Two common techniques to protect a password file is- hashed passwords and a salt value or password file access control.
+
+Q #24) List the component used in SSL?
+
+Answer: Secure Sockets Layer protocol or SSL is used to make secure connections between clients and computers.
+
+Below are the component used in SSL:
+
+SSL Recorded protocol
+Handshake protocol
+Change Cipher Spec
+Encryption algorithms
+
+Session hijacking: where application exposes session ID, URL, or doesn’t rotate after login.
+
+
+
+
+
+
+
+
