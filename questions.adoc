@@ -12,13 +12,16 @@ Is it possible to override a private static method - method hiding
 
 
 == Java 8
-What is a FunctionalInterface? - what conditions are needed for a interface to be functional interface?
+*What is a FunctionalInterface?*
+
+- what conditions are needed for a interface to be functional interface?
 A functional interface is an interface with no more, no less but one single abstract method (default methods do not count).
 Where an instance of such interface is required, a Lambda Expression can be used instead. More formally put: Functional interfaces provide target types for lambda expressions and method references.
-
 Any interface with a SAM(Single Abstract Method) is a functional interface, and its implementation may be treated as lambda expressions.
 
-Can you give some example of functional interfaces Function Consumer Supplier Predicate - functional interfaces in the java.util.function package
+Can you give some *example of functional interfaces*
+
+Function Consumer Supplier Predicate - functional interfaces in the java.util.function package
 - Function – it takes one argument and returns a result
 - Consumer – it takes one argument and returns no result (represents a side effect)
 - Supplier – it takes not argument and returns a result
@@ -27,31 +30,33 @@ Can you give some example of functional interfaces Function Consumer Supplier Pr
 - BinaryOperator – it is similar to a BiFunction, taking two arguments and returning a result. The two arguments and the result are all of the same types
 - UnaryOperator – it is similar to a Function, taking a single argument and returning a result of the same type
 
-What is a Lambda expression and what it is used for. 
+*What is a Lambda expression and what it is used for. *
+
 a lambda expression is a function that can be referenced and passed around as an object.
 Lambda expressions introduce functional style processing in Java and facilitate the writing of compact and easy-to-read code.
 Because of this, lambda expressions are a natural replacement for anonymous classes as method arguments. One of their main uses is to define inline implementations of functional interfaces.
 
+*What is a default method why were needed/introduced?*
 
-
-What is a default method why were needed/introduced?
 A default method is a method with an implementation – which can be found in an interface.
 We can use a default method to add a new functionality to an interface while maintaining backward compatibility with classes that are already implementing the interface
 
 
-How hashset is implemented in Java internally.
-Difference between a stream and a collection
+*How hashset is implemented in Java internally.*
+
+*Difference between a stream and a collection* 
+
  a stream is an iterator whose role is to accept a set of actions to apply on each of the elements it contains.
 The stream represents a sequence of objects from a source such as a collection, which supports aggregate operations. They were designed to make collection processing simple and concise. Contrary to the collections, the logic of iteration is implemented inside the stream, so we can use methods like map and flatMap for performing a declarative processing.
 
-What Is the Difference Between Intermediate and Terminal Operations?
+*What Is the Difference Between Intermediate and Terminal Operations?*
 
 Stream operations are combined into pipelines to process streams. All operations are either intermediate or terminal.
 Intermediate operations are those operations that return Stream itself allowing for further operations on a stream.
 These operations are always lazy, i.e. they do not process the stream at the call site, an intermediate operation can only process data when there is a terminal operation. Some of the intermediate operations are filter, map and flatMap.
 Terminal operations terminate the pipeline and initiate stream processing. The stream is passed through all intermediate operations during terminal operation call. Terminal operations include forEach, reduce, Collect and sum.
 
-Java 8 Date and Time API
+*Java 8 Date and Time API*
 
 The existing classes such as java.util.Date and SimpleDateFormatter aren’t thread-safe, leading to potential concurrency issues for users.
 
@@ -65,8 +70,10 @@ thread lifecycle/ states
 
 
 
-Java Collections
-The basic interfaces of Java Collections Framework
+== Java Collections
+
+*The basic interfaces of Java Collections Framework* 
+
 Java Collections Framework provides a well designed set of interfaces and classes that support operations on a collections of objects. The most basic interfaces that reside in the Java Collections Framework are:
 Collection, which represents a group of objects known as its elements.
 Set, which is a collection that cannot contain duplicate elements.
@@ -86,36 +93,44 @@ interface Iterable
     class TreeMap implements SortedMap
     utility classes Collections and Arrays
 
-Differences exist between Iterator and ListIterator ? The differences of these elements are listed below:
+*Differences exist between Iterator and ListIterator ?*
+
+The differences of these elements are listed below:
 An Iterator can be used to traverse the Set and List collections, while the ListIterator can be used to iterate only over Lists.
 The Iterator can traverse a collection only in forward direction, while the ListIterator can traverse a List in both directions.
 The ListIterator implements the Iterator interface and contains extra functionality, such as adding an element, replacing an element, getting the index position for previous and next elements, etc.
 
-Difference between fail-fast and fail-safe ? 
+*Difference between fail-fast and fail-safe ? *
+
 The Iterator's fail-safe property works with the clone of the underlying collection and thus, it is not affected by any modification in the collection. All the collection classes in java.util package are fail-fast, while the collection classes in java.util.concurrent are fail-safe. Fail-fast iterators throw a ConcurrentModificationException, while fail-safe iterator never throws such an exception.
 
-How HashMap works in Java ? 
+*How HashMap works in Java ?*
+
 A HashMap in Java stores key-value pairs. The HashMap requires a hash function and uses hashCode and equals methods, in order to put and retrieve elements to and from the collection respectively. When the put method is invoked, the HashMap calculates the hash value of the key and stores the pair in the appropriate index inside the collection. If the key exists, its value is updated with the new value. Some important characteristics of a HashMapare its capacity, its load factor and the threshold resizing.
 
- What is the importance of hashCode() and equals() methods ? In Java, a HashMap uses the hashCode and equals methods to determine the index of the key-value pair and to detect duplicates. More specifically, the hashCodemethod is used in order to determine where the specified key will be stored. Since different keys may produce the same hash value, the equals method is used, in order to determine whether the specified key actually exists in the collection or not.
+ *What is the importance of hashCode() and equals() methods ?*
+ In Java, a HashMap uses the hashCode and equals methods to determine the index of the key-value pair and to detect duplicates. More specifically, the hashCode method is used in order to determine where the specified key will be stored. Since different keys may produce the same hash value, the equals method is used, in order to determine whether the specified key actually exists in the collection or not.
 
-What is Java Priority Queue ? The PriorityQueue is an unbounded queue, based on a priority heap and its elements are ordered in their natural order. At the time of its creation, we can provide a Comparator that is responsible for ordering the elements of the PriorityQueue. A PriorityQueue doesn’t allow null values, those objects that doesn’t provide natural ordering, or those objects that don’t have any comparator associated with them. Finally, the Java PriorityQueue is not thread-safe and it requires O(log(n)) time for its enqueing and dequeing operations.
+*What is Java Priority Queue ?*
 
-The difference between HashSet and TreeSet ? The HashSet is Implemented using a hash table and thus, its elements are not ordered. The add, remove, and contains methods of a HashSet have constant time complexity O(1). On the other hand, a TreeSet is implemented using a tree structure. The elements in a TreeSet are sorted, and thus, the add, remove, and contains methods have time complexity of O(logn).
+The PriorityQueue is an unbounded queue, based on a priority heap and its elements are ordered in their natural order. At the time of its creation, we can provide a Comparator that is responsible for ordering the elements of the PriorityQueue. A PriorityQueue doesn’t allow null values, those objects that doesn’t provide natural ordering, or those objects that don’t have any comparator associated with them. Finally, the Java PriorityQueue is not thread-safe and it requires O(log(n)) time for its enqueing and dequeing operations.
+
+*The difference between HashSet and TreeSet ?*
+The HashSet is Implemented using a hash table and thus, its elements are not ordered. The add, remove, and contains methods of a HashSet have constant time complexity O(1). On the other hand, a TreeSet is implemented using a tree structure. The elements in a TreeSet are sorted, and thus, the add, remove, and contains methods have time complexity of O(logn).
 ---
 
-2. What is HashMap and Map?
+* What is HashMap and Map?*
 
     Map is an interface. Contains methods to manipulate Key-Value based collections. The main methods of Map interface are put(K,V), get(K), Collection<V> values(), Set<K> keySet(), containsKey(), containsValue()
     HashMap is one of implementations of the Map interface based on hashcodes of objects used as keys.
 
-3. Difference between HashMap and HashTable? Can we make hashmap synchronized?
+* Difference between HashMap and HashTable? Can we make hashmap synchronized?*
 
     Both implement Map interface. HashTable is synchronized. It is recommended to use HashMap wherever possible. HashTable doesn't allow null keys and values. HashMap allows one null key and any number of null values.
     We can make it synchronized
         Map m = Collections.synchronizedMap(new HashMap());
 
-6. List vs Set vs Map. Purposes and definitions.
+* List vs Set vs Map. Purposes and definitions.*
 
     All three are interfaces.
 
@@ -143,7 +158,7 @@ Know implementations HashMap, EnumMap, TreeMap, LinkedHashMap, WeakHashMap.
     If the ordering of the elements in the Set matters to you but you don't want to use a comparator you may use LinkedHashSet since it will enforce ordering in which the elements were added to the set.
     Otherwise use TreeSet
 
-9. Differences between Hashtable, ConcurrentHashMap and Collections.synchronizedMap()
+* Differences between Hashtable, ConcurrentHashMap and Collections.synchronizedMap()*
 
     ConcurrentHashMap allows concurrent modification of the Map from several threads without the need to block them. 
 Collections.synchronizedMap(map) creates a blocking Map which will degrade performance, albeit ensure consistency (if used properly).
@@ -169,11 +184,11 @@ Use the first if performance is critical, and each thread only inserts data to t
 
     int hashCode(){ return 57; }
 
-15. Can we put two elements with equal hash code to one hash map?
+* Can we put two elements with equal hash code to one hash map?*
 
     Yes we can. The hashcode of objects doesn't matter. Only the hashcode of keys. But even if you want to put keys with the same hashcode it will be ok since it just means that key-value pairs will be put into the same bucket
 
-16. Iterator and modification of a List. ConcurentModificationException.
+* Iterator and modification of a List. ConcurentModificationException.*
 
     The iterators returned by this class's iterator method are fail-fast: if the set is modified at any time after the iterator is created, in any way except through the iterator's own remove method, the iterator will throw a ConcurrentModificationException. 
 Thus, in the face of concurrent modification, the iterator fails quickly and cleanly, rather than risking arbitrary, non-deterministic behavior at an undetermined time in the future.
@@ -185,8 +200,28 @@ Thus, in the face of concurrent modification, the iterator fails quickly and cle
     ListIterator allows to perform iteration both ways (first-->last and last-->first)
     From JavaDoc: ListIterator is an iterator for lists that allows the programmer to traverse the list in either direction, modify the list during iteration, and obtain the iterator's current position in the list
 
+== Concurrency
 
-Security
+* Which types of thread pool do you know/ have used?
+There are various thread pools in java:
+
+*Single Thread Executor* : 
+A thread pool with only one thread. So all the submitted tasks will be executed sequentially. Method : Executors.newSingleThreadExecutor()
+
+*Cached Thread Pool* : 
+A thread pool that creates as many threads it needs to execute the task in parrallel. The old available threads will be reused for the new tasks. If a thread is not used during 60 seconds, it will be terminated and removed from the pool. Method : Executors.newCachedThreadPool()
+
+*Fixed Thread Pool* : 
+A thread pool with a fixed number of threads. If a thread is not available for the task, the task is put in queue waiting for an other task to ends. Method : Executors.newFixedThreadPool()
+
+*Scheduled Thread Pool* : 
+A thread pool made to schedule future task. Method : Executors.newScheduledThreadPool()
+
+*Single Thread Scheduled Pool* :
+A thread pool with only one thread to schedule future task. Method : Executors.newSingleThreadScheduledExecutor()
+
+
+== Security
 Sqlinjection
 Q #4) What is “SQL Injection”?
 
