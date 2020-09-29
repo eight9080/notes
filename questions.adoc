@@ -520,9 +520,14 @@ Encryption algorithms
 
 Session hijacking: where application exposes session ID, URL, or doesn’t rotate after login.
 
+== SDLC
+How long was release cycle and why? How would I improve it/make it shorter?
 
 
+== Task
 
+Create an Accounts API - list accounts / list transaction
+LRU cache implementation
 
 
 
