@@ -1,17 +1,17 @@
 
-Java SE
-What is Autoboxing/unboxing?
+== Java SE
+*What is Autoboxing/unboxing?*
 
 Autoboxing is automatic casting of variables of primitive types to corresponding wrapper class. Unboxing is the inverted cast.
 Useful to reduce the amount of code to be written. Pitfalls: can be unintentionally slow if used in a loop. Also care has to be taken with cached values. (e.g. a pool of Integers from -128 to +127)
 
-How a HashMap works in Java? hashcode / equals - methods used to implement for the key object 
+*How a HashMap works in Java?* hashcode / equals - methods used to implement for the key object 
 Difference between a HashSet and TreeSet?
 What is an immutable object - example of a class
 Is it possible to override a private static method - method hiding
 
 
-Java 8
+== Java 8
 What is a FunctionalInterface? - what conditions are needed for a interface to be functional interface?
 A functional interface is an interface with no more, no less but one single abstract method (default methods do not count).
 Where an instance of such interface is required, a Lambda Expression can be used instead. More formally put: Functional interfaces provide target types for lambda expressions and method references.
