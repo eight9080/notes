@@ -1,0 +1,8 @@
+= Java
+
+== What is a Functional Interface?
+A functional interface is an interface that defines only one abstract method.
+
+To accurately determine the interface as functional, an annotation has been added @FunctionalInterface that works on the principle of @Override. It will designate a plan and will not allow to define the second abstract method in the interface.
+
+An interface can include as many default methods as you like while remaining functional, because default methods are not abstract.
