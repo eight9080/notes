@@ -1,0 +1,11 @@
+= Spring
+
+== Spring Core
+The Spring IoC creates the objects, wire them together, configure them, and manage their complete lifecycle from creation till destruction. The Spring container uses dependency injection (DI) to manage the components that make up an application.
+
+There are two types of IoC containers in Spring:
+
+Bean Factory container − This is the simplest container providing basic support for DI .The BeanFactory is usually preferred where the resources are limited like mobile devices or applet based applications
+Spring ApplicationContext Container − This container adds more enterprise-specific functionality such as the ability to resolve textual messages from a properties file and the ability to publish application events to interested event listeners.
+
+

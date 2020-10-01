@@ -1,0 +1,9 @@
+= Concurrency
+
+== Compare the sleep() and wait() methods in Java
+sleep() is a blocking operation that keeps a hold on the monitor / lock of the shared object for the specified number of milliseconds.
+
+wait(), on the other hand, simply pauses the thread until either (a) the specified number of milliseconds have elapsed or (b) it receives a desired notification from another thread (whichever is first), without keeping a hold on the monitor/lock of the shared object.
+
+sleep() is most commonly used for polling, or to check for certain results, at a regular interval. wait() is generally used in multithreaded applications, in conjunction with notify() / notifyAll(), to achieve synchronization and avoid race conditions.
+
