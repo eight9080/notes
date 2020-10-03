@@ -76,6 +76,28 @@ When to use encryption:
 
 Ensure data is secure: in transit, in storage, in the users browsers
 
+== Use the wrong encryption algorithms
+
+Use strong algorithms
+- RSA, AES for public key cryptography - with strong enough keys
+- SHA-256 or better for hashing
+- use password specific algorithms for encrypting passwords - PBKDF2, bcrypt, scrypt
+
+Weak algorithms
+- DES -> replaced with AES
+- MD5, SHA-1
+
+=== Salt
+
+A hacker can use a rainbow table - to lookup the password for this hash value
+Adding a salt before hashing -> will change the hash for each password.
+
+- make a salt long enough
+- use a unique salt for every user 
+
+=== Key management
+- use long keys
+- store your keys safely
 
 
 
