@@ -55,5 +55,28 @@ GET/addUser -> isAuthenicated-> isAuthorized-> addUser
 Solution: add tests/ add logging
 
 
+= Encryption
+
+Encryption = Plain text + key .. algorithm ... cipher text
+Decryption = Cipher text + key .. algorithm ... plain text
+
+Cryptography objectives
+* Confidentiality - only the intended receiver can read the data 
+* Integrity - the receiver can determine if the data has been altered
+* Authenticity - the sender can be verified
+* Non-repudiation - the sender cannot deny sending the data
+
+== Missing Encryption
+
+- expose sensitive data 
+Mitigation: check if you need to store/transmit sensitive data and if needed use proper encryption
+
+When to use encryption:
+- for sensitive data: credentials, personal data, banking/financial data
+
+Ensure data is secure: in transit, in storage, in the users browsers
+
+
+
 
 
