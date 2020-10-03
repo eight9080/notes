@@ -1,2 +1,28 @@
 = Authentication
+
 == Broken Authentication
+
+*Vultneabilities*
+
+1. missing authetication for critical function
+Solution - check authentication for each operation and have in place security tests (automated) to check the operations
+2. improper restriction of excessive authentication attempts
+  Countermeasures:
+  - add delay: constant, back-off algortithms, hashing rounds
+  - disconnect user
+  - add chanllenge: captcha, MFA, TAN-code
+  - banning remote hosts - by IP address
+  
+3. Use of hard-coded credentials
+Inbound
+
+Authentication mechanism checks input against hard-coded data
+Solution- first login mode
+
+Outbound
+
+Connects to another system using hard-coded credentials for that system
+Solution
+If any key needs to be stored, encrypt the key itself.
+Descryption can be only done at statup or runtime.
+
