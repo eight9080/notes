@@ -147,7 +147,46 @@ Do:
 - don't use parameters that aren't necessary
 
 
+= Path Traversal
 
+Manipulation of user-controlled variables thare are used to reference files, in order to access critical files/directories on the server.
+
+Risks:
+- information disclosure
+- remote code execution
+- local or remote service enumeration
+- local or remote file inclusion
+- CIA compromise
+
+Any of the methods
+- java.io.FileInputStream()
+- java.io.FileOutputStream()
+- java.io.File()
+
+- check if ../ is contained in the input (%2e, ...../ and all combinations )
+
+SecurityManager(Security Exception)
+----
+grant codeBase "file:${{java.ext.dirs}}/*" {
+    permission java.security.AllPermission;
+};
+----
+
+By default, the JVM loads the common system policy file located at <java.home>/lib/security/java.policy. If we've defined any user-local policy in  <user.home>/.java.policy, the JVM appends it to the system policy.
+
+It's also possible to specify policy file via command line: –Djava.security.policy=/my/policy-file. That way we can append policies to the previously loaded system and user policies.
+
+There is a special syntax for replacing all system and user policies (if any) – double equals sign: –Djava.security.policy==/my/policy-file
+Source: https://www.baeldung.com/java-security-manager
+
+- or use a lookup table to check for filenames available
+
+Restrict application in its env:
+- chroot/jain/container
+
+Specific mitigation:
+- web application firewall
+- api methodology
 
 
 
