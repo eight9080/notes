@@ -223,6 +223,18 @@ Validateon: type of characters /\<>"', length, algorithm
 - used in an HTML attribute -> encode for HTML attribute
 
 
+= Distributed Denial of Service
+
+type of attack that uses a number of hosts to overwhelm a target, causing perfomance issues on the servers and in the end system crash and therefore make the service unavailable. 
+
+SYN Flood - most populat attack. (Infrastructure attacks)
+
+Also HTTP attacks can occur. (Application attacks)
+GET Flodd, POST Flood, Http Header Flood(Cookie)
+
+
+
+
 
 
 
