@@ -232,6 +232,28 @@ SYN Flood - most populat attack. (Infrastructure attacks)
 Also HTTP attacks can occur. (Application attacks)
 GET Flodd, POST Flood, Http Header Flood(Cookie)
 
+Mitigation
+- write DoS resilient code
+- monitor
+- isolate failures
+- scale smartly
+
+Http Flood attack - mitigation
+- rate-limiting 
+- use javascript challenge to knock down HTTP bots
+- make use of a CDN and (Cloud) WAF
+
+
+= Threat modeling
+
+Identify threats, part of the Software Development Lifecycle - SDLC
+
+* Spoofing - authenticity guaranteed
+* Tampering - integrity guaranteed
+* Information disclosure - prevent privacy breackes and data leaks
+* Denial of Service - availability guaranteed
+* Elevation of privilege - authorization be guaranteed
+
 
 
 
