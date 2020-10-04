@@ -188,5 +188,17 @@ Specific mitigation:
 - web application firewall
 - api methodology
 
+= Cross-site scripting
+
+A malicious script is injected into a trusted website.
+Can happen whe user-supplied input is shown in a page withous using proper validation and encoding. 
+
+Types:
+- non-persistent cross-site scripting(reflected)
+- persistent cross-site scripting(stored)
+- dom based cross-site scripting
+
+
+
 
 
