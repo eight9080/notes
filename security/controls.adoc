@@ -33,7 +33,7 @@ Using API keys
 - allow api keys to be used from trusted sources - source ip / signed mobile apps
 - implemnt api key revocation/expiration
 
-== Seurity Misconfiguration 
+== Security Misconfiguration
 
 1. Execution with unnecessary privileges -> *Least privilege principle*
 
@@ -268,7 +268,7 @@ Certificate = public key signed by a trusted CA (3rd party)
 
 == Hashing
 
-A hash - math fucntion -> generates a unique string.
+A hash - math function -> generates a unique string.
 The hash will change completely with any modification of the input. 
 
 == Signing

@@ -28,5 +28,52 @@ use specialized lambda expressions, for example, IntFunction or IntPredicate ins
 support additional end operations sum(), average(), mapToObj().
 
 == Parallel processing in Java 8?
+Streams can be *sequential* and *parallel*.
+Operations on sequential streams are performed in *one processor thread*, on parallel streams using several processor threads.
+Parallel streams use the shared stream *ForkJoinPool* throygh the static *ForkJoinPool.common()* method.
+
+If the environment is not multi core, then the stream will be executed as sequential.
+The use of parallel streams is reduced to the fact that the data in the streams will be divided into parts, each part is processed on a separate processor corem and in the end these parts are coneected and final operations are performed on them.
+
+Create a parallel stream Collection parallelStream()
+
+To make a regular sequential stream parallel -> parallel()
+
+Find out if the stream is parallel -> isParallel()
+
+methods parallel()and sequential()it is possible to determine which operations can be parallel, and which only sequential
+
+[source]
+----
+collection
+  .stream ()
+  .peek ( ... ) // operation is sequential
+  .parallel ()
+  .map ( ... ) // the operation can be performed in parallel,
+  .sequential ()
+  .reduce ( ... ) // operation is sequential again
+----
+
+
+As a rule, elements are transferred to the stream in the same order in which they are defined in the data source. +
+When working with parallel streams, the system preserves the sequence of elements.+
+An exception is a method forEach()that can output elements in random order. And in order to maintain the order, it is necessary to apply the method forEachOrdered().
+
+Criteria that may affect performance in parallel streams:
+* Data size - the more data, the more difficult it is to separate the data first, and then combine them.
+* The number of processor cores. Theoretically, the more cores in a computer, the faster the program will work. If the machine has one core, it makes no sense to use parallel threads.
+* The simpler the data structure the stream works with, the faster operations will occur. For example, data from is ArrayListeasy to use, since the structure of this collection assumes a sequence of unrelated data. But a type collection LinkedListis not the best option, since in a sequential list all the elements are connected with previous / next. And such data is difficult to parallelize.
+* Operations with primitive types will be faster than with class objects.
+* It is highly recommended that you do not use parallel streams for any long operations (for example, network connections), since all parallel streams work with one ForkJoinPool, such long operations can stop all parallel streams in the JVM due to the lack of available threads in the pool, etc. e. parallel streams should be used only for short operations where the count goes for milliseconds, but not for those where the count can go for seconds and minutes;
+* Saving order in parallel streams increases execution costs, and if order is not important, it is possible to disable its saving and thereby increase productivity by using an intermediate operation unordered():
+
+----
+collection.parallelStream ()
+    .sorted ()
+    .unordered ()
+    .collect ( Collectors . toList ());
+----
+
+
 
 
