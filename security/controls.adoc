@@ -99,6 +99,55 @@ Adding a salt before hashing -> will change the hash for each password.
 - use long keys
 - store your keys safely
 
+= Injection 
+
+can go to root level access 
+
+Risks:
+- impersionate specific users or bypass authentication
+- disclosure data residing on a DB server
+- alter/delete data stored in a DB
+- execute OS commands on the DB server
+- upload files and reading files from filesystem
+- obtain shell access
+
+Detection:
+- uses an interpreter
+- verify untrusted data( user input fields, URL, uploaded configuration filesm cookie data, data received from other applications/API's)
+
+Mitigation:
+
+Good practices:
+
+- never trust client side data
+- use least privilege when connecting to the DB and other backend system
+- remove information from error messages
+
+Defence options:
+- prepared statements (with parametrized queries)
+- stored procedures
+- input validation
+
+== Prepared statements 
+Prepare a query with parameter placeholders, bind variables the execute
+
+== Stored procedures
+
+== Input Validation
+
+Do not: 
+- depend on client side valdiation
+- verify what is not allowed and reject it - blackist
+
+Do:
+- verify what is allowed and accept it - whitelist
+- use trusted libraries
+- check ranges, check for strange characters
+- perform input validation on all input( cookies, hidden variables)
+- don't use parameters that aren't necessary
+
+
+
 
 
 
