@@ -198,6 +198,31 @@ Types:
 - persistent cross-site scripting(stored)
 - dom based cross-site scripting
 
+Risks of XSS:
+- session hijacking
+- installation of malware
+- redirect the user to another page
+- modify the DOM tree
+- obtain shell access
+
+Mitigation
+Never put untrusted data:
+- directory in a script <script> ... </script>
+- inside a HTML comment <!-- .. --> 
+- in an attribute name <div .... = test/>
+- in a tag name <... href ="/aaa"/>
+- directly in CSS <style> .. </style>
+
+Input validation
+Validateon: type of characters /\<>"', length, algorithm
+- use a whitelist
+
+- use context specific output encoding
+
+- user input for an URL -> encode for URL
+- used in an HTML attribute -> encode for HTML attribute
+
+
 
 
 
