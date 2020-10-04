@@ -255,6 +255,59 @@ Identify threats, part of the Software Development Lifecycle - SDLC
 * Elevation of privilege - authorization be guaranteed
 
 
+= Certificates
+
+- Symmetric encyption
+- Asymmetric encyption
+
+each party has their own key pair: private + public
+
+Encryption of data - using receiver's public key. 
+
+Certificate = public key signed by a trusted CA (3rd party)
+
+== Hashing
+
+A hash - math fucntion -> generates a unique string.
+The hash will change completely with any modification of the input. 
+
+== Signing
+
+The message hash is encrypted using the senders private key. 
+The receiver decrypts the received hash and compares to their own hash. 
+
+Public key + metadata + trusted CA signature = certificate
+
+Steps:
+1. Install and configure app
+2. generate a key pair
+3. generate a CSR cert signing request for public key 
+4. Submit CSR to your CA
+5. Retrieve and install the signed certificates
+
+Subject names in the certificate matter. 
+
+* keys + certificate - not part of the code, and should not be in git repo, or installer packages
+* key pairs should be generated on the target system 
+* private keys should be password protected
+
+*Key compromise*
+
+- contact CA for revocation of your certificate
+- resecure your application
+- create new key pairs
+- get new certificates
+
+PKI = trust 
+
+Trust store = location to store trusted Certificate Authorities
+
+
+
+
+
+
+
 
 
 
