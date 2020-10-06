@@ -7,3 +7,27 @@ wait(), on the other hand, simply pauses the thread until either (a) the specifi
 
 sleep() is most commonly used for polling, or to check for certain results, at a regular interval. wait() is generally used in multithreaded applications, in conjunction with notify() / notifyAll(), to achieve synchronization and avoid race conditions.
 
+== What is the difference between transient and volatile variable in Java?
+_Transient_: The transient modifier tells the Java object serialization subsystem to exclude the field when serializing an instance of the class. When the object is then deserialized, the field will be initialized to the default value; i.e. null for a reference type, and zero or false for a primitive type.
+
+----
+public transient int limit = 55;   // will not persist
+public int b;   // will persist
+----
+
+_Volatile_: The volatile modifier tells the JVM that writes to the field should always be synchronously flushed to memory, and that reads of the field should always read from memory. This means that fields marked as volatile can be safely accessed and updated in a multi-thread application without using native or standard library-based synchronization.
+
+----
+public class MyRunnable implements Runnable {
+private volatile boolean active;
+    public void run() {
+        active = true;
+        while (active) {
+        }
+    }
+    public void stop() {
+        active = false;
+    }
+}
+----
+

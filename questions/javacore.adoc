@@ -1,0 +1,37 @@
+= Java Core
+
+== What is difference between Heap and Stack Memory in java?
+*Java Heap Space*
+
+Java Heap space is used by java runtime to allocate memory to Objects and JRE classes. Whenever we create any object, it’s always created in the Heap space.
+
+Garbage Collection runs on the heap memory to free the memory used by objects that doesn’t have any reference. Any object created in the heap space has global access and can be referenced from anywhere of the application.
+
+*Java* Stack Memory
+
+Stack in java is a section of memory which contains methods, local variables and reference variables. Local variables are created in the stack.
+
+Stack memory is always referenced in LIFO (Last-In-First-Out) order. Whenever a method is invoked, a new block is created in the stack memory for the method to hold local primitive values and reference to other objects in the method.
+
+As soon as method ends, the block becomes unused and become available for next method. Stack memory size is smaller compared to Heap memory.
+
+== What is a Memory Leak? How can a memory leak appear in garbage collected language?
+The standard definition of a memory leak is a scenario that occurs when objects are no longer being used by the application, but the Garbage Collector is unable to remove them from working memory – because they’re still being referenced. As a result, the application consumes more and more resources – which eventually leads to a fatal OutOfMemoryError.
+
+*Types of Memory Leaks in Java*
+
+* Memory Leak through static Fields
+* Unclosed Resources/connections
+* Adding Objects With no hashCode() and equals() Into a HashSet
+* Inner Classes that Reference Outer Classes
+* Through finalize() Methods
+* Calling String.intern() on Long String
+
+== What will be the problem if you do not override hashcode() method?
+
+Some collections, like HashSet, HashMap or HashTable use the hashcode value of an object to find out how the object would be stored in the collection, and subsequently hashcode is used to help locate the object in the collection. Hashing retrieval involves:
+
+* First, find out the right bucket using hashCode().
+* Secondly, search the bucket for the right element using equals()
+
+If hashcode() in not overridden then the default implementation in Object class will be used by collections. This implementation gives different values for different objects, even if they are equal according to the equals() method.
