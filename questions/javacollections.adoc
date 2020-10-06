@@ -20,3 +20,169 @@ ArrayList and LinkedList both implements List interface and maintains insertion 
 
 |===
 
+== How HashMap works in Java?
+HashMap in Java works on hashing principle. It is a data structure which allow to store object and retrieve it in constant time O(1). In hashing, hash functions are used to link key and value in HashMap. Objects are stored by calling put(key, value) method of HashMap and retrieved by calling get(key) method. When we call put method, hashcode() method of the key object is called so that hash function of the map can find a bucket location to store value object, which is actually an index of the internal array, known as the table. HashMap internally stores mapping in the form of Map.Entry object which contains both key and value object.
+
+Since the internal array of HashMap is of fixed size, and if you keep storing objects, at some point of time hash function will return same bucket location for two different keys, this is called collision in HashMap. In this case, a linked list is formed at that bucket location and a new entry is stored as next node.
+
+If we try to retrieve an object from this linked list, we need an extra check to search correct value, this is done by equals() method. Since each node contains an entry, HashMap keeps comparing entry's key object with the passed key using equals() and when it return true, Map returns the corresponding value.
+
+== How does HashMap handle collisions in java?
+Prior to Java 8, HashMap and all other hash table based Map implementation classes in Java handle collision by chaining, i.e. they use linked list to store map entries which ended in the same bucket due to a collision. If a key end up in same bucket location where an entry is already stored then this entry is just added at the head of the linked list there. In the worst case this degrades the performance of the get() method of HashMap to O(n) from O(1). In order to address this issue in the case of frequent HashMap collisions, Java 8 has started using a balanced tree instead of linked list for storing collided entries. This also means that in the worst case you will get a performance boost from O(n) to O(log n).
+
+The threshold of switching to the balanced tree is defined as TREEIFY_THRESHOLD constant in java.util.HashMap JDK 8 code. Currently, it's value is 8, which means if there are more than 8 elements in the same bucket than HashMap will use a tree instead of linked list to hold them in the same bucket.
+
+== What is Java Priority Queue?
+A priority queue in Java is a special type of queue wherein all the elements are ordered as per their natural ordering or based on a custom Comparator supplied at the time of creation.
+
+*Features*
+
+* PriorityQueue is an unbounded queue and grows dynamically.
+* It does not allow NULL objects.
+* Objects added to PriorityQueue MUST be comparable.
+* The objects of the priority queue are ordered by default in natural order.
+* A Comparator can be used for custom ordering of objects in the queue.
+* The head of the priority queue is the least element based on the natural ordering or comparator based ordering. When we poll the queue, it returns the head object from the queue.
+* If multiple objects are present of same priority the it can poll any one of them randomly.
+* PriorityQueue is not thread safe. Use PriorityBlockingQueue in concurrent environment.
+* It provides O(log(n)) time for add and poll methods.
+
+== What is LinkedHashMap in Java?
+LinkedHashMap is just like HashMap with an additional feature of maintaining an order of elements inserted into it. +
+Java LinkedHashMap class is Hashtable and Linked list implementation of the Map interface, with predictable iteration order.
+
+*Features*
+
+* Java LinkedHashMap contains values based on the key.
+* Java LinkedHashMap contains unique elements.
+* Java LinkedHashMap may have one null key and multiple null values.
+* Java LinkedHashMap is non synchronized.
+* Java LinkedHashMap maintains insertion order.
+* The initial default capacity of Java HashMap class is 16 with a load factor of 0.75.
+
+== What is the difference between fail-fast and fail-safe iterator?
+
+*fail-fast Iterator*
+
+Iterators in java are used to iterate over the Collection objects.Fail-Fast iterators immediately throw ConcurrentModificationException if there is structural modification of the collection. Structural modification means adding, removing or updating any element from collection while a thread is iterating over that collection. Iterator on ArrayList, HashMap classes are some examples of fail-fast Iterator.
+
+*fail-safe Iterator*
+
+Fail-Safe iterators don’t throw any exceptions if a collection is structurally modified while iterating over it. This is because, they operate on the clone of the collection, not on the original collection and that’s why they are called fail-safe iterators. Iterator on CopyOnWriteArrayList, ConcurrentHashMap classes are examples of fail-safe Iterator.
+
+== What is BlockingQueue? How to implement producer-consumer problem by using BlockingQueue?
+
+BlockingQueue: When a thread try to dequeue from an empty queue is blocked until some other thread inserts an item into the queue. Also, when a thread try to enqueue an item in a full queue is blocked until some other thread makes space in the queue, either by dequeuing one or more items or clearing the queue completely.
+
+Producter-Consumer Problem
+
+Producer and Consumer are two separate threads which share a same bounded Queue. The role of producer to produce elements and push to the queue. The producer halts producing if the queue is full and resumes producing when the size of queue is not full. The consumer consumes the element from the queue. The consumers halt consuming if the size of queue is 0 (empty) and resumes consuming once the queue has an element.
+
+The problem can be approached using various techniques
+
+* Using wait() and notifyAll()
+* Using BlockingQueue
+* Using semaphores
+
+----
+public class ProducerConsumerBlockingQueue {
+
+  static int MAX_SIZE = 5;
+  static BlockingQueue queue = new LinkedBlockingQueue(MAX_SIZE);
+
+  public static void main(String[] args) {
+
+    Producer producer = new Producer();
+    Consumer consumer = new Consumer();
+    producer.start();
+    consumer.start();
+  }
+
+  static class Producer extends Thread {
+    Random random = new Random();
+
+    public void run() {
+      while (true) {
+        int element = random.nextInt(MAX_SIZE);
+        try {
+          queue.put(element);
+        } catch (InterruptedException e) {
+        }
+      }
+    }
+  }
+
+  static class Consumer extends Thread {
+    public void run() {
+      while (true) {
+        try {
+          System.out.println("Consumed " + queue.take());
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+}
+----
+
+----
+Output
+
+Producer 2
+Producer 3
+Consumed 2
+Consumed 3
+Producer 0
+Producer 4
+Consumed 0
+----
+
+== What is difference between Iterator and ListIterator?
+ListIterator is the child interface of Iterator interface. The major difference between Iterator and ListIterator is that Iterator can traverse the elements in the collection only in forward direction whereas, the ListIterator can traverse the elements in a collection in both the forward as well as the backwards direction.
+
+== What is a default capacity of ArrayList, Vector, HashMap, Hashtable and Hashset?
+
+
+|===
+|Collections|Capacity
+
+|ArrayList
+|10
+
+|Vector
+|10
+
+|HashSet
+|16
+
+|HashMap
+|16
+
+|HashTable
+|11
+
+|HashSet
+|16
+
+|===
+
+== How Set/HashSet implement unique values?
+Java HashSet class is used to create a collection that uses a hash table for storage. It inherits the AbstractSet class and implements Set interface.
+
+HashSet stores the elements by using a mechanism called hashing.
+HashSet contains unique elements only.
+HashSet allows null value.
+
+When we create a HashSet, it internally creates a HashMap and if we insert an element into this HashSet using add() method, it actually call put() method on internally created HashMap object with element you have specified as it’s key and constant Object called PRESENT as it’s value. So we can say that a Set achieves uniqueness internally through HashMap.
+
+
+
+== What is the difference between HashSet and TreeSet?
+
+* HashSet gives better performance (faster) than TreeSet for the operations like add, remove, contains, size etc. HashSet offers constant time cost while TreeSet offers log(n) time cost for such operations.
+
+* HashSet does not maintain any order of elements while TreeSet elements are sorted in ascending order by default.
+
+
+
