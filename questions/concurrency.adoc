@@ -96,9 +96,178 @@ private volatile boolean active;
 == What is Thread Pool? How can we create Thread Pool in Java?
 A thread pool reuses previously created threads to execute current tasks and offers a solution to the problem of thread cycle overhead and resource thrashing. Since the thread is already existing when the request arrives, the delay introduced by thread creation is eliminated, making the application more responsive.
 
+*Advatange Thread Pool Pattern *
+The Thread Pool pattern helps to save resources in a multithreaded application, and also to contain the parallelism in certain predefined limits.
+
+When you use a thread pool, you write your concurrent code in the form of parallel tasks and submit them for execution to an instance of a thread pool. This instance controls several re-used threads for executing these tasks. +
+The pattern allows you to control the number of threads the application is creating, their lifecycle, as well as to schedule tasks' execution and keep incoming tasks in a queue.
+
+A thread pool reuses previously created threads to execute current tasks and offers a solution to the problem of thread cycle overhead and resource thrashing. Since the thread is already existing when the request arrives, the delay introduced by thread creation is eliminated, making the application more responsive.
+
 Java provides the Executor framework which is centered around the Executor interface, its sub-interface –ExecutorService and the class-ThreadPoolExecutor, which implements both of these interfaces. By using the executor, one only has to implement the Runnable objects and send them to the executor to execute.
 
 To use thread pools, we first create a object of ExecutorService and pass a set of tasks to it. ThreadPoolExecutor class allows to set the core and maximum pool size.The runnables that are run by a particular thread are executed sequentially.
+
+== Which types of thread pool do you know/ have used?
+There are various thread pools in java:
+
+*Single Thread Executor* :
+A thread pool with only one thread. So all the submitted tasks will be executed sequentially. Method : Executors.newSingleThreadExecutor()
+
+*Cached Thread Pool* :
+A thread pool that creates as many threads it needs to execute the task in parrallel. The old available threads will be reused for the new tasks. If a thread is not used during 60 seconds, it will be terminated and removed from the pool. Method : Executors.newCachedThreadPool()
+
+*Fixed Thread Pool* :
+A thread pool with a fixed number of threads. If a thread is not available for the task, the task is put in queue waiting for an other task to ends. Method : Executors.newFixedThreadPool()
+
+*Scheduled Thread Pool* :
+A thread pool made to schedule future task. Method : Executors.newScheduledThreadPool()
+
+*Single Thread Scheduled Pool* :
+A thread pool with only one thread to schedule future task. Method : Executors.newSingleThreadScheduledExecutor()
+
+=== ThreadPoolExecutor
+The ThreadPoolExecutor is an extensible thread pool implementation with lots of parameters and hooks for fine-tuning.
+
+The main configuration parameters that we'll discuss here are: corePoolSize, maximumPoolSize, and keepAliveTime.
+
+The pool consists of a fixed number of core threads that are kept inside all the time, and some excessive threads that may be spawned and then terminated when they are not needed anymore. The corePoolSize parameter is the number of core threads that will be instantiated and kept in the pool. When a new task comes in, if all core threads are busy and the internal queue is full, then the pool is allowed to grow up to maximumPoolSize.
+
+The keepAliveTime parameter is the interval of time for which the excessive threads (instantiated in excess of the corePoolSize) are allowed to exist in the idle state. By default, the ThreadPoolExecutor only considers non-core threads for removal.
+
+*newFixedThreadPool *
+creates a ThreadPoolExecutor with equal corePoolSize and maximumPoolSize parameter values and a zero keepAliveTime. This means that the number of threads in this thread pool is always the same
+
+[source, java]
+----
+ThreadPoolExecutor executor =
+  (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+executor.submit(() -> {
+    Thread.sleep(1000);
+    return null;
+});
+executor.submit(() -> {
+    Thread.sleep(1000);
+    return null;
+});
+executor.submit(() -> {
+    Thread.sleep(1000);
+    return null;
+});
+
+assertEquals(2, executor.getPoolSize());
+assertEquals(1, executor.getQueue().size());
+----
+instantiate a ThreadPoolExecutor with a fixed thread count of 2. This means that if the number of simultaneously running tasks is less or equal to two at all times, then they get executed right away. Otherwise, some of these tasks may be put into a queue to wait for their turn.
+
+*Executors.newCachedThreadPool() method*
+The corePoolSize is actually set to 0, and the maximumPoolSize is set to Integer.MAX_VALUE for this instance. The keepAliveTime is 60 seconds for this one.
+
+These parameter values mean that the cached thread pool may grow without bounds to accommodate any number of submitted tasks. But when the threads are not needed anymore, they will be disposed of after 60 seconds of inactivity. A typical use case is when you have a lot of short-living tasks in your application.
+
+[source,java]
+----
+ThreadPoolExecutor executor =
+  (ThreadPoolExecutor) Executors.newCachedThreadPool();
+executor.submit(() -> {
+    Thread.sleep(1000);
+    return null;
+});
+executor.submit(() -> {
+    Thread.sleep(1000);
+    return null;
+});
+executor.submit(() -> {
+    Thread.sleep(1000);
+    return null;
+});
+
+assertEquals(3, executor.getPoolSize());
+assertEquals(0, executor.getQueue().size());
+----
+The queue size in the example above will always be zero because internally a SynchronousQueue instance is used. In a SynchronousQueue, pairs of insert and remove operations always occur simultaneously, so the queue never actually contains anything.
+
+*Executors.newSingleThreadExecutor() *
+containing a single thread. The single thread executor is ideal for creating an event loop. The corePoolSize and maximumPoolSize parameters are equal to 1, and the keepAliveTime is zero.
+
+Tasks in the above example will be executed sequentially, so the flag value will be 2 after the task's completion:
+
+[source,java]
+----
+AtomicInteger counter = new AtomicInteger();
+
+ExecutorService executor = Executors.newSingleThreadExecutor();
+executor.submit(() -> {
+    counter.set(1);
+});
+executor.submit(() -> {
+    counter.compareAndSet(1, 2);
+});
+----
+
+=== ScheduledThreadPoolExecutor
+
+* schedule method allows to execute a task once after a specified delay;
+* scheduleAtFixedRate method allows to execute a task after a specified initial delay and then execute it repeatedly with a certain period; the period argument is the time measured between the starting times of the tasks, so the execution rate is fixed;
+* scheduleWithFixedDelay method is similar to scheduleAtFixedRate in that it repeatedly executes the given task, but the specified delay is measured between the end of the previous task and the start of the next; the execution rate may vary depending on the time it takes to execute any given task.
+
+Executors.newScheduledThreadPool() method is typically used to create a ScheduledThreadPoolExecutor with a given corePoolSize, unbounded maximumPoolSize and zero keepAliveTime. Here's how to schedule a task for execution in 500 milliseconds:
+
+[source,java]
+----
+ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
+executor.schedule(() -> {
+    System.out.println("Hello World");
+}, 500, TimeUnit.MILLISECONDS);
+----
+
+== Cached Thread Pool
+----
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
+      new SynchronousQueue<Runnable>());
+}
+----
+Cached thread pools are using “synchronous handoff” to queue new tasks.
+
+One can queue an item if and only if another thread takes that item at the same time. In other words, the SynchronousQueue can not hold any tasks whatsoever.
+
+Suppose a new task comes in. If there is an idle thread waiting on the queue, then the task producer hands off the task to that thread. Otherwise, since the queue is always full, the executor creates a new thread to handle that task.
+
+The cached pool starts with zero threads and can potentially grow to have Integer.MAX_VALUE threads. Practically, the only limitation for a cached thread pool is the available system resources.
+
+To better manage system resources, cached thread pools will remove threads that remain idle for one minute.
+
+The cached thread pool configuration caches the threads (hence the name) for a short amount of time to reuse them for other tasks. As a result, it works best when we're dealing with *a reasonable number of short-lived tasks*.
+
+== Fixed Thread Pool
+
+----
+public static ExecutorService newFixedThreadPool(int nThreads) {
+    return new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
+      new LinkedBlockingQueue<Runnable>());
+}
+----
+
+This one is using an unbounded queue with a fixed number of never-expiring threads. +
+Therefore, *instead of an ever-increasing number of threads, the fixed thread pool tries to execute incoming tasks with a fixed amount of threads*. When all threads are busy, then the executor will queue new tasks.
+
+Fixed thread pools are better suited for tasks with unpredictable execution times.
+
+
+=== Similarities
+Cached thread pools will continue to create more and more threads in extreme circumstances, so, practically, they will never reach a saturation point. Similarly, fixed thread pools will continue to add more and more tasks in their queue. Therefore, the fixed pools also will never reach a saturation point.
+
+As both pools won't be saturated, when the load is exceptionally high, they will consume a lot of memory for creating threads or queuing tasks. Adding insult to the injury, cached thread pools will also incur a lot of processor context switches.
+
+
+Source: https://www.baeldung.com/java-executors-cached-fixed-threadpool[Cached vs Fixed Thread Pool]
+
+=== ForkJoinPool
+ It solves a common problem of spawning multiple tasks in recursive algorithms. Using a simple ThreadPoolExecutor, you will run out of threads quickly, as every task or subtask requires its own thread to run.
+
+In a fork/join framework, any task can spawn (fork) a number of subtasks and wait for their completion using the join method. The benefit of the fork/join framework is that it does not create a new thread for each task or subtask, implementing the Work Stealing algorithm instead.
+
 
 == How is the safety of a thread achieved?
 * Immutable objects are by default thread-safe because there state can not be modified once created. Since String is immutable in Java, its inherently thread-safe.

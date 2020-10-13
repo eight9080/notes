@@ -60,6 +60,7 @@ When working with parallel streams, the system preserves the sequence of element
 An exception is a method forEach()that can output elements in random order. And in order to maintain the order, it is necessary to apply the method forEachOrdered().
 
 Criteria that may affect performance in parallel streams:
+
 * Data size - the more data, the more difficult it is to separate the data first, and then combine them.
 * The number of processor cores. Theoretically, the more cores in a computer, the faster the program will work. If the machine has one core, it makes no sense to use parallel threads.
 * The simpler the data structure the stream works with, the faster operations will occur. For example, data from is ArrayListeasy to use, since the structure of this collection assumes a sequence of unrelated data. But a type collection LinkedListis not the best option, since in a sequential list all the elements are connected with previous / next. And such data is difficult to parallelize.
@@ -74,6 +75,18 @@ collection.parallelStream ()
     .collect ( Collectors . toList ());
 ----
 
+== Parallel Stream
 
+----
+List<Long> aList = new ArrayList<>();
+    Stream<Long> parallelStream = aList.parallelStream();
+
+    assertTrue(parallelStream.isParallel());
+----
+
+The default processing that occurs in such a Stream uses the *ForkJoinPool.commonPool(), a Thread Pool shared by the entire application*.
+
+
+Source: https://www.baeldung.com/java-8-parallel-streams-custom-threadpool[Parallel Stream]
 
 
