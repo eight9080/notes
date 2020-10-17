@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: ../images]
 = Concurrency
 
 == What are the states in the lifecycle of a Thread?
@@ -267,6 +268,81 @@ Source: https://www.baeldung.com/java-executors-cached-fixed-threadpool[Cached v
  It solves a common problem of spawning multiple tasks in recursive algorithms. Using a simple ThreadPoolExecutor, you will run out of threads quickly, as every task or subtask requires its own thread to run.
 
 In a fork/join framework, any task can spawn (fork) a number of subtasks and wait for their completion using the join method. The benefit of the fork/join framework is that it does not create a new thread for each task or subtask, implementing the Work Stealing algorithm instead.
+
+== Custom Thread pool implementation in Java
+Thread pool executor requires a Queue for holding tasks and a collection of Worker Threads that will pick up tasks from the work queue start running them.
+
+image::customThreadPool.png[Thread pool]
+
+=== CustomThreadPoolExecutor Basic Implementation
+
+----
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+public class CustomThreadPoolExecutor {
+    private final BlockingQueue<Runnable> workerQueue;
+    private final Thread[] workerThreads;
+
+    public CustomThreadPoolExecutor(int numThreads) {
+        workerQueue = new LinkedBlockingQueue<>();
+        workerThreads = new Thread[numThreads];
+        int i = 0;
+        for (Thread t : workerThreads) {
+            t = new Worker("Custom Pool Thread " + ++i);
+            t.start();
+        }
+    }
+
+    public void addTask(Runnable r) {
+        try {
+            workerQueue.put(r);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    class Worker extends Thread {
+        public Worker(String name) {
+            super(name);
+        }
+
+        public void run() {
+            while (true) {
+                try {
+                    workerQueue.take().run();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        CustomThreadPoolExecutor threadPoolExecutor = new CustomThreadPoolExecutor(10);
+        threadPoolExecutor.addTask(() -> System.out.println("First print task"));
+        threadPoolExecutor.addTask(() -> System.out.println("Second print task"));
+    }
+
+}
+----
+
+==== LinkedBlockingQueue
+An optionally-bounded blocking queue based on linked nodes. This queue orders elements FIFO (first-in-first-out). It is thread-safe in nature and acts as a temporary storage of runnable tasks that are due for execution.
+
+==== Thread
+All the threads get initialized and started at the creation of ThreadPoolExecutor. All threads listen on the shared workqueue for incoming tasks in never ending loop.
+
+=== Why do we need ThreadPool executor?
+1. Creating and destroying threads is a IO extensive operation, which has impact on performance and memory consumption of an application. So its ideal to create threads once and reuse them later on.
+
+2. We do not want to run out of threads when heavy load arrives on an application. Threadpool holds tasks in a queue, so if lot of tasks arrives in a very short amount of time, queue will hold the tasks until a worker thread becomes available for the processing. This approach prevents resource exhaustion in production environment.
+
+3. If due to some reasons, thread gets killed, ThreadPoolExecutor will recreate the thread and put it back to the pool.
+
+Source: https://www.javacodemonk.com/implement-custom-thread-pool-in-java-without-executor-framework-ca10e61d[Custom thread pool]
 
 
 == How is the safety of a thread achieved?
