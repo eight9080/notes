@@ -32,6 +32,13 @@ Prior to Java 8, HashMap and all other hash table based Map implementation class
 
 The threshold of switching to the balanced tree is defined as TREEIFY_THRESHOLD constant in java.util.HashMap JDK 8 code. Currently, it's value is 8, which means if there are more than 8 elements in the same bucket than HashMap will use a tree instead of linked list to hold them in the same bucket.
 
+== Can the keys in HashMap be mutable
+The answer is NO. Making keys in any hashing data structure will cause memory leak.
+
+If we make the keys mutable then the hashcode() of the key will no more be consistent over time which will cause lookup failure for that object from the data structure.
+
+Never make changes to the hashmap’s key, otherwise the associated object can not be fetched using get() method. Though it will be accessible using other methods which iterate over the entire collection.
+
 == What is Java Priority Queue?
 A priority queue in Java is a special type of queue wherein all the elements are ordered as per their natural ordering or based on a custom Comparator supplied at the time of creation.
 

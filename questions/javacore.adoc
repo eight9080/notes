@@ -15,6 +15,42 @@ Stack memory is always referenced in LIFO (Last-In-First-Out) order. Whenever a 
 
 As soon as method ends, the block becomes unused and become available for next method. Stack memory size is smaller compared to Heap memory.
 
+== What do you understand by Java Memory Model?
+=== Memory Barrier
+==== A read barrier
+invalidates the local memory (cache, registers, etc) and then reads the contents from the main memory, so that changes made by other threads becomes visible to the current Thread.
+
+==== A write barrier
+flushes out the contents of the processor’s local memory to the main memory, so that changes made by the current Thread becomes visible to the other threads.
+
+=== JMM semantics for synchronized
+When a thread acquires monitor of an object, by entering into a synchronized block of code, it performs a read barrier (invalidates the local memory and reads from the heap instead).
+
+Similarly exiting from a synchronized block as part of releasing the associated monitor, it performs a write barrier (flushes changes to the main memory)
+
+Thus modifications to a shared state using synchronized block by one Thread, is guaranteed to be visible to subsequent synchronized reads by other threads. This guarantee is provided by JMM in presence of synchronized code block.
+
+=== JMM semantics for Volatile fields
+Read & write to volatile variables have same memory semantics as that of acquiring and releasing a monitor using synchronized code block. So the visibility of volatile field is guaranteed by the JMM.
+
+Thus when Thread A writes to a volatile variable V, and afterwards Thread B reads from variable V, any variable values that were visible to A at the time V was written are guaranteed now to be visible to B.
+
+----
+Data data = null;
+volatile boolean flag = false;
+
+Thread A
+-------------
+data = new Data();
+flag = true;  <-- writing to volatile will flush data as well as flag to main memory
+
+Thread B
+-------------
+if(flag==true) { <-- reading from volatile will perform read barrier for flag as well data.
+use data;  <--- data is guaranteed to visible even though it is not declared volatile because of the JMM semantics of volatile flag.
+}
+----
+
 == What is a Memory Leak? How can a memory leak appear in garbage collected language?
 The standard definition of a memory leak is a scenario that occurs when objects are no longer being used by the application, but the Garbage Collector is unable to remove them from working memory – because they’re still being referenced. As a result, the application consumes more and more resources – which eventually leads to a fatal OutOfMemoryError.
 
