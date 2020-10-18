@@ -141,8 +141,18 @@ Consumed 0
 == What is difference between Iterator and ListIterator?
 ListIterator is the child interface of Iterator interface. The major difference between Iterator and ListIterator is that Iterator can traverse the elements in the collection only in forward direction whereas, the ListIterator can traverse the elements in a collection in both the forward as well as the backwards direction.
 
-== What is a default capacity of ArrayList, Vector, HashMap, Hashtable and Hashset?
+== What is difference between size and capacity of HashMap/ArrayList
+Size defines the actual number of elements contained in the collection, while capacity at any given point in time defines the number of items that a collection can hold without growing itself.
 
+== What is Load Factor in HashMap Context?
+The load factor is a measure of how full the hash table is allowed to get before its capacity is automatically increased. Default initial capacity of the HashMap takes is 16 and load factor is 0.75f (i.e 75% of current map size). The load factor represents at what level the HashMap capacity should be doubled.
+
+== By what amount ConcurrentHashMap/hashMap grows when its capacity is reached?
+Whenever threshold (defined by load factor with default value of 0.75) of HashMap reached, it increases its size to double. Signed Left shift operator is used to double the capacity of hashmap, as shown in code below
+
+`newCap = oldCap << 1`
+
+== What is a default capacity of ArrayList, Vector, HashMap, Hashtable and Hashset?
 
 |===
 |Collections|Capacity
@@ -176,13 +186,48 @@ HashSet allows null value.
 
 When we create a HashSet, it internally creates a HashMap and if we insert an element into this HashSet using add() method, it actually call put() method on internally created HashMap object with element you have specified as it’s key and constant Object called PRESENT as it’s value. So we can say that a Set achieves uniqueness internally through HashMap.
 
-
-
 == What is the difference between HashSet and TreeSet?
 
 * HashSet gives better performance (faster) than TreeSet for the operations like add, remove, contains, size etc. HashSet offers constant time cost while TreeSet offers log(n) time cost for such operations.
 
 * HashSet does not maintain any order of elements while TreeSet elements are sorted in ascending order by default.
 
+== Internals of ConcurrentHashmap
+A ConcurrentHashMap is a hashmap supporting full concurrency of retrieval via volatile reads of segments and tables without locking, and adjustable expected concurrency for updates.
+
+The allowed concurrency among update operations is guided by the optional concurrencyLevel constructor argument (default is16), which is used as a hint for internal sizing.
+
+image::hashmap_internals.png[Hash map intrenals]
+
+Source: https://www.javacodemonk.com/discuss-internals-of-a-concurrenthashmap-chm-in-java-b537d34e[CHM internals]
+
+ConcurrentHashMap is similar in implementation to that of HashMap, with resizable array of hash buckets, each consisting of List of HashEntry elements.
+Instead of a single collection lock, ConcurrentHashMap uses a *fixed pool of locks* that form a partition over the collection of buckets.
+
+HashEntry class takes advantage of final and volatile variables to reflect the changes to other threads without acquiring the expensive lock for read operations.
+
+The table inside ConcurrentHashMap is divided among Segments (which extends Reentrant Lock), each of which itself is a concurrently readable hash table. Each segment uses single lock to consistently update its elements flushing all the changes to main memory.
+
+*put()* method holds the bucket lock for the duration of its execution and doesn’t necessarily block other threads from calling get() operations on the map. +
+It firstly searches the appropriate hash chain for the given key and if found, then it simply updates the volatile value field. Otherwise it creates a new HashEntry object and inserts it at the head of the list.
+
+*Iterator* returned by the ConcurrentHashMap is *fail-safe* but weakly consistent. keySet().iterator() returns the iterator for the set of hash keys backed by the original map. The iterator is a “weakly consistent” iterator that will never throw ConcurrentModificationException, and guarantees to traverse elements as they existed upon construction of the iterator, and may (but is not guaranteed to) reflect any modifications subsequent to construction.
+
+
+|===
+|Property |Value
+
+|Time Complexity for Put, get, remove and containsKey
+|O(1) when no collision, O(1 + log k) when k elements are present in one bucket
+
+|CHM allows concurrent reads from different threads
+|Yes
+
+|CHM allows concurrent writes from different threads
+|Yes
+
+|Default Concurrency Level
+|16
+|===
 
 
