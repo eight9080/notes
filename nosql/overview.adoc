@@ -1,0 +1,20 @@
+= General
+
+== Different Types of NoSql databases
+
+*RDBMS*
+
+Relational databases are used for transactional needs (storing financial data, reporting requirements, etc.)
+
+=== MongoDB
+Documented oriented databases are used for documents oriented needs (for e.g. Product Catalog). Documents are schema free so changes in the schema can be accommodated into application without much headache.
+
+=== Cassandra/Amazon DynamoDB
+Key-value pair based database (User activity tracking, Analytics, etc.). DynamoDB can store documents as well as key-value pairs.
+
+=== Redis
+In memory distributed database (user session tracking), its mostly used as distributed cache among multiple microservices.
+
+=== Neo4j
+Graph DB (social connections, recommendations, etc)
+

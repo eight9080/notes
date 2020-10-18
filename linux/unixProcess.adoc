@@ -1,0 +1,50 @@
+= Processes and Services
+
+== Unix Process
+
+=== Find a process running on given port, we can use any of the below two commands.
+
+----
+$ sudo netstat -ltnp | grep -w '8080'
+$ sudo lsof -t -i:8080
+----
+This information can be used to take further decision, like killing a program, etc.
+
+=== List all processes with given name
+
+`$ ps -elf | grep java`
+
+This command lists all the processes that have name 'java' in it.
+
+=== Kill a process by process id
+
+`$ sudo kill -9 <pid>`
+
+=== List all processes with memory and cpu usage
+----
+$ top
+$ htop
+----
+
+== Manage services using systemctl
+=== Start a service
+
+`$ sudo systemctl start golo-feedback.service`
+
+=== Stop a service
+
+`$ sudo systemctl stop golo-feedback.service`
+
+=== Check status of a service
+
+`$ sudo systemctl status golo-feedback.service`
+
+=== Enable service to start on system startup
+
+`$ sudo systemctl enable golo-feedback.service`
+
+=== Reload service information from filesystem
+
+`$ sudo systemctl daemon-reload`
+
+

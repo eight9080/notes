@@ -1,0 +1,39 @@
+= Basic Commands
+
+== How to list files in current directory?
+
+`$ ls -lrta`
+
+== Find Free Memory on Server
+
+`$ free -m`
+
+== Find Free Disk Space
+
+`$ df -h`
+
+== Search file in current directory and subdirectory whose name contains 'log'
+
+`$ find . -name 'log'`
+
+== Find Exception in log files in current directory
+
+[source, linux]
+----
+$ grep 'Exception' log.txt
+$ grep -i 'Exception' log.txt
+$ grep -i 'exception' log.txt | wc -l
+----
+
+== List all log files that contain the given token
+
+`$ grep -rl 'token' *.log`
+
+== Tail last 200 lines of a log file*
+
+`$ tail -200f file.log`
+
+== How to make a file executable
+
+`$ chmod +x filename.jar`
+

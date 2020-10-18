@@ -2,6 +2,8 @@
 :imagesdir: ./images
 Table of contents
 
+link:basic.adoc[Basic Commands]
+link:unixProcess.adoc[Process & Services]
 link:18-archiving-backup.adoc#archiving-backup[Archiving and backup]
 
 

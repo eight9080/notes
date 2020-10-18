@@ -8,6 +8,18 @@
 gzip - compress or expand a file. +
 bzip2 - a block sorting file compressor.
 
+=== Compress a file
+
+`$ gzip <filename>`
+
+== Un-compress a zipped file
+
+`$ gunzip <filename>`
+
+== Look into a compressed file without decompressing it
+
+`$ gzcat <filename>`
+
 == Archiving programs
 tar - tape archiving utility +
 zip - package and compress files
