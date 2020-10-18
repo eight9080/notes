@@ -1,0 +1,88 @@
+= Download a file using Spring RestTemplate
+
+RestTemplate provides the following two ways to download a file from a remote Http url:
+
+* Using byte array (holding everything in memory)
+
+* Using ResponseExtractor (stream the response instead of loading it to memory)
+
+1. Using byte array
+
+This is quite straight forward approach where we will use getForObject method to get a byte array from the remote service. This approach shall work fine for smaller file sizes, as entire file content is first loaded into memory.
+
+----
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+
+@RestController
+public class DownloadController {
+
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    public DownloadController(RestTemplateBuilder builder) {
+        this.restTemplate = builder.build();
+    }
+
+    @GetMapping("/test-download-v1")
+    public void download() throws IOException {
+        String url = "http://img.championat.com/news/big/l/c/ujejn-runi_1439911080563855663.jpg";
+        byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
+        Files.write(Paths.get("image.jpg"), imageBytes);
+    }
+
+}
+----
+
+----
+@GetMapping("/test-download-v2")
+public void downloadFile() throws IOException {
+    String url = "http://img.championat.com/news/big/l/c/ujejn-runi_1439911080563855663.jpg";
+    HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+    HttpEntity<String> entity = new HttpEntity<>(headers);
+    ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
+    Files.write(Paths.get("demo1.jpg"), response.getBody());
+}
+----
+
+2. Using stream approach
+If the file size is large, then previous approach might cause OOM error and its better to use ResponseExtractor to stream the results from remote service without loading the file content into memory.
+
+----
+@GetMapping("/test-download-v3")
+public void downloadFile() throws IOException {
+    String url = "http://img.championat.com/news/big/l/c/ujejn-runi_1439911080563855663.jpg";
+    // Optional Accept header
+    RequestCallback requestCallback = request -> request
+            .getHeaders()
+            .setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL));
+
+    // Streams the response instead of loading it all in memory
+    ResponseExtractor<Void> responseExtractor = response -> {
+        // Here you can write the inputstream to a file or any other place
+        Path path = Paths.get("downloadv3.jpg");
+        Files.copy(response.getBody(), path);
+        return null;
+    };
+    restTemplate.execute(url, HttpMethod.GET, requestCallback, responseExtractor);
+}
+----
+
+
+
+
+Source: https://www.javacodemonk.com/download-a-file-using-spring-resttemplate-75723d97[Download file]

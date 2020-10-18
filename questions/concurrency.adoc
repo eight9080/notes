@@ -139,7 +139,6 @@ The keepAliveTime parameter is the interval of time for which the excessive thre
 *newFixedThreadPool *
 creates a ThreadPoolExecutor with equal corePoolSize and maximumPoolSize parameter values and a zero keepAliveTime. This means that the number of threads in this thread pool is always the same
 
-[source, java]
 ----
 ThreadPoolExecutor executor =
   (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
@@ -355,4 +354,38 @@ Source: https://www.javacodemonk.com/implement-custom-thread-pool-in-java-withou
 * local variables are also thread-safe because each thread has there own copy and using local variables is good way to writing thread-safe code in Java.
 * In order to avoid thread-safety issue minimize sharing of objects between multiple thread.
 * Volatile keyword in Java can also be used to instruct thread not to cache variables and read from main memory and can also instruct JVM not to reorder or optimize code from threading perspective.
+
+== Can two threads call two different synchronized instance methods of an Object?
+
+No. If an object has synchronized instance methods then the Object itself is used a lock object for controlling the synchronization. Therefore all other instance methods need to wait until previous method call is completed.
+
+== What is AtomicInteger class and how it works internally
+AtomicInteger uses combination of volatile & CAS (compare and swap) to achieve thread-safety for Integer Counter. It is non-blocking in nature and thus highly usable in writing high throughput concurrent data structures that can be used under low to moderate thread contention.
+
+=== Thread Contention
+Essentially thread contention is a condition where one thread is waiting for a lock/object that is currently being held by another thread. Waiting thread, thus cannot use that object until the other thread has unlocked that particular object.
+
+=== How is volatile different from AtomicInteger
+Read & write to volatile variables have same memory semantics as that of acquiring and releasing a monitor using synchronized code block. So the visibility of volatile field is guaranteed by the JMM (Java Memory Model).
+
+AtomicInteger class stores its value field in a volatile variable, thus it is a decorator over the traditional volatile variable, but it provides unique non-blocking mechanism for updating the value after requiring the hardware level support for CAS (compare and set/swap). +
+Under low to moderate thread contention, atomic updates provides higher throughput compared to synchronized blocking increment operation.
+
+----
+class AtomicInteger {
+
+    public final int getAndIncrement() {
+        for (;;) {
+            int current = get();
+            int next = current + 1;
+            if (compareAndSet(current, next))
+                return current;
+        }
+    }
+    //Rest of the implementation
+}
+----
+
+You can see that no lock is acquired to increment the value, rather CAS is used inside infinite loop to update the new value, that’s why it can be used to write scalable application where thread contention is low to medium.
+
 

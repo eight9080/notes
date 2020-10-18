@@ -67,6 +67,77 @@ Java LinkedHashMap class is Hashtable and Linked list implementation of the Map 
 * Java LinkedHashMap maintains insertion order.
 * The initial default capacity of Java HashMap class is 16 with a load factor of 0.75.
 
+== Difference between HashMap, LinkedHashMap and TreeMap
+
+*HashMap* is a hashing data structure which works on hashcode of keys. Keys must provide consistent implementation of equals() and hashCode() method in order to work with hashmap.
+
+Time complexity for get() and put() operations is Big O(1).
+
+*LinkedHashMap* is also a hashing data structure similar to HashMap, but it retains the original order of insertion for its elements using a LinkedList. Thus iteration order of its elements is same as the insertion order for LinkedHashMap which is not the case for other two Map classes. Iterating over its elements is lightly faster than the HashMap because it does not need to traverse over buckets which are empty.
+
+LinkedHashMap also provides a great starting point for creating a LRU Cache object by overriding the removeEldestEntry() method, as shown in the following code snippet.
+----
+private static final int MAX_ENTRIES = 100;
+
+protected boolean removeEldestEntry(Map.Entry eldest) {
+
+    return size() > MAX_ENTRIES;
+
+}
+----
+Time complexity for get() and put() operations is Big O(1).
+
+*TreeMap* is a SortedMap, based on Red-Black Binary Search Tree which maintains order of its elements based on given comparator or comparable.
+
+Time complexity for put() and get() operation is O (log n).
+
+
+|===
+|Property |HashMap |LinkedHasMap |TreeMap
+
+|Time complexity (Big O) for get, put, containsKey and remove method
+|O(1)
+|O(1)
+|O(log n)
+
+|Null keys
+|Allowed
+|Allowed
+|Not allowed if the key uses natural ordering or the comparator does not support comparison on null keys
+
+|Interface
+|Map
+|Map
+|Map, SortedMap and NavigableMap
+
+|Iteration order
+|Random order
+|Based on constructor - either insertion order or access order
+|Sorted - either on natural order of key or according to the comparator provided during construction
+
+|Data structure
+|List of buckets. If more than 8 entries in bucket, then linked list will convert to balanced tree
+|Doubly linked list of buckets
+|Red-black tree - a self balancing search tree, O(log n) for insert, delete and search operations)
+
+|Contract for Keys
+|must override equals() and hashcode()
+|must override equals() and hashcode()
+|key should implement comparator otherwise natural ordering will be used to sort the keys
+
+|Applications
+|General purpose with fast retrieval. ConcurrentHashMap can be used when concurrency is key requirement.
+|LRU cache, any other place where insertion or access order matters
+|Range Search, finding an employee whose salary is next to given employee. Algorithms where sorted or navigable features are required
+
+|Synchronization
+|none, use ConcurrentHashMap or Collections.synchronizedMap()
+|none
+|none
+|===
+
+
+
 == What is the difference between fail-fast and fail-safe iterator?
 
 *fail-fast Iterator*

@@ -1,0 +1,142 @@
+= Blocking Queue
+
+A blocking queue allows multiple threads to communicate with each other and pass data around. For example, a producer can put items to the queue while consumer can take items out from the queue.
+
+A blocking queue has below characteristics:
+
+* It is always thread-safe
+
+* It can hold arbitrary data
+
+* Producer has to wait if the queue is already full, similarly consumer has to be wait if no item is present in the queue.
+
+== BlockingQueue using intrinsic locking using synchronized keyword
+
+----
+class SimpleBlockingQueue {
+    final Object[] items = new Object[100]; //1
+    int putptr, takeptr, count;
+
+    public synchronized void put(Object x) throws InterruptedException {
+        while (count == items.length)
+            wait(); //2
+        items[putptr] = x;
+        if (++putptr == items.length) putptr = 0;
+        ++count;
+        notifyAll(); //3
+    }
+
+    public synchronized Object take() throws InterruptedException {
+        while (count == 0)
+            wait(); /4
+        Object x = items[takeptr];
+        if (++takeptr == items.length) takeptr = 0;
+        --count;
+        notifyAll(); //5
+        return x;
+    }
+}
+----
+
+* Max capacity of blocking queue is 100
+* We are waiting inside a while loop while queue capacity is full. While loop is required to avoid spurious wakeups.
+* All other waiting threads are notified as soon as a new item is added to the queue.
+* Consumer thread waits inside a while loop for arrival of new item, if queue is empty. while loop prevents spurious wakeup problem.
+* Consumer thread notifies all waiting producer threads as soon as an item is removed from the queue.
+
+== BlockingQueue using Lock and Condition
+Lock and Condition interface provides much better flexibility compared to intrinsic locking mechanism, but this flexibility brings more responsibility as we have to take care of calling lock and unlock ourselves. Since one lock can be associated with multiple conditions (notFull & notEmpty in this case), this results in better throughput due to lesser thread contention.
+
+----
+class SimpleBlockingQueue {
+    final Lock lock = new ReentrantLock();
+    final Condition notFull = lock.newCondition();
+    final Condition notEmpty = lock.newCondition();
+    final Object[] items = new Object[100];
+    int putptr, takeptr, count;
+
+    public void put(Object x) throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == items.length)
+                notFull.await();
+            items[putptr] = x;
+            if (++putptr == items.length) putptr = 0;
+            ++count;
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Object take() throws InterruptedException {
+        lock.lock();
+        try {
+            while (count == 0)
+                notEmpty.await();
+            Object x = items[takeptr];
+            if (++takeptr == items.length) takeptr = 0;
+            --count;
+            notFull.signal();
+            return x;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+----
+
+== Generic BlockingQueue using LinkedList
+
+----
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class BlockingQueue<T> {
+    private Queue<T> queue = new LinkedList<T>();
+    private int capacity;
+    private Lock lock = new ReentrantLock();
+    private Condition notFull = lock.newCondition();
+    private Condition notEmpty = lock.newCondition();
+
+    public BlockingQueue(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void put(T element) throws InterruptedException {
+        lock.lock();
+        try {
+            while (queue.size() == capacity) {
+                notFull.await();
+            }
+            queue.add(element);
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public T take() throws InterruptedException {
+        lock.lock();
+        try {
+            while (queue.isEmpty()) {
+                notEmpty.await();
+            }
+            T item = queue.remove();
+            notFull.signal();
+            return item;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+----
+
+
+
+
+
+Source: https://www.javacodemonk.com/blocking-queue-implementation-in-java-044ee033[Blocking Queue]
