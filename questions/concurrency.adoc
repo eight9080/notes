@@ -7,7 +7,56 @@ ifndef::imagesdir[:imagesdir: ../images]
 2. Runnable: The thread is in runnable state after invocation of start() method, but the thread scheduler has not selected it to be the running thread.
 3. Running: The thread is in running state if the thread scheduler has selected it.
 4. Non-Runnable (Blocked): This is the state when the thread is still alive, but is currently not eligible to run.
+* Blocked: A blocked thread is waiting for a monitor lock is in this state. This thing can also happen when a thread performs an I/O operation and moves to the next state.
+* Waiting: It is a thread that is waiting for another thread to do the specific action.
+* Timed_waiting: It is a thread that is waiting for another thread to perform.
 5. Terminated: A thread is in terminated or dead state when its run() method exits.
+
+== What are numerous ways in which a thread can enter the waiting state?
+
+A thread can enter the waiting state by the following ways
+
+* Using sleep() method
+* Blocking on I/O
+* Unsuccessfully trying to acquire an object’s lock
+* By invoking an object’s wait() method
+
+== What is deadlock
+Deadlock is a situation when a thread is waiting for an object lock, that is acquired by another thread and second thread also waiting for an object lock that is acquired by the first thread. As both threads are waiting for each other to release this condition is called deadlock.
+
+=== Avoiding Deadlock
+
+To start with, we should avoid the need for acquiring multiple locks for a thread. However, if a thread does need multiple locks, we should make sure that each thread acquires the locks in the same order, to avoid any cyclic dependency in lock acquisition.
+
+We can also use timed lock attempts, like the tryLock method in the Lock interface, to make sure that a thread does not block infinitely if it is unable to acquire a lock.
+
+== What is Livelock
+In livelock, two or more threads keep on transferring states between one another instead of waiting infinitely as we saw in the deadlock example. Consequently, the threads are not able to perform their respective tasks.
+
+A great example of livelock is a messaging system where, when an exception occurs, the message consumer rolls back the transaction and puts the message back to the head of the queue. Then the same message is repeatedly read from the queue, only to cause another exception and be put back on the queue. The consumer will never pick up any other message from the queue.
+
+=== Avoiding Livelock
+To avoid a livelock, we need to look into the condition that is causing the livelock and then come up with a solution accordingly.
+
+For example, if we have two threads that are repeatedly acquiring and releasing locks, resulting in livelock, we can design the code so that the threads retry acquiring the locks at random intervals. This will give the threads a fair chance to acquire the locks they need.
+
+Another way to take care of the liveness problem in the messaging system example we've discussed earlier is to put failed messages in a separate queue for further processing instead of putting them back in the same queue again.
+
+== What is a monitor
+The monitor is a body of code that can be executed by only one thread at a time.
+If any other thread attempts to get access at the same time, it will be suspended until the current thread releases the Monitor.
+
+== What do you mean by thread starvation?
+In the situation when a thread does not have sufficient CPU for its execution Thread starvation happens.
+
+However, it may happen in the following scenarios
+
+Low priority threads will get less CPU compared to high priority threads. Lower priority thread can starve away waiting to get more CPU space to perform calculations.
+The thread may be waiting indefinitely for a lock on object’s monitor but notify() may repeatedly be awakening some other threads. In that case, also thread starves away.
+
+== What is context-switching in multi-threading?
+
+It is the process of storing and restoring of CPU state. This helps to resume thread execution from the same point at a later point in time. It is one of the essential features for multitasking operating system and support for the multi-threaded environment.
 
 == What is the difference between Process and Thread?
 
