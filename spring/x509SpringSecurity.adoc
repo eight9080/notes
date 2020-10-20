@@ -1,0 +1,167 @@
+= X.509 Authentication in Spring Security
+
+While a secure connection is established, the client verifies the server according to its certificate (issued by a trusted certificate authority).
+
+To verify the identity of a client by the server while connecting. This is called “mutual authentication”,
+
+== Self Signed Root CA
+
+create the CA certificate:
+----
+openssl req -x509 -sha256 -days 3650 -newkey rsa:4096 -keyout rootCA.key -out rootCA.crt
+----
+Enter information that forms a so-called distinguished name
+CN (Common Name)
+
+== Keystore
+A keystore is a repository that the application will use to hold our server's *private key and certificate*.
+In other words, our application will use the keystore to serve the certificate to the clients during the SSL handshake.
+
+=== Server-side Certificate
+Certificate signing request (CSR)
+----
+openssl req -new -newkey rsa:4096 -keyout localhost.key –out localhost.csr
+----
+
+Create a configuration file – localhost.ext. It'll store some additional parameters needed during signing the certificate.
+
+----
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = localhost
+----
+
+Sign the request with our rootCA.crt certificate and its private key:
+----
+openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in localhost.csr -out localhost.crt -days 365 -CAcreateserial -extfile localhost.ext
+----
+
+To print our certificate's details in a human-readable form:
+----
+openssl x509 -in localhost.crt -text
+----
+
+=== Import to the Keystore
+Import the signed certificate and the corresponding private key to the keystore.jks file.
+Create a .p12 file:
+----
+openssl pkcs12 -export -out localhost.p12 -name "localhost" -inkey localhost.key -in localhost.crt
+----
+
+- have the localhost.key and the localhost.crt bundled in the single localhost.p12 file.
+
+*keytool* to create a keystore.jks repository and import the localhost.p12 file with a single command:
+----
+keytool -importkeystore -srckeystore localhost.p12 -srcstoretype PKCS12 -destkeystore keystore.jks -deststoretype JKS
+----
+
+== Spring boot application
+
+== Maven dependencies
+----
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+----
+
+Set SSL to an “enabled” status and change the standard listening port to indicate a secured connection
+
+----
+server.ssl.key-store=../store/keystore.jks
+server.ssl.key-store-password=${PASSWORD}
+server.ssl.key-alias=localhost
+server.ssl.key-password=${PASSWORD}
+server.ssl.enabled=true
+server.port=8443
+spring.security.user.name=Admin
+spring.security.user.password=admin
+----
+
+== Mutual Authentication
+
+Pros:
+
+* The private key of an X.509 client certificate is stronger than any user-defined password. But it has to be kept secret!
+* With a certificate, the identity of a client is well-known and easy to verify.
+* No more forgotten passwords!
+
+Cons:
+
+* We need to create a certificate for each new client.
+* The client's certificate has to be installed in a client application. In fact: X.509 client authentication is device-dependent, which makes it impossible to use this kind of authentication in public areas, for example in an internet-café.
+* There must be a mechanism to revoke compromised client certificates.
+* We must maintain the clients' certificates. -> costly.
+
+=== Truststore
+
+It holds the certificates of the external entities that we trust.
+
+At least - keep the root CA certificate in the truststore.
+----
+keytool -import -trustcacerts -noprompt -alias ca -ext san=dns:localhost,ip:127.0.0.1 -file rootCA.crt -keystore truststore.jks
+----
+
+=== Spring Security Configuration
+----
+@SpringBootApplication
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class X509AuthenticationServer extends WebSecurityConfigurerAdapter {
+    ...
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().anyRequest().authenticated()
+          .and()
+          .x509()
+            .subjectPrincipalRegex("CN=(.*?)(?:,|$)")
+            .userDetailsService(userDetailsService());
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) {
+                if (username.equals("Bob")) {
+                    return new User(username, "",
+                      AuthorityUtils
+                        .commaSeparatedStringToAuthorityList("ROLE_USER"));
+                }
+                throw new UsernameNotFoundException("User not found!");
+            }
+        };
+    }
+}
+----
+
+As a final modification step, we have to tell the application where our truststore is located and that SSL client authentication is necessary (server.ssl.client-auth=need).
+----
+server.ssl.trust-store=store/truststore.jks
+server.ssl.trust-store-password=${PASSWORD}
+server.ssl.client-auth=need
+----
+
+== Client-side Certificate
+Create a certificate signing request:
+----
+openssl req -new -newkey rsa:4096 -nodes -keyout clientBob.key –out clientBob.csr
+----
+
+Sign the request with our CA:
+----
+openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in clientBob.csr -out clientBob.crt -days 365 -CAcreateserial
+----
+
+Source: https://www.baeldung.com/x-509-authentication-in-spring-security[x509]
