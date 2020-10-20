@@ -1,0 +1,106 @@
+= Certificates
+== Get a List of Trusted Certificates in Java
+
+=== Keystore
+
+Java stores the trusted certificates in a special file named cacerts that lives inside our Java installation folder.
+
+==== Load a keystore
+----
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.PKIXParameters;
+import java.security.cert.TrustAnchor;
+import java.security.cert.X509Certificate;
+
+private KeyStore loadKeyStore() {
+    String relativeCacertsPath = "/lib/security/cacerts".replace("/", File.separator);
+    String filename = System.getProperty("java.home") + relativeCacertsPath;
+    FileInputStream is = new FileInputStream(filename);
+
+    KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+    String password = "changeit";
+    keystore.load(is, password.toCharArray());
+
+    return keystore;
+}
+----
+
+==== Reading Certificates From a Specified KeyStore
+----
+@Test
+public void whenLoadingCacertsKeyStore_thenCertificatesArePresent() {
+    KeyStore keyStore = loadKeyStore();
+    PKIXParameters params = new PKIXParameters(keyStore);
+
+    Set<TrustAnchor> trustAnchors = params.getTrustAnchors();
+    List<Certificate> certificates = trustAnchors.stream()
+      .map(TrustAnchor::getTrustedCert)
+      .collect(Collectors.toList());
+
+    assertFalse(certificates.isEmpty());
+}
+----
+When creating an instance of PKIXParametrs, it builds a list of TrustAnchor that will contain the trusted certificates present in our KeyStore.
+
+A TrustAnchor instance simply represents a trusted certificate.
+
+==== Reading Certificates From Default KeyStore
+To get a list of the trusted certificates present in our system by using the TrustManagerFactory class and initializing it without a KeyStore, which will use the default KeyStore.
+
+----
+@Test
+public void whenLoadingDefaultKeyStore_thenCertificatesArePresent() {
+    TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    trustManagerFactory.init((KeyStore) null);
+
+    List<TrustManager> trustManagers = Arrays.asList(trustManagerFactory.getTrustManagers());
+    List<X509Certificate> certificates = trustManagers.stream()
+      .filter(X509TrustManager.class::isInstance)
+      .map(X509TrustManager.class::cast)
+      .map(trustManager -> Arrays.asList(trustManager.getAcceptedIssuers()))
+      .flatMap(Collection::stream)
+      .collect(Collectors.toList());
+
+    assertFalse(certificates.isEmpty());
+}
+----
+X509TrustManager, which is a specialized TrustManager
+
+==== Certificate Aliases
+A certificate alias is simply a String that uniquely identifies a certificate.
+
+To read all certificate aliases present in our KeyStore:
+----
+@Test
+public void whenLoadingKeyStore_thenGoDaddyCALabelIsPresent() {
+    KeyStore keyStore = loadKeyStore();
+
+    Enumeration<String> aliasEnumeration = keyStore.aliases();
+    List<String> aliases = Collections.list(aliasEnumeration);
+    assertTrue(aliases.contains(GODADDY_CA_ALIAS));
+}
+----
+
+To retrieve a certificate by its alias:
+
+----
+@Test
+public void whenLoadingKeyStore_thenGoDaddyCertificateIsPresent() {
+KeyStore keyStore = loadKeyStore();
+
+    Certificate goDaddyCertificate = keyStore.getCertificate(GODADDY_CA_ALIAS);
+    assertNotNull(goDaddyCertificate);
+}
+----
+
+Source: https://www.baeldung.com/java-list-trusted-certificates[List certificates]
