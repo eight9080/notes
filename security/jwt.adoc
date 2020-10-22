@@ -1,0 +1,58 @@
+= JSON Web Tokens (JWTs)
+
+== Authentication with JSON Web Tokens (JWTs)
+
+=== Tokens
+Tokens offer a wide variety of applications, including: Cross Site Request Forgery (CSRF) protection schemes, OAuth 2.0 interactions, session IDs, and (in cookies) as authentication representations.
+
+=== JWTs
+JWTs (pronounced “jots”) are URL-safe, encoded, cryptographically signed (sometimes encrypted) strings that can be used as tokens in a variety of applications.
+The token is cryptographically signed and therefore can be verified, providing proof that it hasn't been tampered with.
+
+The JWTs has three sections:
+
+|===
+|Header|	eyJhbGciOiJIUzI1NiJ9
+|Payload|	eyJqdGkiOiJlNjc4ZjIzMzQ3ZTM0MTBkYjdlNjg3Njc4MjNiMmQ3MCIsImlhdC
+I6MTQ2NjYzMzMxNywibmJmIjoxNDY2NjMzMzE3LCJleHAiOjE0NjY2MzY5MTd9
+|Signature|	rgx_o8VQGuDa2AqCHSgVOD5G68Ld_YYM7N7THmvLIKc
+|===
+
+Each section is base64 URL-encoded.
+
+==== The Header
+----
+{"alg":"HS256"}
+----
+This shows that the JWT was signed with HMAC using SHA-256.
+
+==== The Payload
+----
+{
+  "jti": "e678f23347e3410db7e68767823b2d70",
+  "iat": 1466633317,
+  "nbf": 1466633317,
+  "exp": 1466636917
+}
+----
+These keys are called “claims” and the JWT specification has seven of these specified as “registered” claims.
+|===
+|iss|	Issuer
+|sub|	Subject
+|aud|	Audience
+|exp|	Expiration
+|nbf|	Not Before
+|iat|	Issued At
+|jti|	JWT ID
+|===
+
+====  The Signature
+the signature section is created by taking the header and payload together (with the . in between) and passing it through the specified algorithm (HMAC using SHA-256, in this case) along with a known secret. +
+Note that the secret is always a byte array, and should be of a length that makes sense for the algorithm used.
+
+As long as you know the secret, you can generate the signature yourself and compare your result to the signature section of the JWT to verify that it has not been tampered with. +
+A JWT that's been cryptographically signed is called a *JWS*. +
+JWTs can also be encrypted and would then be called a *JWE*.
+
+=== JJWT
+JJWT (https://github.com/jwtk/jjwt) is a Java library providing end-to-end JSON Web Token creation and verification.

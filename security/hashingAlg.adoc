@@ -1,0 +1,105 @@
+= Hashing
+
+== SHA-256 and SHA3-256 Hashing in Java
+The SHA (Secure Hash Algorithm) is one of the popular cryptographic hash functions.
+The SHA-256 algorithm generates an almost-unique, fixed-size 256-bit (32-byte) hash. This is a one-way function, so the result cannot be decrypted back to the original value.
+
+SHA-3 provides a different approach to generate a unique one-way hash, and it can be much faster on some hardware implementations. Similar to SHA-256, SHA3-256 is the 256-bit fixed-length algorithm in SHA-3.
+
+
+Java provides inbuilt MessageDigest class for SHA-256 hashing:
+----
+MessageDigest digest = MessageDigest.getInstance("SHA-256");
+byte[] encodedhash = digest.digest(
+  originalString.getBytes(StandardCharsets.UTF_8));
+----
+Custom byte to hex converter to get the hashed value in hexadecimal:
+----
+private static String bytesToHex(byte[] hash) {
+    StringBuilder hexString = new StringBuilder(2 * hash.length);
+    for (int i = 0; i < hash.length; i++) {
+        String hex = Integer.toHexString(0xff & hash[i]);
+        if(hex.length() == 1) {
+            hexString.append('0');
+        }
+        hexString.append(hex);
+    }
+    return hexString.toString();
+}
+----
+*MessageDigest is not thread-safe*
+
+=== Guava Library
+----
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>20.0</version>
+    </dependency>
+----
+Use Guava to hash a String:
+----
+String sha256hex = Hashing.sha256()
+    .hashString(originalString, StandardCharsets.UTF_8)
+    .toString();
+----
+
+=== Apache Commons Codecs
+----
+    <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.11</version>
+    </dependency>
+----
+The utility class – called DigestUtils – that supports SHA-256 hashing:
+----
+String sha256hex = DigestUtils.sha256Hex(originalString);
+----
+
+=== Bouncy Castle Library
+----
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>1.60</version>
+    </dependency>
+----
+
+----
+MessageDigest digest = MessageDigest.getInstance("SHA-256");
+byte[] hash = digest.digest(
+  originalString.getBytes(StandardCharsets.UTF_8));
+String sha256hex = new String(Hex.encode(hash));
+----
+
+=== SHA3-256
+Starting from JDK 9, we can simply use the built-in SHA3-256 algorithm:
+----
+final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+final byte[] hashbytes = digest.digest(
+originalString.getBytes(StandardCharsets.UTF_8));
+String sha3Hex = bytesToHex(hashbytes);
+----
+==== Apache Commons Codecs
+----
+String sha3Hex = new DigestUtils("SHA3-256").digestAsHex(originalString);
+----
+==== Keccak-256
+----
+Security.addProvider(new BouncyCastleProvider());
+final MessageDigest digest = MessageDigest.getInstance("Keccak-256");
+final byte[] encodedhash = digest.digest(
+  originalString.getBytes(StandardCharsets.UTF_8));
+String sha3Hex = bytesToHex(encodedhash);
+----
+We can also make use of the Bouncy Castle API to do the hashing:
+----
+Keccak.Digest256 digest256 = new Keccak.Digest256();
+byte[] hashbytes = digest256.digest(
+  originalString.getBytes(StandardCharsets.UTF_8));
+String sha3Hex = new String(Hex.encode(hashbytes));
+----
+
+Source: https://www.baeldung.com/sha-256-hashing-java[Sha 256]
+
