@@ -241,7 +241,17 @@ Authenticity
 Both the SHA-2 and the SHA-3 family are considered cryptographically secure.
 
 
+
+
 === SSL Secure Sockets Layer/ TLS Transport Layer Security
+Secured Socket Layer (SSL) enables a secured connection between two parties.
+
+SSL is necessary to support the three main information security principles:
+
+* Encryption: protect data transmissions between parties
+* Authentication: ensure the server we connect to is indeed the proper server
+* Data integrity: guarantee that the requested data is what is effectively delivered
+
 - private channel
 - authenticated channel
 - reliable channel
@@ -261,7 +271,7 @@ HTTPS - Http over TLS - combination provides is that all HTTP requests are first
  TLS meets this gap by asking the web application to provide as part of the *handshake an artifact called X.509 certificate* +
 *X.509 certificates* contain a subject, a validity period, and allowed usages, the web application public asymmetric key, which is basically the public portion of the key pair that the web application holds and uses to identify itself.
 
-Checks performed by the browser to check authentication
+Checks performed by the browser to check authentication:
 
 - the name of the web application matches the subject field in the certificate.
 - this certificate has not expired
@@ -275,6 +285,15 @@ To protect sensitive data from exposure - the TLS protocol requires that the web
 - encrypt that secret with the asymmetric public key in the provided web application X.509 certificate
 - send it to the web application +
  Now both the web browser and the web application have *a short secret which they will use to generate a common symmetric encryption key*, which will later be used to encrypt all the traffic that passes between the web browser and the web application. In our case, all HTTP requests that pass the TLS layer will get encrypted with this symmetric key.
+
+*Typical steps in an SSL handshake are:*
+
+* Client provides a list of possible SSL version and cipher suites to use
+* Server agrees on a particular SSL version and cipher suite, responding back with its certificate
+* Client extracts the public key from the certificate responds back with an encrypted “pre-master key”
+* Server decrypts the “pre-master key” using its private key
+* Client and server compute a “shared secret” using the exchanged “pre-master key”
+* Client and server exchange messages confirming the successful encryption and decryption using the “shared secret”
 
 *OWASP Recommendations*
 
@@ -299,6 +318,59 @@ OpenSSL
 
 The _Heartbleed_ Bug is a serious vulnerability in the popular OpenSSL cryptographic software library. This weakness allows stealing the information protected, under normal conditions, by the SSL/TLS encryption used to secure the Internet.
 
+* Java Secured-Socket Extension (JSSE)
+* Java Cryptography Architecture (JCA)
+* Java Cryptographic Extension (JCE)
+
+==== JSSE API
+===== SSLSocketFactory
+javax.net.ssl.SSLSocketFactory is used for creating SSLSocket objects.
+
+* single static getDefault() method used to retrieve the default instance which, in turn, can create SSLSocket instances
+
+----
+Socket createSocket(String host, int port)
+Socket createSocket(String host, int port, InetAddress clientHost, int clientPort)
+Socket createSocket(InetAddress host, int port)
+Socket createSocket(InetAddress host, int port, InetAddress clientHost, int clientPort)
+Socket createSocket(Socket socket, String host, int port, boolean autoClose)
+----
+
+===== SSLSocket
+SSLSocket instances construct an SSL connection to a named host at a specified port.
+
+===== SSLServerSocketFactory
+creates SSLServerSocket instances
+
+===== SSLServerSocket
+The methods on SSLServerSocket class are a subset of the SSLSocket class methods.
+
+----
+String host = getHost(...);
+Integer port = getPort(...);
+SSLSocketFactory sslsocketfactory = SSLSocketFactory.getDefault();
+SSLSocket sslsocket = (SSLSocket) sslsocketfactory
+  .createSocket(host, port);
+InputStream in = sslsocket.getInputStream();
+OutputStream out = sslsocket.getOutputStream();
+
+out.write(1);
+while (in.available() > 0) {
+    System.out.print(in.read());
+}
+
+System.out.println("Secured connection performed successfully");
+----
+
+Add certificate in the truststore:
+
+* add the public certificate of the server to the default cacerts truststore used by Java. while initiating the SSL connection
+* Set the javax.net.ssl.trustStore environment variable to point to the truststore file so that the application can pick up that file which contains the public certificate of the server we are connecting to.
+
+The steps to install a new certificate into the Java default truststore are:
+
+* extract cert from server: `openssl s_client -connect server:443`
+import certificate into truststore using `keytool: keytool -import -alias alias.server.com -keystore $JAVA_HOME/jre/lib/security/cacerts`
 
 ==== X.509 Certificate
  An X. 509 certificate has: a subject, a Validity range, and a *public key*, and it's signed by a CA certificate authority. The certificate authority vouches for my identity.
