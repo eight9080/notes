@@ -215,16 +215,31 @@ Source https://app.pluralsight.com/library/courses/cryptography-fundamentals-jav
 link:DataEncryptionExample.adoc#asym-encrypt[Asymmetric encryption]
 
 === Digital Signatures
+Digital Signature is a technique for ensuring:
+
+* *Integrity*: the message hasn't been altered in transit
+* *Authenticity*: the author of the message is really who they claim to be
+* *Non-repudiation*: the author of the message can't later deny that they were the source
+
+==== Sending a Message with a Digital Signature
+A digital signature is the *encrypted hash (digest, checksum) of a message*. +
+That means we generate a hash from a message and encrypt it with a private key according to a chosen algorithm. +
+The message, the encrypted hash, the corresponding public key, and the algorithm are all then sent.
+
+==== Receiving and Checking a Digital Signature
+To check the digital signature, the message receiver generates a new hash from the received message, decrypts the received encrypted hash using the public key, and compares them.
+Only it is encrypted the message hash, and not the message itself
+
 Verify an email was send by the real person.
 The email is signed with the private key of the sender,
 and is verified with the public key of the sender by the receiver.
 
-Confidentiality.
+*Confidentiality*
 - encrypt a message and then send the secret key that we used to encrypt the message to just the person that we want to be able to read it.
 - encrypt symmetric key with public key
 - confidence that only recipient can read it
 
-Authenticity
+*Authenticity*
 - guarantee that the message came from a particular source.
 - to take a digest of the original message.
 - *A digest* is simply a *hash*, a smaller number computed from the larger message.
@@ -237,11 +252,124 @@ Authenticity
 - CRC-32 is a polynomial on 33 bits, but only 32 bits of the result are stored.
 - this polynomial is easily reversible.
 
+==== Digital Certificate and Public Key Identity
+A certificate is a document that associates an identity to a given public key.
+A Digital Certificate contains a public key and is itself signed by another entity. The signature of that entity can itself be verified by another entity and so on. - *certificate chain*
+The most *top-level entity is self-signed*, which means that his public key is signed by his own private key.
+
+The X.509 is the most used certificate format, and it is shipped either as binary format (DER) or text format (PEM).
+
+===== Loading the Private Key for Signing
+----
+KeyStore keyStore = KeyStore.getInstance("PKCS12");
+keyStore.load(new FileInputStream("sender_keystore.p12"), "changeit");
+PrivateKey privateKey =
+  (PrivateKey) keyStore.getKey("senderKeyPair", "changeit");
+----
+
+==== Loading a Public Key for Verification
+----
+KeyStore keyStore = KeyStore.getInstance("PKCS12");
+keyStore.load(new FileInputStream("receiver_keytore.p12"), "changeit");
+Certificate certificate = keyStore.getCertificate("receiverKeyPair");
+PublicKey publicKey = certificate.getPublicKey();
+----
+
 ==== Hashing Algorithms
 Both the SHA-2 and the SHA-3 family are considered cryptographically secure.
 
+==== Digital Signature With MessageDigest and Cipher Classes
+===== Generating a Message Hash
+A message can be a string, a file, or any other data. So let's take the content of a simple file:
+----
+byte[] messageBytes = Files.readAllBytes(Paths.get("message.txt"));
+----
 
+Using MessageDigest -> use the digest method to generate a hash:
+----
+MessageDigest md = MessageDigest.getInstance("SHA-256");
+byte[] messageHash = md.digest(messageBytes);
+----
 
+===== Encrypting the Generated Hash
+o encrypt a message, we need an algorithm and a private key. Here we'll use the RSA algorithm. The DSA algorithm is another option.
+
+----
+Cipher cipher = Cipher.getInstance("RSA");
+cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+byte[] digitalSignature = cipher.doFinal(messageHash);
+----
+The signature can be saved into a file for sending it later:
+----
+Files.write(Paths.get("digital_signature_1"), digitalSignature);
+----
+
+==== Verifying Signature
+----
+byte[] encryptedMessageHash =
+Files.readAllBytes(Paths.get("digital_signature_1"));
+----
+For decryption, we create a Cipher instance. Then we call the doFinal method:
+----
+Cipher cipher = Cipher.getInstance("RSA");
+cipher.init(Cipher.DECRYPT_MODE, publicKey);
+byte[] decryptedMessageHash = cipher.doFinal(encryptedMessageHash);
+----
+
+Generate a new message hash from the received message:
+----
+byte[] messageBytes = Files.readAllBytes(Paths.get("message.txt"));
+
+MessageDigest md = MessageDigest.getInstance("SHA-256");
+byte[] newMessageHash = md.digest(messageBytes);
+----
+Check if the newly generated message hash matches the decrypted one:
+----
+boolean isCorrect = Arrays.equals(decryptedMessageHash, newMessageHash);
+----
+
+=== Digital Signature Using the Signature Class
+JCA already offers a dedicated API in the form of the Signature class.
+
+==== Signing a Message
+----
+Signature signature = Signature.getInstance("SHA256withRSA");
+signature.initSign(privateKey);
+----
+The signing algorithm we chose, SHA256withRSA in this example, is a *combination of a hashing algorithm and an encryption algorithm*. Other alternatives include SHA1withRSA, SHA1withDSA, and MD5withRSA,
+
+----
+byte[] messageBytes = Files.readAllBytes(Paths.get("message.txt"));
+
+signature.update(messageBytes);
+byte[] digitalSignature = signature.sign();
+----
+
+Save the signature into a file for later transmission:
+----
+Files.write(Paths.get("digital_signature_2"), digitalSignature);
+----
+
+==== Verifying the Signature
+Create a Signature instance:
+----
+Signature signature = Signature.getInstance("SHA256withRSA");
+----
+Initialize the Signature object for verification by calling the initVerify method, which takes a public key:
+----
+signature.initVerify(publicKey);
+----
+
+Add the received message bytes to the signature object by invoking the update method:
+----
+byte[] messageBytes = Files.readAllBytes(Paths.get("message.txt"));
+
+signature.update(messageBytes);
+----
+Check the signature by calling the verify method:
+----
+boolean isCorrect = signature.verify(receivedSignature);
+----
 
 === SSL Secure Sockets Layer/ TLS Transport Layer Security
 Secured Socket Layer (SSL) enables a secured connection between two parties.
