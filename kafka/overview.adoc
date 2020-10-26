@@ -1,0 +1,206 @@
+= Apache Kafka with Spring
+
+*Apache Kafka* is a distributed and fault-tolerant stream processing system.
+
+----
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+    <version>2.3.7.RELEASE</version>
+</dependency>
+----
+
+=== Topics
+----
+bin/kafka-topics.sh --create \
+  --zookeeper localhost:2181 \
+  --replication-factor 1 --partitions 1 \
+  --topic mytopic
+----
+
+AdminClient in Kafka - create topics programmatically.
+
+Add the KafkaAdmin Spring bean, which will automatically add topics for all beans of type NewTopic
+
+----
+@Configuration
+public class KafkaTopicConfig {
+
+    @Value(value = "${kafka.bootstrapAddress}")
+    private String bootstrapAddress;
+
+    @Bean
+    public KafkaAdmin kafkaAdmin() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        return new KafkaAdmin(configs);
+    }
+
+    @Bean
+    public NewTopic topic1() {
+         return new NewTopic("baeldung", 1, (short) 1);
+    }
+}
+----
+
+== Producing Messages
+To create messages:
+
+- to configure a ProducerFactory which sets the strategy for creating Kafka Producer instances.
+-  a KafkaTemplate which wraps a Producer instance and provides convenience methods for sending messages to Kafka topics.
+
+Producer instances are *thread-safe* and hence using a single instance throughout an application context will give higher performance. Consequently, KakfaTemplate instances are also thread-safe and use of one instance is recommended.
+
+=== Producer Configuration
+
+----
+@Configuration
+public class KafkaProducerConfig {
+
+    @Bean
+    public ProducerFactory<String, String> producerFactory() {
+        Map<String, Object> configProps = new HashMap<>();
+        configProps.put(
+          ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+          bootstrapAddress);
+        configProps.put(
+          ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+          StringSerializer.class);
+        configProps.put(
+          ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+          StringSerializer.class);
+        return new DefaultKafkaProducerFactory<>(configProps);
+    }
+
+    @Bean
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
+    }
+}
+----
+
+=== Publishing Messages
+----
+@Autowired
+private KafkaTemplate<String, String> kafkaTemplate;
+
+public void sendMessage(String msg) {
+    kafkaTemplate.send(topicName, msg);
+}
+----
+
+*The send API returns a ListenableFuture object.* +
+If we want to *block the sending thread* and get the result about the sent message, we can call the *get API of the ListenableFuture* object. The thread will wait for the result, but it will slow down the producer.
+
+Kafka is a fast stream processing platform. So it's a better idea to handle the results asynchronously so that the subsequent messages do not wait for the result of the previous message. We can do this through a callback:
+
+----
+public void sendMessage(String message) {
+
+    ListenableFuture<SendResult<String, String>> future =
+      kafkaTemplate.send(topicName, message);
+
+    future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+
+        @Override
+        public void onSuccess(SendResult<String, String> result) {
+            System.out.println("Sent message=[" + message +
+              "] with offset=[" + result.getRecordMetadata().offset() + "]");
+        }
+        @Override
+        public void onFailure(Throwable ex) {
+            System.out.println("Unable to send message=["
+              + message + "] due to : " + ex.getMessage());
+        }
+    });
+}
+----
+
+== Consuming Messages
+=== Consumer Configuration
+For consuming messages, we need to configure a ConsumerFactory and a KafkaListenerContainerFactory. Once these beans are available in the Spring bean factory, POJO based consumers can be configured using @KafkaListener annotation.
+
+@EnableKafka annotation is required on the configuration class to enable detection of @KafkaListener annotation on spring managed beans:
+
+----
+@EnableKafka
+@Configuration
+public class KafkaConsumerConfig {
+
+    @Bean
+    public ConsumerFactory<String, String> consumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(
+          ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+          bootstrapAddress);
+        props.put(
+          ConsumerConfig.GROUP_ID_CONFIG,
+          groupId);
+        props.put(
+          ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+          StringDeserializer.class);
+        props.put(
+          ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+          StringDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, String>
+      kafkaListenerContainerFactory() {
+
+        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+          new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
+}
+----
+
+=== Consuming Messages
+----
+@KafkaListener(topics = "topicName", groupId = "foo")
+public void listenGroupFoo(String message) {
+    System.out.println("Received Message in group foo: " + message);
+}
+----
+
+Spring also supports retrieval of one or more message headers using the @Header annotation in the listener:
+----
+@KafkaListener(topics = "topicName")
+public void listenWithHeaders(
+    @Payload String message,
+    @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
+        System.out.println(
+            "Received Message: " + message"
+            + "from partition: " + partition);
+}
+----
+
+
+=== Consuming Messages from a Specific Partition
+
+----
+@KafkaListener(
+  topicPartitions = @TopicPartition(topic = "topicName",
+  partitionOffsets = {
+    @PartitionOffset(partition = "0", initialOffset = "0"),
+    @PartitionOffset(partition = "3", initialOffset = "0")}),
+  containerFactory = "partitionsKafkaListenerContainerFactory")
+public void listenToPartition(
+  @Payload String message,
+  @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
+      System.out.println(
+        "Received Message: " + message"
+        + "from partition: " + partition);
+}
+----
+
+
+
+
+
+
+
+
+Source: https://www.baeldung.com/spring-kafka[Spring Kafka]
