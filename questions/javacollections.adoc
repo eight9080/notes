@@ -264,6 +264,34 @@ HashSet allows null value.
 
 When we create a HashSet, it internally creates a HashMap and if we insert an element into this HashSet using add() method, it actually call put() method on internally created HashMap object with element you have specified as it’s key and constant Object called PRESENT as it’s value. So we can say that a Set achieves uniqueness internally through HashMap.
 
+== Performance of removeAll() in a HashSet
+----
+Set<Integer> set = new HashSet<Integer>();
+set.add(1);
+set.add(2);
+set.add(3);
+set.add(4);
+
+Collection<Integer> collection = new ArrayList<Integer>();
+collection.add(1);
+collection.add(3);
+
+set.removeAll(collection);
+
+Integer[] actualElements = new Integer[set.size()];
+Integer[] expectedElements = new Integer[] { 2, 4 };
+assertArrayEquals(expectedElements, set.toArray(actualElements));
+----
+The removeAll() method determines which one is smaller – the set or the collection. This is done by invoking the size() method on the set and the collection.
+
+If the collection has fewer elements than the set, then it iterates over the specified collection with the time complexity O(n). It also checks if the element is present in the set with the time complexity O(1). And if the element is present, it's being removed from the set using the remove() method of the set, which again has a time complexity of O(1). So the overall time complexity is O(n).
+
+If the set has fewer elements than the collection, then it iterates over this set using O(n). Then it checks if each element is present in the collection by invoking its contains() method. And if such an element is present, then the element is removed from the set. So this depends on the time complexity of the contains() method.
+
+Now in this case, if the collection is an ArrayList, the time complexity of the contains() method is O(m). So overall time complexity to remove all elements present in the ArrayList from the set is O(n * m).
+
+If the collection is again HashSet, the time complexity of the contains() method is O(1). So overall time complexity to remove all elements present in the HashSet from the set is O(n).
+
 == What is the difference between HashSet and TreeSet?
 
 * HashSet gives better performance (faster) than TreeSet for the operations like add, remove, contains, size etc. HashSet offers constant time cost while TreeSet offers log(n) time cost for such operations.
