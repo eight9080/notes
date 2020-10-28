@@ -1,5 +1,108 @@
 = NIO
 
+== NIO – java.nio
+The java.nio package was introduced in Java 1.4 and updated in Java 1.7 (NIO.2) with enhanced file operations and an ASynchronousSocketChannel. It provides:
+
+* *Buffer* – to read chunks of data at a time
+* *CharsetDecoder* – for mapping raw bytes to/from readable characters
+* *Channel* – for communicating with the outside world
+* *Selector* – to enable multiplexing on a SelectableChannel and provide access to any Channels that are ready for I/O
+non-blocking mode – to read whatever is ready
+
+=== Configure Our Test Server
+----
+<dependency>
+    <groupId>com.github.tomakehurst</groupId>
+    <artifactId>wiremock-jre8</artifactId>
+    <version>2.26.3</version>
+    <scope>test</scope>
+</dependency>
+----
+
+----
+@Rule public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+
+private String REQUESTED_RESOURCE = "/test.json";
+
+@Before
+public void setup() {
+    stubFor(get(urlEqualTo(REQUESTED_RESOURCE))
+      .willReturn(aResponse()
+      .withStatus(200)
+      .withBody("{ \"response\" : \"It worked!\" }")));
+}
+----
+
+=== Send a Request
+create a java.nio.channel.SocketChannel to access the port on our server, and pass it an InetSocketAddress
+
+----
+InetSocketAddress address = new InetSocketAddress("localhost", wireMockRule.port());
+SocketChannel socketChannel = SocketChannel.open(address);
+----
+With a standard UTF-8 Charset to encode and write our message:
+----
+Charset charset = StandardCharsets.UTF_8;
+socket.write(charset.encode(CharBuffer.wrap("GET " + REQUESTED_RESOURCE + " HTTP/1.0\r\n\r\n")));
+----
+
+=== Read the Response
+a ByteBuffer for the raw bytes and a CharBuffer for the converted characters
+----
+ByteBuffer byteBuffer = ByteBuffer.allocate(8192);
+CharsetDecoder charsetDecoder = charset.newDecoder();
+CharBuffer charBuffer = CharBuffer.allocate(8192);
+----
+
+Fast performance -> create a MappedByteBuffer in native memory using ByteBuffer.allocateDirect(). +
+Using allocate() from the standard heap is fast enough. - for this case
+
+When dealing with buffers, we need to know how big the buffer is (the capacity), where we are in the buffer (the current position), and how far we can go (the limit).
+
+Let's read from our SocketChannel, passing it our ByteBuffer to store our data. Our read from the SocketChannel will finish with our ByteBuffer‘s current position set to the next byte to write to (just after the last byte written), but with its limit unchanged:
+----
+socketChannel.read(byteBuffer)
+----
+Our SocketChannel.read() returns the number of bytes read that could be written into our buffer. This will be -1 if the socket was disconnected.
+
+When our buffer doesn't have any space left because we haven't processed all its data yet, then SocketChannel.read() will return zero bytes read but our buffer.position() will still be greater than zero.
+
+use Buffer.flip() to set our ByteBuffer‘s current position to zero and its limit to the last byte that was written by the SocketChannel. We'll then save the buffer contents using our storeBufferContents method, which we'll look at later. Lastly, we'll use buffer.compact() to compact the buffer and set the current position ready for our next read from the SocketChannel.
+
+----
+while (socketChannel.read(byteBuffer) != -1 || byteBuffer.position() > 0) {
+    byteBuffer.flip();
+    storeBufferContents(byteBuffer, charBuffer, charsetDecoder, ourStore);
+    byteBuffer.compact();
+}
+----
+And let's not forget to close() our socket (unless we opened it in a try-with-resources block):
+----
+socketChannel.close();
+----
+
+=== Storing Data From Our Buffer
+
+* decode the raw bytes into characters in our CharBuffer
+* flip the pointers so that we can read our character data, and append it to our expandable StringBuilder.
+* clear the CharBuffer ready for the next write/read cycle.
+
+----
+void storeBufferContents(ByteBuffer byteBuffer, CharBuffer charBuffer,
+  CharsetDecoder charsetDecoder, StringBuilder ourStore) {
+    charsetDecoder.decode(byteBuffer, charBuffer, true);
+    charBuffer.flip();
+    ourStore.append(charBuffer);
+    charBuffer.clear();
+}
+----
+
+
+
+
+
+
+
 == Http download using Java NIO FileChannel
 Java’s Channel should always be preferred for IO related stuff because Channel can utilize OS specific optimization while dealing with the files. An input stream can easily be converted to a FileChannel using Channels.newChannel() static factory method.
 
