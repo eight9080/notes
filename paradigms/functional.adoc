@@ -1,0 +1,46 @@
+= Functional Programming
+
+The key concepts of functional programming include the following:
+
+* Functions as first-class objects
+* Pure functions
+* Higher-order functions
+
+**FUNCTIONS AS FIRST-CLASS OBJECTS**
+Saying that functions are first-class objects means that we can create an instance of a function as having a variable referencing that function instance.
+
+*PURE FUNCTIONS*
+A pure function is a function whose execution has no side effects and the return value depends only on its input parameters.
+
+*HIGHER-ORDER FUNCTIONS*
+A higher-order function takes one or more functions as parameters and/or returns another function as a result. +
+In other words, in Java, a higher-order function is a method that gets one (or more) lambda expressions as arguments and/or returns another lambda expression.
+
+== PURE FUNCTIONAL PROGRAMMING RULES
+
+* No state
+* No side effects
+* Immutable variables
+* Favoring recursion over looping
+
+=== NO STATE
+By no state, we do not mean that functional programming eliminates state. Commonly, no state means that there is no external state to the function. In other words, a function may work with local variables that contain temporary states internally, but it cannot reference any member variables of the class/object it belongs to.
+
+=== NO SIDE EFFECTS
+By no side effects, we should understand that a function cannot change (mutate) any state outside of the function (outside of its functional scope). State outside of a function includes the following:
+
+The member variables in the class/object that contain that function
+The member variables that are passed as parameters to the function
+Or the state in external systems (for example, databases or files).
+
+=== IMMUTABLE VARIABLES
+Functional programming encourages and sustains the usage of immutable variables. Relying on immutable variables helps us to avoid side effects in a much easier and more intuitive way.
+
+Since recursion relies on repeated function calls to emulate looping, the code becomes more functional.
+----
+static long factorial(long n) {
+    return n == 1 ? 1 : n * factorial(n - 1);
+}
+----
+We use tail recursion to improve the performance penalty caused by the fact that, in the preceding example, every function call is saved as a frame in the recursion stack. Tail recursion is preferred when there are many recursive calls. In tail recursion, the function executes the recursive call as the last thing to do, so the compiler doesn't need to save the function call as a frame in the recursion stack. Most compilers will optimize tail recursion, hence avoiding the performance penalty
+
