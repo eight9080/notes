@@ -135,8 +135,74 @@ public class BlockingQueue<T> {
 }
 ----
 
-
-
-
-
 Source: https://www.javacodemonk.com/blocking-queue-implementation-in-java-044ee033[Blocking Queue]
+
+== LinkedBlockingQueue vs ConcurrentLinkedQueue
+
+The LinkedBlockingQueue is an optionally-bounded blocking queue implementation, meaning that the queue size can be specified if needed.
+
+Contain up to 100 elements:
+----
+BlockingQueue<Integer> boundedQueue = new LinkedBlockingQueue<>(100);
+----
+An unbounded LinkedBlockingQueue just by not specifying the size:
+----
+BlockingQueue<Integer> unboundedQueue = new LinkedBlockingQueue<>();
+----
+If there is no memory left, then the queue throws a java.lang.OutOfMemoryError.
+If the queue is full, then adding a new element will block the accessing thread unless there is space available for the new element. Similarly, if the queue is empty, then accessing an element blocks the calling thread.
+
+=== ConcurrentLinkedQueue
+
+A ConcurrentLinkedQueue is an unbounded, thread-safe, and non-blocking queue.
+it does not block a thread once the queue is empty. Instead, it returns null. Since its unbounded, it'll throw a java.lang.OutOfMemoryError if there's no extra memory to add new elements.
+----
+int element = 1;
+ExecutorService executorService = Executors.newFixedThreadPool(2);
+ConcurrentLinkedQueue<Integer> queue = new ConcurrentLinkedQueue<>();
+
+Runnable offerTask = () -> queue.offer(element);
+
+Callable<Integer> pollTask = () -> {
+  while (queue.peek() != null) {
+    return queue.poll().intValue();
+  }
+  return null;
+};
+
+executorService.submit(offerTask);
+Future<Integer> returnedElement = executorService.submit(pollTask);
+assertThat(returnedElement.get().intValue(), is(equalTo(element)));
+----
+
+|===
+|Feature	|LinkedBlockingQueue	|ConcurrentLinkedQueue
+
+|Blocking Nature
+|It is a blocking queue and implements the BlockingQueue interface
+|It is a non-blocking queue and does not implement the BlockingQueue interface
+
+|Queue Size
+|It is an optionally bounded queue, which means there are provisions to define the queue size during creation
+|It is an unbounded queue, and there is no provision to specify the queue size during creation
+
+|Locking Nature
+|It is a lock-based queue
+|It is a lock-free queue
+
+|Algorithm
+|It implements its locking based on two-lock queue algorithm
+|It relies on the Michael & Scott algorithm for non-blocking, lock-free queues
+
+|Implementation
+|In the two-lock queue algorithm mechanism, LinkedBlockingQueue uses two different locks – the putLock and the takeLock. The put/take operations uses the first lock type, and the take/poll operations use the other lock type
+|It uses CAS (Compare-And-Swap) for its operations
+
+|Blocking Behavior
+|It is a blocking queue. So, it blocks the accessing threads when the queue is empty
+|It does not block the accessing thread when the queue is empty and returns null
+|===
+
+
+
+Source: https://www.baeldung.com/java-queue-linkedblocking-concurrentlinked[Linked vs Concurrent]
