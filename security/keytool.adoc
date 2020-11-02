@@ -169,3 +169,30 @@ keytool -list -v -keystore $JAVA_HOME/jre/lib/security/cacerts
 ```
 keytool -import -trustcacerts -file /path/to/ca/ca.pem -alias CA_ALIAS -keystore $JAVA_HOME/jre/lib/securi
 ```
+
+
+=== KeyStore
+* A Keystore contains private keys and associated certificates having the public key
+KeyStore has its own password
+* Each entry of a private key/certificate combination in Keystore has its own password
+* The owner/Server retrieves a certificate from its KeyStore and present it to the other side.
+
+=== TrustStore
+* A trust store has a list of all certificates which client trust
+* These could be certificates of Trusted CA and self-signed certificates of trusted parties
+* So when a Server presents its certificate, the Client will verify it using the certificates stored in TrustStore
+* TrustStore is also protected by a password.
+
+=== Certificate Verification
+A client starts the verification –
+
+* The client checks the end-user certificate
+* Certificate validity period is checked
+* Checks the issuer in the certificate
+* The issuer info of the Server/End User Certificate will match the owner information of Intermediate CA.
+* The client retrieves the public key of the Intermediate CA(from its certificate) and decrypts the signature in Server Certificate. If decryption is successful then it is trusted that Intermediate CA has signed the certificate
+* Now trust is established between Server and Intermediate CA
+* To trust Intermediate CA, the client finds Root CA certificate whose owner info is the same as that of issuer info of intermediate CA certificate
+* Using the public key of the Root CA, the client verify the signature of the Root CA on the intermediate CA certificate
+* This establishes the trust between Root CA and Intermediate CA.
+
