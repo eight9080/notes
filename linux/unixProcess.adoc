@@ -26,6 +26,26 @@ $ top
 $ htop
 ----
 
+=== PS example
+==== For seeing process running under username
+`ps -fu username`
+
+==== Find all java process in your UNIX host
+`ps -ef | grep java`
+
+==== The last ps command
+`!ps`
+
+==== To find the number of process running in your Linux server
+`ps -ef | wc -l`
+
+==== To see the full command-line arguments used to start a process for every user in the Linux server
+`ps -ef`
+
+==== To show full arguments for really long commands used to start a process
+`ps auxwww`
+
+
 == Manage services using systemctl
 === Start a service
 
