@@ -1,0 +1,48 @@
+= cURL
+
+----
+[--digest] it's a digest authentication
+[-u{username}:{password}] attaching username and password
+[-X PUT] method="put"
+[-H 'Expect: '] header = 'Expect: '
+[-H 'Content-type: application/xml'] additional header
+----
+
+----
+$ curl --digest \
+-u{username}:{password} \
+-v \
+-X PUT \
+-H 'Expect: ' \
+-H 'Content-type: application/xml' \
+-d @- \
+http://localhost:8080/SpringRestDemo/api/book/9783827321312 \
+< data.xml
+----
+
+== Test Authentication against REST API
+----
+curl -i -X POST -d j_username=user -d j_password=password http://localhost:8080/SpringDemo/j_spring_security_check
+----
+
+== Saving the Cookie in a file
+----
+$ curl -i -X POST -d j_username=user -d j_password=password -c /tmp/cookies.txt http://localhost:8080/SpringDemo/j_spring_security_check
+----
+
+== Attaching Header and Cookie into an HTTP request using curl
+
+----
+curl -i --header "Accept:application/json" -X GET -b /tmp/cookies.txt http://localhost:8080/SpringRestDemo/j_spring_security_check
+----
+
+== Accessing RESTful Web Service
+----
+curl -i http://localhost:8080/SpringRestDemo/api/book/9783827321312
+----
+
+
+Read more: https://www.java67.com/2017/10/how-to-test-restful-web-services-using.html#ixzz6creWcBH5[Curl]
+
+
+
