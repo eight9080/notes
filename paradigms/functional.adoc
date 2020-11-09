@@ -1,5 +1,8 @@
 = Functional Programming
 
+Functional programming is a style of writing computer programs that treat computations as evaluating mathematical functions.
+
+
 The key concepts of functional programming include the following:
 
 * Functions as first-class objects
@@ -7,7 +10,10 @@ The key concepts of functional programming include the following:
 * Higher-order functions
 
 **FUNCTIONS AS FIRST-CLASS OBJECTS**
-Saying that functions are first-class objects means that we can create an instance of a function as having a variable referencing that function instance.
+Saying that functions are first-class objects means that we can create an instance of a function as having a variable referencing that function instance. +
+Functions are allowed to support all operations typically available to other entities. These include assigning functions to variables, passing them as arguments to other functions, and returning them as values from other functions.
+
+ Functional interfaces have exactly one abstract method and are also known as Single Abstract Method (SAM) interfaces.
 
 *PURE FUNCTIONS*
 A pure function is a function whose execution has no side effects and the return value depends only on its input parameters.
@@ -43,4 +49,66 @@ static long factorial(long n) {
 }
 ----
 We use tail recursion to improve the performance penalty caused by the fact that, in the preceding example, every function call is saved as a frame in the recursion stack. Tail recursion is preferred when there are many recursive calls. In tail recursion, the function executes the recursive call as the last thing to do, so the compiler doesn't need to save the function call as a frame in the recursion stack. Most compilers will optimize tail recursion, hence avoiding the performance penalty
+
+=== Referential Transparency
+
+An expression referentially transparent if replacing it with its corresponding value has no impact on the program's behavior.
+
+== Functional Programming Techniques
+=== Function Composition
+
+Function composition refers to composing complex functions by combining simpler functions.
+Function is a simple and generic functional interface that accepts one argument and produces a result.
+
+It also provides two default methods, compose and andThen, which will help us in function composition:
+
+----
+Function<Double, Double> log = (value) -> Math.log(value);
+Function<Double, Double> sqrt = (value) -> Math.sqrt(value);
+Function<Double, Double> logThenSqrt = sqrt.compose(log);
+logger.log(Level.INFO, String.valueOf(logThenSqrt.apply(3.14)));
+// Output: 1.06
+Function<Double, Double> sqrtThenLog = sqrt.andThen(log);
+logger.log(Level.INFO, String.valueOf(sqrtThenLog.apply(3.14)));
+// Output: 0.57
+----
+
+While compose applies the function passed in the argument first and then the function on which it's invoked, andThen does the same in reverse.
+
+=== Monads
+A monad is an abstraction that allows structuring programs generically. So basically, a monad allows us to wrap a value, apply a set of transformations, and get the value back with all transformations applied.
+
+Three laws that any monad needs to follow – left identity, right identity, and associativity.
+
+Java monads: Optional and Stream
+
+----
+Optional.of(2).flatMap(f -> Optional.of(3).flatMap(s -> Optional.of(f + s)))
+----
+
+Optional allows us to wrap a value using the method of and apply a series of transformations. We're applying the transformation of adding another wrapped value using the method flatMap.
+
+=== Currying
+
+Currying is a mathematical technique of converting a function that takes multiple arguments into a sequence of functions that take a single argument.
+
+----
+Function<Double, Function<Double, Double>> weight = mass -> gravity -> mass * gravity;
+
+Function<Double, Double> weightOnEarth = weight.apply(9.81);
+logger.log(Level.INFO, "My weight on Earth: " + weightOnEarth.apply(60.0));
+
+Function<Double, Double> weightOnMars = weight.apply(3.75);
+logger.log(Level.INFO, "My weight on Mars: " + weightOnMars.apply(60.0));
+----
+
+=== Recursion
+Recursion is another powerful technique in functional programming that allows us to break down a problem into smaller pieces. +
+*tail recursion* -
+the recursive call is the last call a function makes
+----
+Integer factorial(Integer number, Integer result) {
+    return (number == 1) ? result : factorial(number - 1, result * number);
+}
+----
 
