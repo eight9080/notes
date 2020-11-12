@@ -1,0 +1,113 @@
+= Docker
+
+== Volumes
+Remove volumes if no space left on device
+Cleanup:
+
+$ docker volume rm $(docker volume ls -qf dangling=true)
+Additional commands:
+
+List dangling volumes:
+
+$ docker volume ls -qf dangling=true
+List all volumes:
+
+$ docker volume ls
+
+docker system prune
+This will remove:
+
+- all stopped containers
+- all volumes not used by at least one container
+- all networks not used by at least one container
+- all dangling images
+As below, this is nuclear.
+
+To clean your system, first remove containers
+
+$ docker rm $(docker ps -aq)
+then remove images
+
+$ docker rmi $(docker images -q)
+
+== Setting Memory And CPU Limits
+
+=== Setting Resources Limit With docker run
+==== Memory
+To constrain memory, we need to use the m parameter:
+----
+$ docker run -m 512m nginx
+----
+
+Set a soft limit called a reservation. It's activated when docker detects low memory on the host machine:
+----
+$ docker run -m 512m --memory-reservation=256m nginx
+----
+
+==== CPU
+Set the CPUs limit using the cpus parameter
+----
+$ docker run --cpus=2 nginx
+----
+
+Specify the priority of CPU allocation. The default is 1024, higher numbers are higher priority:
+----
+$ docker run --cpus=2 --cpu-shares=2000 nginx
+----
+
+=== Setting Memory Limit With the docker-compose File
+==== Versions 3 and Newer With docker swarm
+----
+services:
+  service:
+    image: nginx
+    deploy:
+        resources:
+            limits:
+              cpus: 0.50
+              memory: 512M
+            reservations:
+              cpus: 0.25
+              memory: 128M
+----
+
+To take advantage of the deploy segment in a docker-compose file, we need to use the docker stack command. To deploy a stack to the swarm, we run the deploy command:
+----
+$ docker stack deploy --compose-file docker-compose.yml bael_stack
+----
+
+==== Version 2 With docker-compose
+
+----
+service:
+  image: nginx
+  mem_limit: 512m
+  mem_reservation: 128M
+  cpus: 0.5
+  ports:
+    - "80:80"
+----
+
+To create configured containers, we need to run the docker-compose command:
+----
+$ docker-compose up
+----
+
+=== Verifying Resources Usage
+
+----
+$ docker stats
+CONTAINER ID        NAME                                             CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
+8ad2f2c17078        bael_stack_service.1.jz2ks49finy61kiq1r12da73k   0.00%               2.578MiB / 512MiB   0.50%
+----
+
+Source: https://www.baeldung.com/ops/docker-memory-limit[Docker Memory Limit]
+
+
+
+
+
+
+
+
+
