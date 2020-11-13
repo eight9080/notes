@@ -302,7 +302,7 @@ PKI = trust
 
 Trust store = location to store trusted Certificate Authorities
 
-
+Labs https://owasp-skf.gitbook.io/asvs-write-ups/ 
 
 
 
