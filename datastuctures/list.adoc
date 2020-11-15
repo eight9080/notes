@@ -1,0 +1,43 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= List
+
+== Big O
+
+
+
+|===
+
+.2+| Data Structure 3+| Average cases 3+| Worst cases
+                    | Insert | Delete |Search |Insert |Delete |Search
+| Array/stack/queue | O(1)   | O(1)   |O(n)   |O(1)   |O(1)   |O(n)
+| Linked list       | O(1)   | O(1)   |O(n)   |O(1)   |O(1)   |O(n)
+| Doubly linked list| O(1)   | O(1)   |O(n)   |O(1)   |O(1)   |O(n)
+|===
+
+== Linked List
+A linked list is a linear data structure, in which the elements are not stored at contiguous memory locations.
+
+
+[.left.text-center]
+image::linkedlist.png[linked list]
+Source: https://www.geeksforgeeks.org/data-structures/linked-list/[Linked list]
+
+== Doubly Linked List
+
+----
+public class DoublyLL {
+    Node head; // head of list
+
+    /* Doubly Linked list Node*/
+    class Node {
+        int data;
+        Node prev;
+        Node next;
+
+        // Constructor to create a new node
+        // next and prev is by default initialized as null
+        Node(int d) { data = d; }
+    }
+}
+----
+Source: https://www.geeksforgeeks.org/doubly-linked-list/[Doubly linked list]
