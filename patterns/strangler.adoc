@@ -1,0 +1,12 @@
+ifndef::imagesdir[:imagesdir: ../images]
+== Strangler pattern
+
+To use the gateway as a facade while you gradually move the backend monolith to a new architecture—either services, functions, or a combination of both.
+As soon as progress is made to break up the monolith and implementing those pieces of functionality as services or functions, the gateway is updated to redirect requests to the new functionality.
+
+Incrementally replace specific pieces of functionality with new applications and services. Create a façade that intercepts requests going to the backend legacy system. The façade routes these requests either to the legacy application or the new services. Existing features can be migrated to the new system gradually, and consumers can continue using the same interface, unaware that any migration has taken place.
+
+[.left.text-center]
+image::strangler.png[strangler pattern]
+
+Source: https://docs.microsoft.com/en-us/azure/architecture/patterns/strangler[Strangler pattern]
