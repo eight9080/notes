@@ -1,5 +1,52 @@
 = Docker
 
+== Images
+An image is a file that represents a packaged application with all the dependencies needed to run correctly. In other words, we could say that a Docker image is like a Java class.
+
+Images are built as a series of layers. Layers are assembled on top of one another.
+
+----
+$ docker images
+REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+postgres             11.6                d3d96b1e5d48        4 weeks ago         332MB
+----
+
+== Containers
+A container is an instance of an image. Each container can be identified by its ID. Going back to our Java development analogy, we could say that a container is like an instance of a class.
+
+Docker defines seven states for a container: created, restarting, running, removing, paused, exited, and dead.
+
+One big advantage is that containers are like lightweight VMs. Their behaviors are completely isolated from each other. This means that we can run multiple containers of the same image, having each one in a different state with different data and different IDs.
+
+=== Containers Lifecycle
+Starting up a new container requires us to create it and then start it.
+----
+docker container create <image_name>:<tag>
+docker container start <container_id>
+----
+OR
+----
+docker run <image_name>:<tag>
+----
+Pause:
+----
+docker pause <container_id>
+docker unpause <container_id>
+----
+
+Stop a running container and then rerun it:
+----
+docker stop <container_id>
+docker start <container_id>
+----
+Remove a container:
+----
+docker container rm <container_id>
+----
+*Only containers in the stopped or created state can be removed.*
+
+
+
 == Volumes
 Remove volumes if no space left on device
 Cleanup:
@@ -212,7 +259,7 @@ b06cfe3053e5        postgres:11         Up 28 minutes
 $ docker container rm -f $(docker container ls -aq)
 ----
 
-
+Source: https://www.baeldung.com/docker-images-vs-containers[Docker images]
 
 
 
