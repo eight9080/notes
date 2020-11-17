@@ -77,6 +77,52 @@ then remove images
 
 $ docker rmi $(docker images -q)
 
+== Accessing a container
+=== Connecting to an Existing Container
+
+----
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                NAMES
+b7a9f5eb6b85        rabbitmq:3          "docker-entrypoint.s…"   25 minutes ago      Up 25 minutes       4369/tcp, 5671-5672/tcp, 25672/tcp   trusting_bose
+----
+
+Connecting:
+----
+$ docker exec -it b7a9f5eb6b85 sh
+----
+* docker exec tells Docker that we want to execute a command into a running container
+* The -it argument means that it will be executed in an interactive mode – it keeps the STIN open
+
+Explore the operating system of our newly created container:
+----
+$ cat /etc/*-release
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=18.04
+----
+
+=== Running Containers in Interactive Mode
+----
+$ docker run -it ubuntu:18.04
+----
+
+ –rm argument when starting a container in interactive mode, thus will remove the container when we exit:
+
+----
+$ docker run -it --rm ubuntu:18.04
+----
+
+=== Keep a Container Running
+----
+$ docker run -d ubuntu:18.04 tail -f /dev/null
+----
+With this command, we are starting a new container in detached/background mode (-d) and executing the tail -f /dev/null command inside the container. As a result, this will force our container to run forever.
+
+----
+$ docker exec -it CONTAINER_ID sh
+----
+
+Source: https://www.baeldung.com/ops/docker-container-shell[Docker container shell]
+
 == Setting Memory And CPU Limits
 
 === Setting Resources Limit With docker run
