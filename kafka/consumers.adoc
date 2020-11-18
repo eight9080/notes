@@ -1,0 +1,51 @@
+= Consumers
+
+== Listing Kafka Consumers
+
+===  Adding Topics and Consumers
+----
+$ ./bin/kafka-topics.sh --create --topic users.registrations --replication-factor 1 \
+  --partitions 2 --zookeeper localhost:2181
+$ ./bin/kafka-topics.sh --create --topic users.verfications --replication-factor 1 \
+  --partitions 2 --zookeeper localhost:2181
+----
+
+Add a few consumer groups
+----
+$ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic users.registrations --group new-user
+$ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic users.registrations --group new-user
+----
+
+These consumers are in the same group, so the messages from topic partitions will be spread across the members of the group.
+
+----
+$ ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic users.verifications
+----
+
+=== Listing Consumers
+----
+$ ./bin/kafka-consumer-groups.sh --list --bootstrap-server localhost:9092
+new-user
+console-consumer-40123
+----
+
+–bootstrap-server option to specify the Kafka cluster address
+
+To see the members of the first group  *“–group <name> –describe –members” options*
+----
+$ ./bin/kafka-consumer-groups.sh --describe --group new-user --members --bootstrap-server localhost:9092
+GROUP           CONSUMER-ID                    HOST            CLIENT-ID            #PARTITIONS
+new-user        consumer-new-user-1-b90...     /127.0.0.1      consumer-new-user-1  1
+new-user        consumer-new-user-1-af8...     /127.0.0.1      consumer-new-user-1  1
+----
+
+If we omit the –members option, it'll list the consumers in the group, the partition number each is listening to, and their offsets:
+----
+$ ./bin/kafka-consumer-groups.sh --describe --group new-user --bootstrap-server localhost:9092
+GROUP           TOPIC                       PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG
+new-user        users.registrations         1          3               3               0
+new-user        users.registrations         0          5               5               0
+----
+
+Source: https://www.baeldung.com/ops/listing-kafka-consumers[Kafka Consumers]
+
