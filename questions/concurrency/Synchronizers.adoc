@@ -1,0 +1,43 @@
+= Synchronizers
+
+== CyclicBarrier
+
+CyclicBarrier in Java is a synchronizer introduced in JDK 5 on java.util.Concurrent
+
+All threads which wait for each other to reach the barrier are called parties, CyclicBarrier is initialized with a number of parties to wait and threads wait for each other by calling CyclicBarrier.await() method which is a blocking method in Java and blocks until all Thread or parties call await().
+
+await() is a blocking call but can be timed out or Interrupted by other threads.
+
+If you look at CyclicBarrier it also does the same thing but it is different you can not reuse CountDownLatch once the count reaches zero while you can reuse CyclicBarrier by calling the reset() method which resets Barrier to its initial State.
+
+What it implies that *CountDownLatch is good for one-time events* like application start-up time and CyclicBarrier can be used in case of the recurrent event like concurrently calculating a solution of the big problem etc.
+
+Each thread calls await method in short duration but they don't proceed until all 3 threads reached the barrier, once all thread reaches the barrier, the barrier gets broker and each thread started their execution from that point.
+
+https://github.com/eight9080/test/blob/master/src/main/java/com/example/concurent/CyclicBarrierExample.java[CyclicBarrierExample.java]
+
+Output:
+----
+Output:
+Thread 1 is waiting on the barrier
+Thread 3 is waiting on the barrier
+Thread 2 is waiting on the barrier
+All parties have arrived at the barrier, lets play
+Thread 3 has crossed the barrier
+Thread 1 has crossed the barrier
+Thread 2 has crossed the barrier
+----
+
+* CyclicBarrier can perform a completion task once all thread reaches to the barrier, This can be provided while creating CyclicBarrier.
+
+* The thread will block on await() until all parties reach the barrier, another thread interrupts or await timed out
+
+* If another thread interrupts the thread which is waiting on the barrier it will throw BrokernBarrierException
+
+* CyclicBarrier.reset() put Barrier on its initial state, other thread which is waiting or not yet reached barrier will terminate with java.util.concurrent.BrokenBarrierException.
+
+Read more: https://javarevisited.blogspot.com/2012/07/cyclicbarrier-example-java-5-concurrency-tutorial.html[Cyclic Barrier]
+
+
+== CountDownLatch
+
