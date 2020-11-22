@@ -1,0 +1,23 @@
+= Executor Framework
+
+The Executor Framework provides several classes e.g. Executor, ExecutorService, and Executors for execution and creating thread pools. +
+It also provides several built-in, ready to use thread pools like a pool of fixed threads, cached thread pool which can expand itself, spawn new threads if required due to heavy load.
+
+The Job of that thread pool is to accept the task and execute if there is a free worker thread available, but ForJoinPool is a special kind of thread pool. They use a work-stealing pattern. All threads in a fork-join pool attempt to find and execute tasks submitted to the pool and/or created by other active tasks.
+
+The main difference between the Executor framework and ForkJoinPool is that the former provides a general-purpose thread pool, while the latter provides a special implementation that uses a work-stealing pattern for efficient processing of ForkJoinTask.
+
+== ForkJoinPool vs Executor Framework
+1. The main difference between ForkJoinPool and ThreadPoolExecutor is that ForkJoinPool is designed to accept and execute ForkJoinTask, which is a lightweight version of FutureTask, +
+while ThreadPoolExecutor is designed to provide a normal thread pool which executes each submitted task using one of possibly several pooled threads.
+
+2. ForkJoinPool uses a work-stealing pattern, which means one thread can also execute a pending task from another thread. This improves efficiency in the case of ForkJoinTask as most of the ForkJoinTask algorithm spawn new tasks.
+
+3. Some of the common ThreadPoolExecutor provided by JDK API is *SingleThreadExecutor*, which is a thread pool of just one background thread, *a cached thread pool* provided by Executors.newCachedThreadPool, which is a pool of unbounded threads, where the pool can spawn new threads if needed and reclaim old threads when not needed.
+
+The third type of common use of ThreadPoolExecutor is a fixed thread pool, where the pool has *a fixed number of threads* in its lifetime, it's also an example of a bounded thread pool.
+
+
+
+
+Read more: https://javarevisited.blogspot.com/2016/12/difference-between-executor-framework-and-ForkJoinPool-in-Java.html[Executor]

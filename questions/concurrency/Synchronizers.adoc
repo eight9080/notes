@@ -41,3 +41,26 @@ Read more: https://javarevisited.blogspot.com/2012/07/cyclicbarrier-example-java
 
 == CountDownLatch
 
+CountDownLatch in Java is a kind of synchronizer which allows one Thread to wait for one or more Threads before starts processing.
+
+* You can not reuse CountDownLatch once count is reaches zero, this is the main difference between CountDownLatch and CyclicBarrier
+
+* Main Thread wait on Latch by calling *CountDownLatch.await()* method while other thread calls *CountDownLatch.countDown()* to inform that they have completed.
+
+CountDownLatch works in latch principle, the main thread will wait until Gate is open. One thread waits for n number of threads specified while creating CountDownLatch in Java.
+
+Any thread, usually the main thread of application, which calls CountDownLatch.await() will wait until count reaches zero or its interrupted by another Thread. All other threads are required to do a count down by calling CountDownLatch.countDown() once they are completed or ready to the job. as soon as count reaches zero, Thread awaiting starts running.
+
+One of the disadvantages of CountDownLatch is that *it's not reusable* once count reaches zero you can not use CountDownLatch any more
+
+https://github.com/eight9080/test/blob/master/src/main/java/com/example/concurent/CountDownLatchDemo.java[CountDownLatchDemo.java]
+
+Output:
+----
+CacheService is Up
+ValidationService is Up
+AlertService is Up
+All services are up, Application is starting now
+----
+
+Read more: https://javarevisited.blogspot.com/2012/07/countdownlatch-example-in-java.html[CountDownLatch]

@@ -437,4 +437,30 @@ class AtomicInteger {
 
 You can see that no lock is acquired to increment the value, rather CAS is used inside infinite loop to update the new value, that’s why it can be used to write scalable application where thread contention is low to medium.
 
+=== Can You Make an Array or ArrayList Volatile in Java?
 
+The volatile is a modifier in Java which only applies to member variables, both instance and class variables, and both primitive and reference types. It provides the happens-before guarantee which ensures that a write to a volatile variable will happen before any reading. This ensures that any modification to a volatile object or primitive type will be visible to all threads i.e. it provides the visibility guarantee.
+
+Volatile variable doesn't provide atomicity (except for write to the volatile double variable) and mutual exclusion, which is also the main difference between volatile and synchronized keyword.
+
+Yes, you can make an array (both primitive and reference type array e.g. an int array and String array) volatile in Java but only changes to reference pointing to an array will be visible to all threads, not the whole array. What this means is that suppose you have a reference variable called primes as shown below:
+
+protected volatile int[] primes = new int[10];
+
+then if you assign a new array to primes variable, the change will be visible to all threads, but changes to individual indices will not be covered under volatile guarantee i.e.
+----
+primes = new int[20];
+----
+will follow the "happens-before" rule and cause memory barrier refresh, but the following code will not do so
+----
+primes[0] = 10;
+primes[1] = 20;
+primes[2] = 30;
+primes[3] = 40;
+----
+
+if multiple threads are changing individual array elements e.g. storing updates, there won’t be any happens-before guarantee provided by the volatile modifier for such modification. So, if your use-case is to provide memory visibility guarantee for individual array elements then volatile is not the right choice. You must rely on other synchronization and a thread-safety mechanism to cover this case e.g. synchronized keyword, atomic variables, or ReentrantLock.
+
+
+
+Read more: https://javarevisited.blogspot.com/2017/01/can-we-make-array-volatile-in-java.html[Array Volatile]
