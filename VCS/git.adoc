@@ -1,0 +1,62 @@
+= Git
+== Git branches
+=== Basic branching
+
+To create a new branch and switch to it at the same time, you can run the git checkout command with the -b switch:
+----
+git checkout -b issue100
+----
+
+== Reset
+
+=== commit amend
+Alter the most-recent commit.
+----
+$ git commit --amend -m 'your text'
+----
+
+=== Ancestry References
+^ – indicates the parent commit +
+~ – indicates the first parent commit
+
+* the parent commit – the following indicate the parent commit of the current commit
+** HEAD^
+** HEAD~
+** HEAD~1
+
+* the grandparent commit – the following indicate the grandparent commit of the current commit
+** HEAD^^
+** HEAD~2
+
+* the great-grandparent commit – the following indicate the great-grandparent commit of the current commit
+** HEAD^^^
+** HEAD~3
+
+=== Commit revert
+Git will make a new commit
+----
+$ git revert <SHA-of-commit-to-revert>
+----
+* will undo the changes that were made by the provided commit
+* creates a new commit to record the change
+
+----
+$ git reset <reference-to-commit>
+
+$ git reset --hard HEAD^
+----
+
+* the ^ character, the "Relative Commit Reference" indicates "the parent commit"
+
+* move the HEAD and current branch pointer to the referenced commit
+* erase commits
+* move committed changes to the staging index
+
+* unstage committed changes
+** --mixed (the default, places changes back in the working dir)
+** --soft (will put them into the staging are)
+** --hard (will throw out all changes)
+
+^ – indicates the parent commit +
+~ – indicates the first parent commit
+
