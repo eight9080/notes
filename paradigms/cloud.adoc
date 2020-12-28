@@ -1,4 +1,6 @@
-= Types of Cloud computing services
+= Cloud computing
+
+== Types of Cloud computing services
 
 * On Premises
 
