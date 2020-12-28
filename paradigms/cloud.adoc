@@ -1,4 +1,60 @@
-Infrasturture as a service - IaaS
+= Types of Cloud computing services
 
+* On Premises
+
+Layers: all managed in house
+Applications
+Data
+Runtime
+Middleware
+OS
+Virtualization
+Servers
+Storage
+Networking
+
+
+* Infrasturture as a service - IaaS +
 Azure/ AWS
 
+Layers:
+Applications
+Data
+Runtime
+Middleware
+OS
+-------
+Virtualization
+Servers
+Storage
+Networking
+
+
+* Platform as a Service - PaaS +
+Azure Logic Apps, Heroku, Amazon Elastic Beanstalk
+
+Layers:
+Applications
+Data
+-------
+Runtime
+Middleware
+OS
+Virtualization
+Servers
+Storage
+Networking
+
+* Software as a Service
+Office 365, Google G Suite, Safesforce
+
+Layers: all managed by vendor
+Applications
+Data
+Runtime
+Middleware
+OS
+Virtualization
+Servers
+Storage
+Networking
