@@ -1,0 +1,4 @@
+Infrasturture as a service - IaaS
+
+Azure/ AWS
+
