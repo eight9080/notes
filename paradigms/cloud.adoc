@@ -23,7 +23,7 @@ Data
 Runtime
 Middleware
 OS
--------
+''''
 Virtualization
 Servers
 Storage
@@ -36,7 +36,7 @@ Azure Logic Apps, Heroku, Amazon Elastic Beanstalk
 Layers:
 Applications
 Data
--------
+''''
 Runtime
 Middleware
 OS
