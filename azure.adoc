@@ -1,2 +1,11 @@
 = Azure
 == Azure DevOps Git
+
+=== Source control fundamentals
+Make changes to files and keep the history
+
+Types of Source control systems:
+* centralized (client server model) e.g. svn, tfs
+* distributed (act as peer) e.g. git
+
+
