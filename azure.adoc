@@ -5,7 +5,25 @@
 Make changes to files and keep the history
 
 Types of Source control systems:
+
 * centralized (client server model) e.g. svn, tfs
 * distributed (act as peer) e.g. git
 
+== Azure DevOps Pipeline
 
+Sameple job:
+
+----
+jobs:
+- job: myJob
+  timeoutInMinutes: 10
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - bash: echo "Hello world"
+----
+Source: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml[Job Yaml]
+
+- use job - when you want to provide additional properties like: timeoutInMinutes
+- pool and vmImage - needed when the job should be run against a Hosted Agent
+- steps - multiple actions, that should be run on the agent
