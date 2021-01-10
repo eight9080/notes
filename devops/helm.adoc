@@ -38,3 +38,55 @@ helm upgrade mysql stable/mysql
 
 image::kubernetes/kubernetesChart.png[Kubernetes chart,700,350]
 
+Helm stores the *release manifest* in the secrets.
+
+=== Installing
+
+https://minikube.sigs.k8s.io/docs/start/[Install Minikube]
+
+----
+sudo mv minikube /usr/local/bin
+minikube version
+minikube start
+minikube addons enable ingress
+minikube ip
+----
+
+https://kubernetes.io/docs/tasks/tools/install-kubectl/[Install Kubectl]
+
+----
+sudo mv kubectk /usr/local/bin
+kubectl version --short
+minikube status
+----
+
+==== Installing Helm
+
+https://helm.sh/docs/intro/install/[Installing helm]
+
+----
+helm version --short
+----
+
+===== Adding a repository
+
+----
+kubectl config view
+helm repo add stable https://charts.helm.sh/stable
+
+helm install demo-mysql stable/mysql
+kubectl get all | grep mysql
+----
+https://helm.sh/blog/new-location-stable-incubator-charts/[Charts location]
+
+==== Cleaning Helm
+
+----
+helm uninstall demo-mysql
+kubectl get all | grep demo-mysql
+kubectl get secret | grep demo-mysql
+helm env
+----
+
+== Charts
+
