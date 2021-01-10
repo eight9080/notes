@@ -36,5 +36,5 @@ helm upgrade mysql stable/mysql
 
 *Chart* is a definition of the application, and the release is an instance of that chart.
 
-image::kubernetes/kubernetesChart.png[Kubernetes chart,500,600]
+image::kubernetes/kubernetesChart.png[Kubernetes chart,700,350]
 
