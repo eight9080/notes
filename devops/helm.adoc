@@ -4,7 +4,37 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 Helm is a package manager for Kubernetes that allows developers and operators to more easily package, configure, and deploy applications and services onto Kubernetes clusters.
 
+== Kubernetes
+
 Application -> Container -> Pod -> Service -> Ingress (reverse proxy)
 
-image::kubernetes/kubernatesbasicdiagram.png[Kubernetes diagram]
+image::kubernetes/kubernatesbasicdiagram.png[Kubernetes diagram,300,200]
+
+Kubernetes API:
+- REST client
+- Go Client
+- Kubectl
+
+== Concepts
+
+Helm -> Package manager +
+Charts -> Packages
+
+*System & apt*
+
+----
+apt install mysql
+apt update
+----
+
+*Kubenetes & helm*
+
+----
+helm install mysql stable/mysql
+helm upgrade mysql stable/mysql
+----
+
+*Chart* is a definition of the application, and the release is an instance of that chart.
+
+image::kubernetes/kubernetesChart.png[Kubernetes chart,300,200]
 
