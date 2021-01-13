@@ -1,0 +1,129 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= Map
+
+== Internal Working of HashMap in Java
+
+Hashing is a process of converting an object into integer form by using the method hashCode().
+
+*hashCode()* method of object class returns the memory reference of object in integer form.
+
+In HashMap, hashCode() is used to calculate the bucket and therefore calculate the index.
+
+HashMap uses equals() to compare the key whether the are equal or not. If equals() method return true, they are equal otherwise not equal.
+
+=== Buckets
+A bucket is one element of HashMap array. It is used to store nodes. Two or more nodes can have the same bucket. In that case link list structure is used to connect the nodes.
+
+capacity = number of buckets * load factor
+
+=== Index Calculation in Hashmap
+
+Hash code of key may be large enough to create an array. hash code generated may be in the range of integer and if we create arrays for such a range, then it will easily cause outOfMemoryException. So we generate index to minimize the size of array.
+
+index = hashCode(key) & (n-1).
+
+ n is number of buckets or the size of array.
+ n as default size that is 16.
+
+* Initially Empty hashMap: Here, the hashmap is size is taken as 16.
+----
+HashMap map = new HashMap();
+----
+
+* Inserting Key-Value Pair: Putting one key-value pair in above HashMap
+----
+map.put(new Key("vishal"), 20);
+----
+Steps:
+
+1. Calculate hash code of Key {“vishal”}. It will be generated as 118.
+2. Calculate index by using index method it will be 6.
+3. Create a node object as :
+----
+{
+int hash = 118
+
+  // {"vishal"} is not a string but
+  // an object of class Key
+  Key key = {"vishal"}
+
+  Integer value = 20
+  Node next = null
+}
+----
+
+4. Place this object at index 6, if no other object is presented there.
+
+* Inserting another Key-Value Pair:
+----
+map.put(new Key("sachin"), 30);
+----
+
+Steps:
+
+* Calculate hashCode of Key {“sachin”}. It will be generated as 115.
+* Calculate index by using index method it will be 3.
+* Create a node object as :
+----
+{
+int hash = 115
+Key key = {"sachin"}
+Integer value = 30
+Node next = null
+}
+----
+* Place this object at index 3 if no other object is presented there.
+
+* In Case of collision:
+----
+map.put(new Key("vaibhav"), 40);
+----
+
+Steps:
+
+* Calculate hash code of Key {“vaibhav”}. It will be generated as 118.
+* Calculate index by using index method it will be 6.
+* Create a node object as :
+----
+{
+int hash = 118
+Key key = {"vaibhav"}
+Integer value = 40
+Node next = null
+}
+----
+* Place this object at index 6 if no other object is presented there.
+* In this case a node object is found at the index 6 – this is a case of collision.
+* In that case, check via hashCode() and equals() method that if both the keys are same.
+* If keys are same, replace the value with current value.
+* Otherwise connect this node object to the previous node object via linked list and both are stored at index 6.
+
+* Fetch the data for key sachin:
+----
+map.get(new Key("sachin"));
+----
+Steps:
+
+* Calculate hash code of Key {“sachin”}. It will be generated as 115.
+* Calculate index by using index method it will be 3.
+* Go to index 3 of array and compare first element’s key with given key. If both are equals then return the value, otherwise check for next element if it exists.
+* In our case it is found as first element and returned value is 30.
+
+* Fetch the data for key vaibahv:
+----
+map.get(new Key("vaibhav"));
+----
+Steps:
+
+* Calculate hash code of Key {“vaibhav”}. It will be generated as 118.
+* Calculate index by using index method it will be 6.
+* Go to index 6 of array and compare first element’s key with given key. If both are equals then return the value, otherwise check for next element if it exists.
+* In our case it is not found as first element and next of node object is not null.
+* If next of node is null then return null.
+* If next of node is not null traverse to the second element and repeat the process 3 until key is not found or next is not null.
+
+=== HashMap Changes in Java 8
+n case of hash collision entry objects are stored as a node in a linked-list and equals() method is used to compare keys. That comparison to find the correct key with in a linked-list is a linear operation so in a worst case scenario the complexity becomes O(n).
+To address this issue, Java 8 hash elements use balanced trees instead of linked lists after a certain threshold is reached.
+Which will improve the worst case performance from O(n) to O(log n).
+
