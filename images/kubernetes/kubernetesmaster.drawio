@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-01-17T19:38:39.459Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36" etag="ObRjNK9VWNwDUdsTIcsN" version="14.1.9" type="github">
+<mxfile host="app.diagrams.net" modified="2021-01-17T19:46:56.867Z" agent="5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36" etag="nFql0qoP-OGMmjj91Kci" version="14.1.9" type="github">
   <diagram id="G6kuFu6opgcHD38waq7a" name="Page-1">
     <mxGraphModel dx="786" dy="491" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -81,6 +81,49 @@
         </mxCell>
         <mxCell id="nTDdlAI-Cy0kuK_sTxGI-21" value="Pod" style="html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=pod;spacingBottom=-70;" vertex="1" parent="nTDdlAI-Cy0kuK_sTxGI-19">
           <mxGeometry x="45" y="30" width="50" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-28" value="&lt;b&gt;&lt;font style=&quot;font-size: 17px&quot;&gt;Node&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;spacingBottom=110;spacingRight=0;" vertex="1" parent="1">
+          <mxGeometry x="175" y="460" width="350" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-33" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="200" y="520" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-29" value="Pod" style="rounded=1;whiteSpace=wrap;html=1;spacingBottom=70;" vertex="1" parent="nTDdlAI-Cy0kuK_sTxGI-33">
+          <mxGeometry width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-30" value="Container" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;fontSize=12;verticalAlign=top;fontColor=#364149;shadow=0;dashed=0;image;image=img/lib/cumulus/container.svg;" vertex="1" parent="nTDdlAI-Cy0kuK_sTxGI-33">
+          <mxGeometry x="47.5" y="30" width="45" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-34" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="360" y="520" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-35" value="Pod" style="rounded=1;whiteSpace=wrap;html=1;spacingBottom=70;" vertex="1" parent="nTDdlAI-Cy0kuK_sTxGI-34">
+          <mxGeometry width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-36" value="Container" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;fontSize=12;verticalAlign=top;fontColor=#364149;shadow=0;dashed=0;image;image=img/lib/cumulus/container.svg;" vertex="1" parent="nTDdlAI-Cy0kuK_sTxGI-34">
+          <mxGeometry x="47.5" y="30" width="45" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.995;exitY=0.63;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="nTDdlAI-Cy0kuK_sTxGI-37">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="508" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-37" value="" style="html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=kubelet" vertex="1" parent="1">
+          <mxGeometry x="40" y="470" width="70" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="nTDdlAI-Cy0kuK_sTxGI-38">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="575" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-38" value="Container&amp;nbsp;&lt;br&gt;Runtime" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn4.iconfinder.com/data/icons/SOPHISTIQUE/web_design/png/128/our_process_2.png" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="70" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.997;entryY=0.467;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="nTDdlAI-Cy0kuK_sTxGI-39" target="nTDdlAI-Cy0kuK_sTxGI-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nTDdlAI-Cy0kuK_sTxGI-39" value="kube-proxy" style="html=1;dashed=0;whitespace=wrap;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon;prIcon=k_proxy;spacingBottom=-80;" vertex="1" parent="1">
+          <mxGeometry x="570" y="520" width="50" height="48" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
