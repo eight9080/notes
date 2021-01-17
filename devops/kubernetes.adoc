@@ -128,6 +128,174 @@ kubectl describe secret -n kube-system
 kubectl proxy
 ----
 
+== Pods
+
+A Pod is the basic execution unit of a Kubernetes application, the smallest and simplest unit in the Kubernetes object model that you create or deploy. +
+Pods act as an environment for containers.
+
+A single process per container, and oftentimes *a single container per Pod*
+
+A Pod has an IP address, memory, volumes, and all of that can be shared across multiple containers within the Pod if needed.
+So if Kubernetes sees a Pod that's unhealthy or sick, it can automatically remove that and then replace it. +
+Pods can be horizontally scaled. -> replicas - Kubernetes can load balance between those +
+Kubernetes will monitor that and can automatically take it out and then put something back that's a healthy Pod.
+
+Pods within a node are going to have a unique IP address, ** cluster IP address**, and then the containers within Pods can then have their own unique ports. +
+Pod containers share the same network namespace, they share the same IP.
+They use the same loopback network interface within a Pod -> localhost
+Now containers processed within the same Pod need to have a different port.
+
+Multiple containers within a Pod -> a container and then another one is very tightly coupled -> *sidecar container*
+
+=== Creating a Pod
+
+Different ways:
+
+* kubectl run command
+* kubectl create/apply command with a yaml file
+
+-> create a deployment behind the scenes for deploying that pod and scheduling it on the appropriate node within your Kubernetes cluster
+
+----
+kubectl run [podname] --imagine=nginx:alpine
+----
+
+==== Get info about the pods
+----
+kubectl get pods
+kubectl get all
+----
+
+==== Expose a Pod Port
+Pods and containers are only accessible within the Kubernetes cluster by default.
+One way to expose port externally: `external port: internal port`
+----
+kubectl port-forward [name-of-pod] 8080:80
+----
+
+==== Delete a pod
+
+Running a Pod will cause a deployment to be created.
+To delete a Pod use kubectl delete pod or find the deployment and use kubectl delete deployment.
+
+----
+kubectl delete pod [name-of-pod]
+----
+
+Delete the Deployment that manages the pod
+
+----
+kubectl delete deployment [name-of-deploymet]
+----
+
+_A deployment is responsible for making sure that the current state is maintained._
+
+==== Defining a Pod with YAML
+
+Basic file
+[source,yaml]
+----
+apiVersion: v1
+kind: Pod
+metadata:
+ name: my-nginx
+spec:
+ containers:
+ - name: my-nginx
+   image: nginx:alpine
+----
+
+To create a pod using YAML use kubectl create command along with the --filename or -f switch
+----
+kubectl create -f file.pod.yml --dry-run --validate=true
+kubectl create -f file.pod.yml
+----
+
+To create or apply changes to a pod using YAML kubectl apply
+----
+kubectl apply -f file.pod.yml
+----
+
+To delete a node using YAML:
+----
+kubectl delete -f file.pod.yml
+----
+
+Describe pod
+----
+kubectl describe pod [pod-name]
+----
+
+Exec commands into the container of the pod
+----
+kubectl exec [pod-name] -it sh
+----
+
+=== Pod health
+
+Kubernetes relies on *probes* to determine the health of a pod container. A probe is a diagnostic performed periodically by the kubelet on a container.
+
+Types of probes:
+
+* Liveness probe - used to determine the health of the pod
+* Readiness probe - helps Kubernetes determine when it should start sending requests
+
+If the container in the pod, though, fails one of these health checks, then it can be restarted. And there's a restart policy that defaults to always.
+
+It could run a command, for example, and as long as it returns zero, then that's successful.
+Perform a TCP type of check on the IP address of a port and see if that's successful.
+
+Liveness probe example
+[source,yaml]
+----
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-request
+spec:
+  containers:
+  - name: liveness
+    image: nginx:alpine
+    ports:
+        - containerPort: 80
+    livenessProbe:
+      httpGet:
+        path: /index.html
+        port: 80
+      initialDelaySeconds: 15 #Default 0
+      timeoutSeconds: 2 #Default 1
+      periodSeconds: 5 #Default 10 Check every 5 seconds
+      successThreshold: 1 #Default 1
+      failureThreshold: 1 #Default 3 Allow 1 failure before failing Pod
+----
+
+
+Readiness probe example
+[source,yaml]
+----
+apiVersion: v1
+kind: Pod
+metadata:
+  name: readiness-request
+spec:
+  containers:
+  - name: readiness
+    image: nginx:alpine
+    ports:
+        - containerPort: 80
+    readinessProbe:
+      httpGet:
+        path: /index.html
+        port: 80
+      initialDelaySeconds: 2 #Default 0
+      periodSeconds: 5 #Default 10 Check every 5 seconds
+----
+
+== Deployments
+
+
+
+
 
 
 
