@@ -293,6 +293,80 @@ spec:
 
 == Deployments
 
+A ReplicaSet is a declarative way to manage Pods. +
+A Deployment is a declarative way to manage Pods using a ReplicaSet.
+
+Deployment and ReplicaSets ensure Pods stay running and can be used to scale Pods.
+
+ReplicaSets act as a Pod Controller:
+
+* self-healing mechanism
+* ensure the requested number of Pods are available
+* provide fault-tolerance
+* can be used to scale Pods
+* relies on a Pod template
+* used by deployments
+
+A Deployment manages Pods:
+
+* Pods are managed using ReplicaSets
+* Scales ReplicaSets
+* Support zero-downtime updates by creating and destroying ReplicaSets
+* Provides rollback functionality
+* Creates a unique label that is assigned to the ReplicaSet and generated Pods
+
+Example
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+----
+
+Commands deployment:
+----
+kubectl create -f file.deployment.yml
+kubectl apply -f file.deployment.yml
+kubectl get deployments
+kubectl get deployments --show-labels
+kubectl get deployments -l app=nginx
+kubectl delete deployment [deployment-name]
+
+kubectl scale deployment [deployment-name] --replicas=5
+kubectl scale -f file.deployment.yml --replicas=5
+----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
