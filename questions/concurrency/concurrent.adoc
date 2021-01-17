@@ -101,3 +101,77 @@ _All the classes in Java are represented by objects._
 * to use a dedicated, explicit object to conduct synchronization
 private final object called key, synchronized block inside this method, pass this key object as a parameter of this synchronized keyword.
 
+[source,java]
+----
+public class Person {
+    private final Object key = new Object();
+
+    public String init(){
+        synchronized(key){
+            // stuff
+        }
+    }
+}
+----
+
+==== Multiple synchronized methods
+
+[source,java]
+----
+public class Person {
+    public synchronized String getName(){
+        return "1";
+    }
+
+    public synchronized int getAge(){
+        return 10;
+    }
+    public static create(){
+        Person marry = new Person();
+    }
+}
+----
+
+If a thread wants to execute getName -> it will take the *key* from the lock object, thus preventing a red thread from executing getAge at the same time. -> the same key is used to synchronize both methods.
+
+If we need to synchronize getName *independently* of getAge, then two lock objects in the person class need to be created, and synchronize the block of codes inside the methods on those two different objects.
+
+Using the synchronized keyword on a method declaration, uses an implicit lock object, which is the class object in the case of a static method, or the instance object itself in the case of a non-static method.
+
+If what we really want is to prevent two threads to execute the getName method at the same time, in all the instances of the person class, then we need our lock object to be bound not to each instance of our class, but to the class itself -> _the static field of the class person itself_
+
+=== Reentrant Lock
+
+*Locks are reentrant* -  When a thread holds a lock, it can enter a block synchronized on the lock it is holding. (inheritance)
+
+=== Deadlock
+
+Mary and John instances of the person class, a synchronized method that is calling another synchronized method. +
+First method is synchronized using a red key, and the method called by this method is synchronised using a green key. This green protected method calls another method, the third one, protected also by the red key. The blue thread is going to take the red key, and begin to run this first method. And at the same time, the purple thread is going to take the green key, and to run the other method. At some point, the blue thread will need the green key to enter the green method, but the purple thread has it. So this blue thread has to wait. And the purple thread will arrive at the point of code where it needs the red key to continue to run. And unfortunately the red key is not available, because it is held by the blue thread.
+
+*A deadlock situation is a situation where a thread T one holds a key that is needed by another thread T two. And the deadlock is the fact that T two also holds the key needed by T one. So as long as no thread releases its key, the situation is blocked, and called a deadlock.*
+
+== Runnable Pattern to Launch Threads
+
+Small Example
+
+[source, java]
+----
+public class FirstRunnable {
+
+	public static void main(String[] args) {
+
+		Runnable runnable = () -> {
+			System.out.println("I am running in " + Thread.currentThread().getName());
+		};
+
+		Thread t = new Thread(runnable);
+		t.setName("My thread");
+
+		t.start();
+	}
+}
+----
+
+
+
