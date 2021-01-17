@@ -58,4 +58,82 @@ On each node:
 
 image::kubernetes/kubernetesNodes.png[Kubernetes node]
 
+==== Benefits
+
+* Accelerate Developer Onboarding
+* Eliminate App Conflicts
+* Environment Consistency
+* Ship Software faster
+
+* Orchestrate containers
+* Zero-Downtime Deployments
+* Self Healing - desired state
+* Scale containers ( add more pods )
+
+Developer Use Case:
+
+* Emulate production locally
+* Create an end-to-end testing environment
+* Ensure application scales properly
+* Ensure secrets/config are working properly
+* Performance testing scenarios
+* Workload scenarios (CI/CD)
+
+== Running Kubernetes Locally
+
+* Minikube
+* Docker Desktop
+
+=== kubectl
+
+Basic commands:
+
+* Check Kubernetes version
+----
+kubectl version
+----
+* View cluster information
+----
+kubectl cluster-info
+----
+* Retrieve information about Pods, Deployments, Services..
+----
+kubectl get all
+----
+* Simple way to create a deployment for a Pod
+----
+kubectl run [container-name] --image=[image-name]
+----
+* Forward a port to allow external access
+----
+kubectl port-forward [pod] [pors]
+----
+* Expose a port for a Deployment/Pod
+----
+kubectl expose
+----
+* Create a resource
+----
+kubectl create [resource]
+----
+* Create or modify a resource
+----
+kubectl apply [resource]
+----
+
+=== Web UI Dashboard
+----
+kubectl apply dashboard-yaml-url
+kubectl describe secret -n kube-system
+kubectl proxy
+----
+
+
+
+
+
+
+
+
+
 
