@@ -1,0 +1,61 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+= Kubernetes
+
+== Core concepts
+
+Kubernetes, K8s, is an open‑source system for automating deployment, scaling, and management of containerized applications.
+
+management of the containers, eliminate single points of failure in our application, scale containers easily, and update containers without actually even bringing down the running application
+
+robust networking infrastructure so that containers can talk to other containers, even across different machines.
+
+some storage options across machines
+
+=== Key features
+* Service discovery/ Load balancing
+* Storage orchestration
+* Automate Rollouts/Rollbacks - a zero downtime deployment
+* Self-healing
+* Secret and configuration management - ConfigMaps can be used to store key value pairs
+* Horizontal scaling
+
+Kubernetes provides a declared way to define a *cluster's state*
+Current state -> desired state
+
+One or more master nodes -> it will call worker nodes. +
+The worker nodes can be physical servers/ virtual machines.(they will form a cluster). +
+A node is just a virtual machine, and it can run one or more pods.
+
+The master will start on each of these nodes -> *pods*.
+
+A pod - a way to host a container, the packaging.
+
+Deployments and replica sets - a way to deploy the pods.
+
+Services - to enable pods to communicate possibly with the outside world or just amongst themselves within the cluster.
+
+On master:
+
+*etcd store* on our master nodes - the database for everything the master node needs to track.
+
+A *Controller manager* - responsible for when a request comes in, the manager can act upon that request and schedule it using a *scheduler*
+
+*The scheduler* will determine when the nodes and the different pods running on the nodes actually come to life or go away.
+
+To interact with the master to give it instructions to go from one state to another by using a command line tool called *kubectl*
+Kubectl is just making your different types of RESTful service calls to send these before and after state requests to the master.
+
+image::kubernetes/kubernetesMaster.png[Kubernetes master]
+
+On each node:
+
+* a little agent installed and running on each node that registers that node with the cluster and reports back and forth to the manager. That's called the *kubelet*
+
+* container runtime - to run our containers within the pods
+
+* networking capabilities - a *kube‑proxy* that can ensure that each pod gets a unique IP address
+
+image::kubernetes/kubernetesNodes.png[Kubernetes node]
+
+
