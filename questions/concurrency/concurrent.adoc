@@ -1,0 +1,103 @@
+= Concurrent programming
+
+== Thread
+
+A thread is defined at the operating system level. +
+A thread is a set of instructions. +
+
+The JVM itself, the Java Virtual Machine, works with several threads:
+
+- There are threads for the garbage collection.
+- There are threads for the Just In Time compiler
+- other technical threads.
+
+A CPU with only one core -> this CPU can only do one thing at a time. +
+If I have only one core, nothing is really happening at the same time.
+All those little actions are just happening so fast, that it feels they are happening at the same time.
+
+CPU with two cores. +
+CPU is able to do two things at the same time. +
+
+On a multi-core CPU, things are really happening at the same time. +
+CPU is able to run several tasks at the same time.
+
+=== CPU Time Sharing Using a Thread Scheduler
+
+A thread-scheduler is going to share evenly, the CPU timeline, divided into time slices, to all the tasks that need to be run.
+
+There are three reasons for the scheduler to pause a thread, and to run another thread:
+
+-  the CPU resource should be shared equally among the threads (check priority)
+- A thread might be waiting for some more data. (some input output, reading or writing data to a disk or to a network)
+- a thread might be waiting for another thread to do something. (to release a resource)
+
+=== Race condition
+
+A race condition deals with the *access of data concurrently*.
+
+Two different threads are trying to read and write the same variable or the same field, at the same time.
+
+==== Singleton pattern
+
+[source,java]
+----
+public class Singleton{
+    private static Singleton instance;
+    private Singleton() {}
+
+    public static Singleton getInstance(){
+        if(instance==null){
+            instance = new Singleton();
+        }
+        return  instance;
+    }
+}
+----
+
+- not a good implementation, not thread safe
+
+To prevent this -> Synchonization
+
+== Synchronization
+
+Synchronization prevents a block of code to be executed by more than one thread at the same time. +
+From a technical point of view -> it will prevent the *thread scheduler* to give the hand to a thread that wants to execute the synchronized portion of code that has already been executed by another thread.
+
+[source,java]
+----
+public class Singleton{
+    private static Singleton instance;
+    private Singleton() {}
+
+    public static synchronized Singleton getInstance(){
+        if(instance==null){
+            instance = new Singleton();
+        }
+        return  instance;
+    }
+}
+----
+
+=== Under the hood
+
+The singleton class is a class with a get instance method that we want to synchronize.
+
+The Java machine uses a special object, called a *lock object*, that has a key. The lock object has only one single key.
+
+ A. When a thread want to enter this protected method, this protected block of code, it will make a request on this lock object, give me your key.
+  * If the lock object has the key available, it will give it to this thread, and this thread will be able to run the get instance method freely.
+ B. If another thread wants to enter this synchronized block of code, it will make the same request on the lock object, but this time, the lock object has no key available for him.
+
+==== Lock Object
+
+*Lock* (monitor) - A special technical object that will hold the key. This key is defined internally in the object class. _Every Java object can play this role._
+
+The synchronized keyword on a public static method of the singleton class -> the JVM uses the *singleton class object itself*. +
+_All the classes in Java are represented by objects._
+
+* synchronized static method -> the object chosen to hold the key is the *class object itself*.
+* on a non-static method -> the instance of the class
+
+* to use a dedicated, explicit object to conduct synchronization
+private final object called key, synchronized block inside this method, pass this key object as a parameter of this synchronized keyword.
+
