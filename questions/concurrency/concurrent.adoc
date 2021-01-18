@@ -173,5 +173,256 @@ public class FirstRunnable {
 }
 ----
 
+== Implementing the Producer/Consumer Pattern Using Wait / Notify
+
+=== Runnable Pattern
+
+[source, java]
+----
+@FunctionalInterface
+public interface Runnable {
+    void run();
+}
+----
+
+The `Thread.currentThread()` static method returns the current thread.
+
+==== How to Stop a Thread Using the interrupt() Method
+
+* not using `stop()` method - never
+
+* using `interrupt` method -  send a signal to the task the thread is running telling it that it is time for this task to stop itself.
+
+----
+Runnable task = () -> {
+    while (!Thread.currentThread().isInterrupted()){
+        // the task
+    }
+}
+----
+
+* calling `interrupt` will cause the isInterrupted method to return true
+
+_If the thread is blocked or waiting, then the corresponding method will throw an interrupted exception._
+
+=== Implementing a First Producer/Consumer Example
+
+Producer/Consumer:
+
+* A producer produces values in a buffer
+* A consumer consumes the values from this buffer
+
+Producers/consumers are run in their own thread.
+
+[source,java]
+----
+public class ProducerConsumer {
+	private static int count;
+    private static int[] buffer = new int[BUFFER_SIZE];
+
+	static class Producer {
+		void produce() {
+				while (isFull(buffer)) {}
+				buffer[count++] = 1;
+		}
+	}
+
+	static class Consumer {
+
+		void consume() {
+			while (isEmpty(buffer)) {}
+			buffer[--count] = 0;
+		}
+	}
+
+	static boolean isFull(int[] buffer) {
+		return count == buffer.length;
+	}
+	static boolean isEmpty(int[] buffer) {
+		return count == 0;
+	}
+}
+----
+
+==== 1. Synchronized Version of the Producer / Consumer
+
+- synchronize access to array
+- synchronize a common object that will be used by the Producer/consumer
+
+[source,java]
+----
+public class ProducerConsumer {
+
+	private static Object lock = new Object();
+
+	private static int[] buffer;
+	private static int count;
+
+	static class Producer {
+
+		void produce() {
+			synchronized (lock) {
+				while (isFull(buffer)) {}
+				buffer[count++] = 1;
+			}
+		}
+	}
+
+
+	static class Consumer {
+
+		void consume() {
+			synchronized (lock) {
+               while (isEmpty(buffer)) {}
+               buffer[--count] = 0;
+			}
+		}
+	}
+
+	static boolean isEmpty(int[] buffer) {
+		return count == 0;
+	}
+
+	static boolean isFull(int[] buffer) {
+		return count == buffer.length;
+	}
+}
+----
+
+==== 2. Synchronized Version of the Producer / Consumer
+
+What if the buffer is empty -> the thread executing this consumer is blocked in the while loop.
+So the producer has no chance to add objects to the buffer.
+
+* need to park a thread while he is waiting for some data to be produced, without blocking all the others threads.
+* so the key/monitor should be released while this thread is waiting
+
+=== wait() and notify() Methods
+
+* methods from the Object class
+* invoked on a given object, the thread executing the invocation should hold the key of that object
+
+If the thread that is executing a wait method does not hold the key of the object on which it is executing this method, then an exception is raised -> _the only way for a thread to hold the key of an object is to be in a synchronized block_
+
+* *wait and notify cannot be invoked outside a synchronized block*
+
+1. calling the wait on a lock object releases the key held by the thread
+  a. this key becomes available to the other thread
+  b. it puts the current thread in a particular state called the WAIT state
+The only way to release a thread from a WAIT state is to call notify on the lock object this thread is using.
+
+2. calling notify released a thread that is in a WAIT state so a thread that has called a wait method and it puts it in the Runnable state. -> the only way to release a waiting thread
+
+If there are more than one thread in the WAIT state, the released thread by the notify method is chosen randomly among those threads.
+* a notifyALL method -> will awake all the threads in the WAIT state.
+
+==== implementation with wait/notify
+
+[source,java]
+----
+package org.paumard.waitnotify;
+
+public class ProducerConsumer {
+
+	private static Object lock = new Object();
+
+	private static int[] buffer;
+	private static int count;
+
+	static class Producer {
+
+		void produce() {
+			synchronized (lock) {
+				if (isFull(buffer)) {
+					try {
+						lock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				buffer[count++] = 1;
+				lock.notify();
+			}
+		}
+	}
+
+
+	static class Consumer {
+
+		void consume() {
+			synchronized (lock) {
+				if (isEmpty(buffer)) {
+					try {
+						lock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				buffer[--count] = 0;
+				lock.notify();
+			}
+		}
+	}
+
+	static boolean isEmpty(int[] buffer) {
+		return count == 0;
+	}
+
+	static boolean isFull(int[] buffer) {
+		return count == buffer.length;
+	}
+
+	public static void main(String... strings) throws InterruptedException {
+
+		buffer = new int[10];
+		count = 0;
+
+		Producer producer = new Producer();
+		Consumer consumer = new Consumer();
+
+		Runnable produceTask = () -> {
+			for (int i = 0 ; i < 50 ; i++) {
+				producer.produce();
+			}
+			System.out.println("Done producing");
+		};
+		Runnable consumeTask = () -> {
+			for (int i = 0 ; i < 45 ; i++) {
+				consumer.consume();
+			}
+			System.out.println("Done consuming");
+		};
+
+		Thread consumerThread = new Thread(consumeTask);
+		Thread producerThread = new Thread(produceTask);
+
+		consumerThread.start();
+		producerThread.start();
+
+		consumerThread.join();
+		producerThread.join();
+
+		System.out.println("Data in the buffer: " + count);
+	}
+}
+
+----
+
+== States of a Thread
+
+* New - when a thread is created new Thread()
+* Runnable - once the start method was invoked it is eligible to be run
+* Terminated - once the task is complted
+* Blocked - waiting at the entrance of a synchronized block
+* Waiting - parked using a wait call
+* Timed_waiting - parked using a sleep(timeout) or wait(timeout) call
+
+The thread scheduler can run the threads in the state RUNNABLE. +
+A BLOCKED thread can only run again when the key is released. +
+A WAITING thread can only run again when the notify() method is called.
+
+Getting the state `thread.getState()`
+
+
 
 
