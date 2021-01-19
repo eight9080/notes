@@ -423,6 +423,77 @@ A WAITING thread can only run again when the notify() method is called.
 
 Getting the state `thread.getState()`
 
+== Ordering Read/Write
+
+Synchronization
+
+* protects a block of code
+* guarantees this code is executed by one thread at a time
+* prevents race condition
+
+=== Memory access
+
+A CPU does not read a variable from main memory, but from a cache. +
+A CPU has multiple cores. +
+Each CPU has a L1 and L2 cache. L3 cache is common for all cores. +
+
+Access to the:
+
+* main memory ~100ns
+* L2 cache 7ns
+* L1 cache 0.5ns
+
+Size L2 Cache 256 kB  - Size L1 cache 32 kB
+
+Visibility:
+
+* A variable is said to be visible if *the writes made on it are visible*
+* All the synchronized writes are visible
+
+=== Before link
+
+A happens before link exists between all synchronized or volatile write operations and all synchronized or volatile read operations that follow.
+
+All shared variables should be accessed in a synchronized or a volatile way.
+
+=== False sharing
+
+Memory is stored within the cache system in units know as cache lines.  Cache lines are a power of 2 of contiguous bytes which are typically 32-256 in size.
+
+False sharing is a term which applies when threads unwittingly impact the performance of each other while modifying independent variables sharing the same cache line.
+
+To achieve linear scalability with number of threads, we must ensure no two threads write to the same variable or cache line.  Two threads writing to the same variable can be tracked down at a code level.   To be able to know if independent variables share the same cache line we need to know the memory layout, or we can get a tool to tell us.
+
+==== Java Memory Layout
+
+For the Hotspot JVM, all objects have a 2-word header.
+
+First is the “mark” word which is made up of 24-bits for the hash code and 8-bits for flags such as the lock state, or it can be swapped for lock objects.
+
+The second is a reference to the class of the object.
+
+Arrays have an additional word for the size of the array.  Every object is aligned to an 8-byte granularity boundary for performance.
+
+* doubles (8) and longs (8)
+* ints (4) and floats (4)
+* shorts (2) and chars (2)
+* booleans (1) and bytes (1)
+* references (4/8)
+
+[source, java]
+----
+public final static class VolatileLongPadded {
+		public long q1, q2, q3, q4, q5, q6 ;
+		public volatile long value = 0L;
+		public long q11, q12, q13, q14, q15, q16 ;
+
+	}
+----
+
+
+
+
+
 
 
 
