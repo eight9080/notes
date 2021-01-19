@@ -490,9 +490,77 @@ public final static class VolatileLongPadded {
 	}
 ----
 
+== Singleton Pattern
+
+Do not use synchronized
+
+[source, java]
+----
+public class Singleton {
+    private static Singleton instance;
+    private Singleton() {}
+
+    public static synchronized Singleton getInstance() {
+        if (instance == null){
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+----
 
 
+Do not use Double Check Locking
+[source, java]
+----
+public class Singleton {
+    private static Singleton instance;
+    private static Object key = new Object();
+    private Singleton() {}
 
+    public static Singleton getInstance() {
+        if (instance != null){
+            return instance;
+        }
+        synchronized (key){
+            if (instance == null){
+                instance = new Singleton();
+            }
+            return instance;
+        }
+    }
+}
+----
+
+Double Check Locking - fixed with volatile
+
+[source, java]
+----
+public class Singleton {
+    private static volatile Singleton instance;
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance != null){
+            return instance;
+        }
+        synchronized (Singleton.class){
+            if (instance == null){
+                instance = new Singleton();
+            }
+            return instance;
+        }
+    }
+}
+----
+
+The right solution
+[source, java]
+----
+public enum Singleton {
+    INSTANCE
+}
+----
 
 
 
