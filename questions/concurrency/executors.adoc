@@ -18,6 +18,165 @@ while ThreadPoolExecutor is designed to provide a normal thread pool which execu
 The third type of common use of ThreadPoolExecutor is a fixed thread pool, where the pool has *a fixed number of threads* in its lifetime, it's also an example of a bounded thread pool.
 
 
-
-
 Read more: https://javarevisited.blogspot.com/2016/12/difference-between-executor-framework-and-ForkJoinPool-in-Java.html[Executor]
+
+== Executor Pattern
+
+* Creating pools of ready to use threads and using them
+* Pass a task to a pool of threads that will execute it
+
+[source,java]
+----
+public interface ExecutorService extends Executor{
+// 11 methods
+}
+----
+
+Factory class -> `Executors`
+
+----
+ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+----
+
+Creates a pool of thread with only one thread ->
+This thread is created also and will be kept alive as long as this pool of thread is alive
+
+When we pass a task to this ExecutorService, this task will be executed in that thread and this thread will now be destroyed once this task is done.
+
+
+----
+ExecutorService multipleThreadsExecutor = Executors.newFixedThreadExecutor(8);
+----
+
+FixedThreadPoolExecutor -> pool of threads in which you can fix the number of thread
+
+
+Example
+----
+ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+Runanble task = () -> System.out.println("run");
+executor.execute(task);
+----
+
+An Executor has to *waiting queue*
+
+* A task is added to the waiting queue when no thread is available.
+* The tasks are executed in the order of their submission
+
+A task can be removed from the waiting queue -> If the task has been started by the thread, it is not possible to cancel it.
+
+* Runnable as a task -> cannot return anything or raise an exception
+* There is no way to know when the task is done.
+
+=== Callable interface
+
+[source, java]
+----
+@FunctionalInterface
+public interface Callable<V>{
+    V call() throws Exception;
+}
+
+public interface ExecutorService extends Executor{
+ <T> Future<T> submit(Callable<T> task);
+}
+----
+
+Example
+----
+Callable<String> task = () -> buildReport();
+Future<String> future = executor.submit(task);
+String result = future.get();
+----
+
+The Future object is returned by the submit to the main thread.
+
+Future.get -> blocking method, returns the object returned by the task:
+
+* can throw InterruptedException
+* in the case the task throws an exception, it is wrapped in an ExecutionException and re-thrown
+
+Get also can receive a timeout.
+
+*Cached Thread Pool* `newCachedThreadPool`
+
+* creates threads on demand
+* keeps unused threads for 60s
+* then terminates them
+
+
+*Scheduled Thread Pool* `newScheduledThreadPool(poolSize)`
+
+* creates a pool of threads
+* returns a ScheduledExecutorService
+
+The ScheduledExecutorService:
+
+* schedule(task,delay)
+* scheduleAtFixedRate(task,delay,period)
+* scheduleWithFixedRate(task,initialDelay, delay)
+
+==== Shutting down
+
+* `shutdown()`:
+
+** continue to execute all submitted tasks
+** execute waiting tasks
+** do not accept new tasks
+** the shutdown
+
+* `shutdownNow()`:
+
+** halt the running tasks
+** do not execute waiting tasks
+** do not accept new tasks
+** the shutdown
+
+* `awaitTermination(timeout)`:
+
+** shutdown()
+** wait for the timeout
+** if still remaining tasks -> halt everything
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
