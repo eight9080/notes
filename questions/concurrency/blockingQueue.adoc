@@ -149,13 +149,14 @@ An unbounded LinkedBlockingQueue just by not specifying the size:
 ----
 BlockingQueue<Integer> unboundedQueue = new LinkedBlockingQueue<>();
 ----
-If there is no memory left, then the queue throws a java.lang.OutOfMemoryError.
+If there is no memory left, then the queue throws a java.lang.OutOfMemoryError. +
 If the queue is full, then adding a new element will block the accessing thread unless there is space available for the new element. Similarly, if the queue is empty, then accessing an element blocks the calling thread.
 
 === ConcurrentLinkedQueue
 
-A ConcurrentLinkedQueue is an unbounded, thread-safe, and non-blocking queue.
-it does not block a thread once the queue is empty. Instead, it returns null. Since its unbounded, it'll throw a java.lang.OutOfMemoryError if there's no extra memory to add new elements.
+A ConcurrentLinkedQueue is an unbounded, thread-safe, and non-blocking queue. +
+It does not block a thread once the queue is empty. Instead, it returns null. +
+Since its unbounded, it'll throw a java.lang.OutOfMemoryError if there's no extra memory to add new elements.
 ----
 int element = 1;
 ExecutorService executorService = Executors.newFixedThreadPool(2);

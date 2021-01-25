@@ -1,0 +1,10 @@
+ifndef::imagesdir[:imagesdir: ../../images]
+
+= Collection API
+
+== Hierarchy of Collection and Map, Concurrent Interfaces
+
+Collection and Map branches
+
+image::collection/collection.png[Collection hierarchy]
+
