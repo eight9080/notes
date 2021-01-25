@@ -8,3 +8,276 @@ Collection and Map branches
 
 image::collection/collection.png[Collection hierarchy]
 
+Map
+
+* SortedMap -> navigableMap
+* ConcurrentMap -> ConcurrentNavigableMap
+
+== Concurrent Lists
+
+=== Vector abd Stacks
+* thread safe structures
+* legacy structures
+* all the methods are synchronized
+* one thread is reading a vector, no other thread can access it, whether for read operations or write operations
+
+=== Copy On Write Arrays
+
+* No locking for read operations
+* write operations create a new structure
+* new structure replaces the previous one
+* internally a copy of the existing structure and the new structure replaces the previous one by just moving a pointer from the old structure to the new one in a synchronized way
+
+* So the new read operations will see this new structure while there are other threads iterating over the previous one, they will not see the modification.
+
+* CopyOnWriteArraylist
+* CopyOnWriteArraySet
+
+* recommend for many reads and very few writes
+
+Example: application initialization
+
+=== Queues and Stacks
+
+Queue and Deque - interfaces
+
+*ArrayBlockingQueue* - a bounded blocking queue built on an array
+
+* Bounded means that we create a blocking queue with a certain amount of cells, a certain size of the array, and once this queue is full, it does not extend itself. Adding elements to it would not be possible.
+
+*ConcurrentLinkedQueue* - an unbounded blocking queue
+
+Types:
+
+* the FIFO, First In First Out -  the queue itself
+* the LIFO, Last In First Out - the stack
+
+The queue is the interface for the Queue +
+The Deque is the interface for both a queue and a stack
+
+Suppose we want to add an element to a queue that is full:
+
+* cannot occur with ConcurrentLinkedQueue
+
+* can occur with ArrayBlockingQueue
+* boolean add(E e); //fail IllegalArgumentException
+* boolean offer(E e); // fail return false
+* boolean offer(E e, timeout, timeunit); // fail return false
+
+* if the queue is a BlockingQueue
+void put(E e); //blocks until a cell becomes available
+
+Deque can accept elements at the head of a queue:
+
+* addFirst(), offerFirst()
+
+And for the *BlokingDeque*
+
+* putFirst()
+
+==== Other operations
+
+* *get* is to remove an element from a queue
+* *peek* is just to examine an element without removing it from the queue.
+
+If queue is empty:
+
+* poll() and peek() returns *null*
+* remove() and element() - throw an exception
+
+If BlockingQueue is empty:
+* take() - blocks until an element is available.
+
+If deque is empty:
+
+* pollLast() and peeklast() returns *null*
+* removeLast() and getlast() - throw an exception
+
+If BlockingDeque is empty:
+
+* takeLast() - blocks until an element is available
+
+== Concurrent Maps
+
+* ConcurrentHashMap
+    ** defines atomic operations
+        *** putIfAbsent(key, value)
+        *** remove(key, value)
+        *** replace(key, value)
+        *** replace(key, existingValue, newValue)
+
+* ConcurrentSkipListMap
+
+
+=== ConcurrentHashMap
+
+* thread safe
+* efficient
+
+A hashmap is built on an array.
+
+1. compute a hashcode from the key
+2. decide which cell will hold the key/value pair
+3. check if the key is there or not
+4. Update the map
+
+Each cell is called a bucket.
+
+==== Parallel Search
+
+[source]
+----
+ ConcurrentHashMap<Integer, UUID> concurrentHashMap = new ConcurrentHashMap<>();
+int threshold = 10;
+
+concurrentHashMap.forEachValue(threshold, System.out::println);
+
+String searchResult = concurrentHashMap.search(threshold, (id, uuid) -> {
+      if (String.valueOf(uuid).contains(String.valueOf(id))) {
+        return new String(id + ":" + uuid);
+      }
+      return null;
+    });
+----
+If this operation returns a non-null value, this value will be returned by the search method and it will stop the exploration of the map.
+
+*Parallelism threshold* - the number of key value pairs in this map that will trigger a parallel search.
+
+* searchKeys, searchValues, and searchEntries
+
+==== Parallel Map / Reduce
+
+----
+ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
+    map.putIfAbsent("foo", "bar");
+    map.putIfAbsent("han", "solo");
+    map.putIfAbsent("r2", "d2");
+    map.putIfAbsent("c3", "p0");
+
+    String reduced = map.reduce(1, (key, value) -> key + "=" + value,
+            (s1, s2) -> s1 + ", " + s2);
+----
+
+1. maps the element
+2. reduces two elements
+
+==== Parallel ForEach
+
+----
+HashMap<String, Integer> mapcon= new HashMap<>();
+mapcon.put("k1", 100);
+mapcon.put("k2", 200);
+mapcon.put("k3", 300);
+mapcon.put("k4", 400);
+
+mapcon.forEach( 2, (k, v) -> v.removeIf(s -> s==100); //foreach function
+----
+
+* forEachKeys that takes a consumer of key
+* forEachValues that takes a consumer values
+* forEachEntry that takes a consumer of entry
+
+==== Creating a Concurrent Set on a Java 8 ConcurrentHashMap
+
+----
+Set<string> set = ConcurrentHashMap.<String>newKeySet();
+----
+
+== Concurrent skip list
+
+A skip list is a smart structure used to create linked lists and to provide fast random access to any of its elements.
+
+The concurrent version of this skip list implemented in Java 6 relies on atomic reference operations and no synchronization is used in it.
+
+The solution this skip lists brings is to create a fast access list with less elements on top of it.
+
+* create several layer of such a fast access list
+* the elements of the skip list are sorted
+
+Access time O(logN)
+
+Implementations:
+
+* ConcurrentSkipListMap
+    ** the references in this skip list are implemented using AtomicReference
+
+* ConcurrentSkipListSet
+
+== Examples
+
+== Producer Consumer - Blocking Queue
+
+[source, java]
+----
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+public class ProducerConsumer {
+
+	public static void main(String[] args) throws InterruptedException {
+
+		BlockingQueue<String> queue = new ArrayBlockingQueue<>(50);
+
+		class Consumer implements Callable<String> {
+
+			public String call() throws InterruptedException {
+				int count = 0;
+				while (count++ < 50) {
+					queue.take();
+				}
+				return "Consumed " + (count - 1);
+			}
+		}
+
+		class Producer implements Callable<String> {
+
+			public String call() throws InterruptedException {
+				int count = 0;
+				while (count++ < 50) {
+					queue.put(Integer.toString(count));
+				}
+				return "Produced " + (count - 1);
+			}
+		}
+
+		List<Callable<String>> producersAndConsumers = new ArrayList<>();
+
+		for (int i = 0; i < 2; i++) {
+			producersAndConsumers.add(new Producer());
+		}
+
+		for (int i = 0; i < 2; i++) {
+			producersAndConsumers.add(new Consumer());
+		}
+
+		System.out.println("Producers and Consumers launched");
+
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
+		try {
+			List<Future<String>> futures = executorService.invokeAll(producersAndConsumers);
+
+			futures.forEach(future -> {
+				try {
+					System.out.println(future.get());
+				} catch (InterruptedException | ExecutionException e) {
+					System.out.println("Exception: " + e.getMessage());
+				}
+			});
+
+		} finally {
+			executorService.shutdown();
+			System.out.println("Executor service shut down");
+		}
+	}
+}
+----
+
+
+
