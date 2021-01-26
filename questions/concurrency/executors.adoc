@@ -43,13 +43,11 @@ This thread is created also and will be kept alive as long as this pool of threa
 
 When we pass a task to this ExecutorService, this task will be executed in that thread and this thread will now be destroyed once this task is done.
 
-
 ----
 ExecutorService multipleThreadsExecutor = Executors.newFixedThreadExecutor(8);
 ----
 
 FixedThreadPoolExecutor -> pool of threads in which you can fix the number of thread
-
 
 Example
 ----

@@ -1,0 +1,268 @@
+ifndef::imagesdir[:imagesdir: ../../images]
+
+= CompletableFuture
+
+The Future interface was added in Java 5 to serve as a result of an asynchronous computation, but it did not have any methods to combine these computations or handle possible errors.
+
+Java 8 introduced the CompletableFuture class.
+
+* it implements the Future interface and the *CompletionStage* interface.
+
+* contains 50 different methods for composing, combining, and executing asynchronous computation steps and handling errors
+
+image::completablefuture.png[Completable Future]
+
+Example
+
+A method that creates a CompletableFuture instance, then spins off some computation in another thread and returns the Future immediately.
+
+----
+public Future<String> calculateAsync() throws InterruptedException {
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
+
+    Executors.newCachedThreadPool().submit(() -> {
+        Thread.sleep(500);
+        completableFuture.complete("Hello");
+        return null;
+    });
+
+    return completableFuture;
+}
+----
+
+The Future instance -> call the get method on it when we're ready to block for the result.
+
+The get method throws some checked exceptions:
+
+* ExecutionException (encapsulating an exception that occurred during a computation)
+* InterruptedException (an exception signifying that a thread executing a method was interrupted)
+
+----
+Future<String> completableFuture = calculateAsync();
+
+// ...
+
+String result = completableFuture.get();
+assertEquals("Hello", result);
+----
+
+== CompletableFuture with Encapsulated Computation Logic
+
+Static methods `runAsync` and `supplyAsync` allow us to create a CompletableFuture instance out of Runnable and Supplier functional types correspondingly.
+
+----
+CompletableFuture<String> future
+  = CompletableFuture.supplyAsync(() -> "Hello");
+// ...
+assertEquals("Hello", future.get());
+----
+
+=== Processing Results of Asynchronous Computations
+
+The `thenApply` method accepts a Function instance, uses it to process the result, and returns a Future that holds a value returned by a function
+
+----
+CompletableFuture<String> completableFuture
+  = CompletableFuture.supplyAsync(() -> "Hello");
+
+CompletableFuture<String> future = completableFuture
+  .thenApply(s -> s + " World");
+
+assertEquals("Hello World", future.get());
+----
+
+The thenAccept method receives a Consumer and passes it the result of the computation. Then the final future.get() call returns an instance of the Void type
+
+----
+CompletableFuture<String> completableFuture
+  = CompletableFuture.supplyAsync(() -> "Hello");
+
+CompletableFuture<Void> future = completableFuture
+  .thenAccept(s -> System.out.println("Computation returned: " + s));
+
+future.get();
+----
+
+If we neither need the value of the computation, nor want to return some value at the end of the chain, then we can pass a Runnable lambda to the thenRun method
+
+----
+CompletableFuture<String> completableFuture
+  = CompletableFuture.supplyAsync(() -> "Hello");
+
+CompletableFuture<Void> future = completableFuture
+  .thenRun(() -> System.out.println("Computation finished."));
+
+future.get();
+----
+
+=== Combining Futures
+
+The ability to combine CompletableFuture instances in a chain of computation steps -> monadic design pattern.
+
+The `thenCompose` method to chain two Futures sequentially
+
+This method takes a function that returns a CompletableFuture instance. The argument of this function is the result of the previous computation step. This allows us to use this value inside the next CompletableFuture‘s lambda:
+
+----
+CompletableFuture<String> completableFuture
+  = CompletableFuture.supplyAsync(() -> "Hello")
+    .thenCompose(s -> CompletableFuture.supplyAsync(() -> s + " World"));
+
+assertEquals("Hello World", completableFuture.get());
+----
+
+The thenCompose (flatMap) method receives a function that returns another object of the same type
+
+To execute two independent Futures and do something with their results -> `thenCombine` method that accepts a Future and a Function with two arguments to process both results:
+
+----
+CompletableFuture<String> completableFuture
+  = CompletableFuture.supplyAsync(() -> "Hello")
+    .thenCombine(CompletableFuture.supplyAsync(() -> " World"), (s1, s2) -> s1 + s2));
+
+assertEquals("Hello World", completableFuture.get());
+----
+
+To do something with two Futures‘ results, but don't need to pass any resulting value down a Future chain -> The `thenAcceptBoth` method
+
+----
+CompletableFuture future = CompletableFuture.supplyAsync(() -> "Hello")
+  .thenAcceptBoth(CompletableFuture.supplyAsync(() -> " World"),
+    (s1, s2) -> System.out.println(s1 + s2));
+----
+
+=== Running Multiple Futures in Parallel
+
+The CompletableFuture.allOf static method allows to wait for completion of all of the Futures provided as a var-arg:
+----
+CompletableFuture<String> future1
+= CompletableFuture.supplyAsync(() -> "Hello");
+CompletableFuture<String> future2
+= CompletableFuture.supplyAsync(() -> "Beautiful");
+CompletableFuture<String> future3
+= CompletableFuture.supplyAsync(() -> "World");
+
+CompletableFuture<Void> combinedFuture
+= CompletableFuture.allOf(future1, future2, future3);
+
+// ...
+
+combinedFuture.get();
+
+assertTrue(future1.isDone());
+assertTrue(future2.isDone());
+assertTrue(future3.isDone());
+----
+
+The return type of the CompletableFuture.allOf() is a CompletableFuture<Void>.
+The limitation of this method is that it does not return the combined results of all Futures.
+Instead, we have to manually get results from Futures.
+`CompletableFuture.join()` method and Java 8 Streams API makes it simple:
+
+----
+String combined = Stream.of(future1, future2, future3)
+.map(CompletableFuture::join)
+.collect(Collectors.joining(" "));
+
+assertEquals("Hello Beautiful World", combined);
+----
+
+=== Handling Errors
+
+The CompletableFuture class allows us to handle it in a special handle method.
+This method receives two parameters: a result of a computation (if it finished successfully), and the exception thrown (if some computation step did not complete normally).
+
+----
+String name = null;
+
+// ...
+
+CompletableFuture<String> completableFuture
+  =  CompletableFuture.supplyAsync(() -> {
+      if (name == null) {
+          throw new RuntimeException("Computation error!");
+      }
+      return "Hello, " + name;
+  })}).handle((s, t) -> s != null ? s : "Hello, Stranger!");
+
+assertEquals("Hello, Stranger!", completableFuture.get());
+----
+
+To manually complete the Future with a value, as in the first example, but also have the ability to complete it with an exception.
+The completeExceptionally method is intended for just that. The completableFuture.get() method in the following example throws an ExecutionException with a RuntimeException as its cause:
+
+----
+CompletableFuture<String> completableFuture = new CompletableFuture<>();
+
+// ...
+
+completableFuture.completeExceptionally(
+new RuntimeException("Calculation failed!"));
+
+// ...
+
+completableFuture.get(); // ExecutionException
+----
+
+=== Async Methods
+
+Methods with the Async postfix are usually intended for running a corresponding step of execution in another thread.
+
+The methods without the Async postfix run the next execution stage using a calling thread.
+
+the Async method without the Executor argument runs a step using the common fork/join pool implementation of Executor that is accessed with the ForkJoinPool.commonPool() method.
+
+The Async method with an Executor argument runs a step using the passed Executor.
+
+----
+CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> "Hello");
+
+CompletableFuture<String> future = completableFuture.thenApplyAsync(s -> s + " World");
+
+assertEquals("Hello World", future.get());
+----
+
+=== JDK 9 CompletableFuture API
+Java 9 enhances the CompletableFuture API with the following changes:
+
+* New factory methods added
+* Support for delays and timeouts
+* Improved support for subclassing and new instance APIs:
+----
+Executor defaultExecutor()
+CompletableFuture<U> newIncompleteFuture()
+CompletableFuture<T> copy()
+CompletionStage<T> minimalCompletionStage()
+CompletableFuture<T> completeAsync(Supplier<? extends T> supplier, Executor executor)
+CompletableFuture<T> completeAsync(Supplier<? extends T> supplier)
+CompletableFuture<T> orTimeout(long timeout, TimeUnit unit)
+CompletableFuture<T> completeOnTimeout(T value, long timeout, TimeUnit unit)
+----
+
+Static utility methods:
+
+----
+Executor delayedExecutor(long delay, TimeUnit unit, Executor executor)
+Executor delayedExecutor(long delay, TimeUnit unit)
+<U> CompletionStage<U> completedStage(U value)
+<U> CompletionStage<U> failedStage(Throwable ex)
+<U> CompletableFuture<U> failedFuture(Throwable ex)
+----
+
+To address timeout, Java 9 has introduced two more new functions:
+----
+orTimeout()
+completeOnTimeout()
+----
+
+
+
+
+
+
+
+
+
+
+
+Source https://www.baeldung.com/java-completablefuture[Completable Futures]
