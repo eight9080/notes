@@ -1,0 +1,8 @@
+ifndef::imagesdir[:imagesdir: ../../images]
+
+= RxJava
+
+== Reactive programming
+
+The consumer reacts to the data as it comes in.
+Reactive programming allows to propagates event changes to registered observers.
