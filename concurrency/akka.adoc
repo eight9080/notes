@@ -1,0 +1,159 @@
+= Akka
+
+Akka is an open-source library that helps to easily develop concurrent and distributed applications
+
+== The Actor Model
+
+An actor represents an independent computation unit.
+
+* an actor encapsulates its state and part of the application logic
+actors interact only through asynchronous messages and never through direct method calls
+* each actor has a unique address and a mailbox in which other actors can deliver messages
+* the actor will process all the messages in the mailbox in sequential order (the default implementation of the mailbox being a FIFO queue)
+the actor system is organized in a tree-like hierarchy
+* an actor can create other actors, can send messages to any other actor and stop itself or any actor is has created
+
+== Advantages
+
+* By using Akka actors we can easily write asynchronous code without the need for locks and synchronization.
+
+* the sender thread won't block to wait for a return value when it sends a message to another actor
+
+* The receiving actor will respond with the result by sending a reply message to the sender.
+
+* don't have to worry about synchronization in a multi-threaded environment -> because of the fact that all the messages are processed sequentially.
+
+* By organizing the actors in a hierarchy, each actor can notify its parent of the failure, so it can act accordingly. The parent actor can decide to stop or restart the child actors.
+
+=== Setup
+
+----
+<dependency>
+    <groupId>com.typesafe.akka</groupId>
+    <artifactId>akka-actor_2.12</artifactId>
+    <version>2.5.11</version>
+</dependency>
+----
+
+==== Creating an Actor
+
+All the actors that share a common configuration will be defined by an ActorSystem.
+
+----
+ActorSystem system = ActorSystem.create("test-system");
+----
+
+By default the system will already contain 3 main actors:
+
+* the root guardian actor having the address “/” which as the name states represent the root of the actor system hierarchy
+* the user guardian actor having the address “/user”. This will be the parent of all the actor we define
+* the system guardian actor having the address “/system”. This will be the parent for all the actors defined internally by the Akka system
+
+Any Akka actor will extend the AbstractActor abstract class and implement the createReceive() method for handling the incoming messages from other actors:
+----
+public class MyActor extends AbstractActor {
+    public Receive createReceive() {
+        return receiveBuilder().build();
+    }
+}
+ActorRef readingActorRef
+  = system.actorOf(Props.create(MyActor.class), "my-actor");
+----
+
+==== Actor Configuration
+
+The Props class contains the actor configuration. We can configure things like the dispatcher, the mailbox or deployment configuration. This class is immutable, thus thread-safe, so it can be shared when creating new actors.
+
+----
+public class ReadingActor extends AbstractActor {
+    private String text;
+
+    public static Props props(String text) {
+        return Props.create(ReadingActor.class, text);
+    }
+    // ...
+}
+ActorRef readingActorRef = system.actorOf(
+  ReadingActor.props(TEXT), "readingActor");
+----
+
+==== Actor Messaging
+
+To interact with each other, the actors can send and receive messages from any other actor in the system.
+
+These messages can be any type of object with the condition that it's immutable.
+
+It's a best practice to define the messages inside the actor class.
+
+
+===== Sending Messages
+Inside the Akka actor system messages are sent using methods:
+
+* tell() - fire and forget
+----
+readingActorRef.tell(new ReadingActor.ReadLines(), ActorRef.noSender());
+----
+* ask() - request and reply
+----
+CompletableFuture<Object> future = ask(wordCounterActorRef,
+  new WordCounterActor.CountWords(line), 1000).toCompletableFuture();
+----
+* forward()
+the original sender of the message is kept when sending the message, so the actor forwarding the message only acts as an intermediary actor:
+----
+printerActorRef.forward(
+  new PrinterActor.PrintFinalResult(totalNumberOfWords), getContext());
+----
+
+=====  Receiving Messages
+
+Each actor will implement the createReceive() method, which handles all incoming messages. The receiveBuilder() acts like a switch statement, trying to match the received message to the type of messages defined:
+----
+public Receive createReceive() {
+    return receiveBuilder().matchEquals("printit", p -> {
+        System.out.println("The address of this actor is: " + getSelf());
+    }).build();
+}
+----
+When received, a message is put into a FIFO queue, so the messages are handled sequentially.
+
+===== Killing an Actor
+
+Stop it by calling the stop() method from the ActorRefFactory interface:
+----
+system.stop(myActorRef);
+----
+
+Stopping is done asynchronously and that the current message processing will finish before the actor is terminated. No more incoming messages will be accepted in the actor mailbox.
+
+By stopping a parent actor, we'll also send a kill signal to all of the child actors that were spawned by it.
+
+When we don't need the actor system anymore, we can terminate it to free up all the resources and prevent any memory leaks:
+----
+Future<Terminated> terminateResponse = system.terminate();
+----
+
+This will stop the system guardian actors, hence all the actors defined in this Akka system.
+
+Send a PoisonPill message to any actor that we want to kill:
+----
+myActorRef.tell(PoisonPill.getInstance(), ActorRef.noSender());
+----
+
+The PoisonPill message will be received by the actor like any other message and put into the queue. The actor will process all the messages until it gets to the PoisonPill one. Only then the actor will begin the termination process.
+
+Another special message used for killing an actor is the Kill message. Unlike the PoisonPill, the actor will throw an ActorKilledException when processing this message:
+----
+myActorRef.tell(Kill.getInstance(), ActorRef.noSender());
+----
+
+
+
+
+
+
+
+
+
+
+Source: https://www.baeldung.com/akka-actors-java[Akka actors]
