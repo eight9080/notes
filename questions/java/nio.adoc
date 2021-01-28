@@ -1,7 +1,121 @@
 = NIO
 
 == NIO – java.nio
-The java.nio package was introduced in Java 1.4 and updated in Java 1.7 (NIO.2) with enhanced file operations and an ASynchronousSocketChannel. It provides:
+The java.nio package was introduced in Java 1.4 and updated in Java 1.7 (NIO.2) with enhanced file operations and an ASynchronousSocketChannel.
+
+NIO - non-blocking IO
+
+* It deals with buffers and channels
+* It supports asynchronous operations
+* NIO may be more efficient than I/O
+
+=== Java NIO API
+
+Java I/O
+
+-  writes one byte/char at a time
+- buffering occurs in the JVM heap memory
+- all operations are synchronous
+
+NIO provides:
+
+- bulk access to raw bytes
+- bidirectional channels - a single Java object, you can both read and write data to and from the disc or to and from the network
+- off-heap buffering
+- proper support for charsets
+- support for asynchronous operations
+
+New concepts:
+
+- Buffer - where the data resides +
+A space in memory -> resides in the main memory of the JVM, the heap or off-heap
+- Channel - where the data comes from +
+An object that connects to a file or to a circuit +
+Writes the buffer to a medium or can read data from that medium to a buffer. +
+A channel only knows bytes buffers so it can only read and write bytes from files or for circuits
+- Selector - for asynchronous operations
+
+_A write operation takes data from a buffer and writes it to a channel._
+
+_A read operation takes data from a channel and writes it into a buffer._
+
+==== Channels
+
+*FileChannel*
+
+- access a file
+- it has a cursor
+- multiple reads and writes
+- thread safe
+
+In-memory File Channels:
+
+- can be mapped to a memory array for direct access
+- built on OS features for fast access
+- a single write in this array can trigger a modification of the file on the disk
+
+Modes for the mapping:
+
+- READ_ONLY - the mapped file cannot be modified
+- READ_WRITE - can read/write
+- PRIVATE - modifications are local to this channel and will not be propagated to the disk
+
+*DatagramChannel*
+
+- access a socket
+- it supports multicast
+- supports multiple non-concurrent reads and writes
+
+
+*SochetChannel* and *ServerSocketChannel*
+
+- access a TCP socket
+- supports asynchronous operations
+- supports multiple non-concurrent reads and writes
+
+
+===== Buffers
+
+An in-memory structure
+An array
+
+- ByteBuffer
+- CharBuffer
+- IntBuffer
+
+Properties:
+
+- capacity - size of the backing array
+- current position
+- limit
+
+Operations:
+
+- rewind - clears the mark and sets the current position to 0
+- reset - sets the current position to the previously set mark
+- flip - sets the limit to the current position and rewinds the buffer
+- clear - clears the buffer
+
+==== Write content to a file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=== Setup NIO
+
+It provides:
 
 * *Buffer* – to read chunks of data at a time
 * *CharsetDecoder* – for mapping raw bytes to/from readable characters
