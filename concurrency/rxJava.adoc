@@ -4,5 +4,282 @@ ifndef::imagesdir[:imagesdir: ../../images]
 
 == Reactive programming
 
-The consumer reacts to the data as it comes in.
+The consumer reacts to the data as it comes in. +
 Reactive programming allows to propagates event changes to registered observers.
+
+*Functional programming* is the process of building software by:
+
+* composing pure functions
+* avoiding shared state
+* mutable data
+* side-effects.
+
+*Reactive programming* is an asynchronous programming paradigm concerned with data streams and the propagation of change.
+
+=== Reactive Manifesto
+
+* Responsive – systems should respond in a timely manner
+* Message Driven – systems should use async message-passing between components to ensure loose coupling
+* Elastic – systems should stay responsive under high load
+* Resilient – systems should stay responsive when some components fail
+
+
+== Build blocks for RxJava
+
+* *observables* representing sources of data
+
+* *subscribers (or observers)* listening to the observables
+
+* a set of methods for modifying and composing the data
+
+An observable emits items; a subscriber consumes those items.
+
+=== Observables
+
+An observer subscribes to an Observable sequence.
+*The sequence sends items to the observer one at a time.*
+
+The observer handles each one before processing the next one. If many events come in asynchronously, they must be stored in a queue or dropped.
+
+In Rx, an observer will never be called with an item out of order or called before the callback has returned for the previous item.
+
+It can terminate either successfully or with an error. Sources may never terminate.
+
+==== Types of Observable
+
+* *Non-Blocking* – asynchronous execution is supported and is allowed to unsubscribe at any point in the event stream.
+* *Blocking* – all onNext observer calls will be synchronous, and it is not possible to unsubscribe in the middle of an event stream.
+
+Convert an Observable into a Blocking Observable:
+----
+BlockingObservable<String> blockingObservable = observable.toBlocking();
+----
+
+=== Subscribers
+
+A observable can have any number of subscribers.
+If a new item is emitted from the observable, the `onNext()` method is called on each subscriber.
+
+If the observable finishes its data flow successful, the `onComplete()` method is called on each subscriber. S
+
+If the observable finishes its data flow with an error, the `onError()` method is called on each subscriber.
+
+== Setup
+----
+<dependency>
+    <groupId>io.reactivex</groupId>
+    <artifactId>rxjava</artifactId>
+    <version>${rx.java.version}</version>
+</dependency>
+----
+
+=== Creating Observable
+
+[source, java]
+----
+import org.junit.Test;
+
+import io.reactivex.Observable;
+
+import static junit.framework.Assert.assertTrue;
+
+
+public class RxJavaUnitTest {
+    String result="";
+
+    // Simple subscription to a fix value
+    @Test
+    public void returnAValue(){
+        result = "";
+        Observable<String> observer = Observable.just("Hello"); // provides datea
+        observer.subscribe(s -> result=s); // Callable as subscriber
+        assertTrue(result.equals("Hello"));
+    }
+}
+----
+
+=== Types of Observables
+
+* Flowable<T> - Emits 0 or n items and terminates with an success or an error event. Supports backpressure, which allows to control how fast a source emits items.
+* Observable<T> - Emits 0 or n items and terminates with an success or an error event.
+* Single<T> - Emits either a single item or an error event.
+* Maybe<T> - Succeeds with an item, or no item, or errors.
+* Completable - Either completes with an success or with an error event. It never emits items.
+
+*Flowable*
+----
+Observable<Todo> todoObservable = Observable.create(new ObservableOnSubscribe<Todo>() {
+           @Override
+           public void subscribe(ObservableEmitter<Todo> emitter) throws Exception {
+               try {
+                   List<Todo> todos = RxJavaUnitTest.this.getTodos();
+                   for (Todo todo : todos) {
+                       emitter.onNext(todo);
+                   }
+                   emitter.onComplete();
+               } catch (Exception e) {
+                   emitter.onError(e);
+               }
+           }
+       });
+
+Observable<Todo> todoObservable = Observable.create(emitter -> {
+    try {
+        List<Todo> todos = getTodos();
+        for (Todo todo : todos) {
+            emitter.onNext(todo);
+        }
+        emitter.onComplete();
+    } catch (Exception e) {
+        emitter.onError(e);
+    }
+});
+----
+
+*Maybe*
+----
+Maybe<List<Todo>> todoMaybe = Maybe.create(emitter -> {
+    try {
+        List<Todo> todos = getTodos();
+        if(todos != null && !todos.isEmpty()) {
+            emitter.onSuccess(todos);
+        } else {
+            emitter.onComplete();
+        }
+    } catch (Exception e) {
+        emitter.onError(e);
+    }
+});
+----
+
+=== OnNext, OnError, and OnCompleted
+
+* OnNext is called on our observer each time a new event is published to the attached Observable.
+* OnCompleted is called when the sequence of events associated with an Observable is complete, indicating that we should not expect any more onNext calls on our observer
+* OnError is called when an unhandled exception is thrown during the RxJava framework code or our event handling code
+
+=== Observable Transformations and Conditional Operators
+
+==== Map
+
+The map operator transforms items emitted by an Observable by applying a function to each item.
+----
+Observable.from(letters)
+  .map(String::toUpperCase)
+  .subscribe(letter -> result += letter);
+assertTrue(result.equals("ABCDEFG"));
+----
+
+The flatMap can be used to flatten Observables whenever we end up with nested Observables.
+
+----
+Observable<String> getTitle() {
+    return Observable.from(titleList);
+}
+Observable.just("book1", "book2")
+  .flatMap(s -> getTitle())
+  .subscribe(l -> result += l);
+
+assertTrue(result.equals("titletitle"));
+----
+
+==== Scan
+
+The scan operator applies a function to each item emitted by an Observable sequentially and emits each successive value.
+
+----
+String[] letters = {"a", "b", "c"};
+Observable.from(letters)
+  .scan(new StringBuilder(), StringBuilder::append)
+  .subscribe(total -> result += total.toString());
+assertTrue(result.equals("aababc"));
+----
+
+==== GroupBy
+
+Group by operator allows us to classify the events in the input Observable into output categories.
+
+----
+Observable.from(numbers)
+  .groupBy(i -> 0 == (i % 2) ? "EVEN" : "ODD")
+  .subscribe(group ->
+    group.subscribe((number) -> {
+        if (group.getKey().toString().equals("EVEN")) {
+            EVEN[0] += number;
+        } else {
+            ODD[0] += number;
+        }
+    })
+  );
+assertTrue(EVEN[0].equals("0246810"));
+assertTrue(ODD[0].equals("13579"));
+----
+
+==== Filter
+
+The operator filter emits only those items from an observable that pass a predicate test.
+
+----
+Observable.from(numbers)
+  .filter(i -> (i % 2 == 1))
+  .subscribe(i -> result += i);
+
+assertTrue(result.equals("13579"));
+----
+
+==== Conditional Operators
+
+DefaultIfEmpty emits item from the source Observable, or a default item if the source Observable is empty:
+----
+Observable.empty()
+.defaultIfEmpty("Observable is empty")
+.subscribe(s -> result += s);
+
+assertTrue(result.equals("Observable is empty"));
+----
+
+TakeWhile operator discards items emitted by an Observable after a specified condition becomes false:
+----
+Observable.from(numbers)
+.takeWhile(i -> i < 5)
+.subscribe(s -> sum[0] += s);
+
+assertTrue(sum[0] == 10);
+----
+
+=== Connectable Observables
+
+A ConnectableObservable resembles an ordinary Observable, except that it doesn't begin emitting items when it is subscribed to, but only when the connect operator is applied to it.
+
+It can wait for all intended observers to subscribe to the Observable before the Observable begins emitting items:
+----
+String[] result = {""};
+ConnectableObservable<Long> connectable
+= Observable.interval(200, TimeUnit.MILLISECONDS).publish();
+connectable.subscribe(i -> result[0] += i);
+assertFalse(result[0].equals("01"));
+
+connectable.connect();
+Thread.sleep(500);
+
+assertTrue(result[0].equals("01"));
+----
+
+=== Single
+----
+String[] result = {""};
+Single<String> single = Observable.just("Hello")
+  .toSingle()
+  .doOnSuccess(i -> result[0] += i)
+  .doOnError(error -> {
+      throw new RuntimeException(error.getMessage());
+  });
+single.subscribe();
+
+assertTrue(result[0].equals("Hello"));
+----
+
+Source: https://www.baeldung.com/rx-java[RxJava] https://www.vogella.com/tutorials/RxJava/article.html[RxJava 2.0]
+
+
+
