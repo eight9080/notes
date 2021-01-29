@@ -201,15 +201,66 @@ ByteBuffer byteBuffer = utf8.encode(buffer);
 fileChannel.write(byteBuffer);
 ----
 
-=== Java NIO 2
+=== Asynchronous operations with NIO
 
+With synchronous read, each read operation is conducted in its own thread. +
+With asynchronous reads, a single thread can handle many read operations.
 
+==== Selectors
 
+Events for file channels :
 
+* READ, WRITE - channel is ready for reading/writing
 
+Events Socket channels:
 
+* CONNECT - a connection was established
+* ACCEPT - a connection was accepted
 
+The registration is configured to listen to certain events.
 
+*Aync Network Reader*
+
+----
+ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+serverSocketChannel.configureBlocking(false);
+
+ServerSocket serverSocket = serverSocketChannel.socket();
+serverSocket.bind(new InetSocketAddress(12345));
+
+Selector selector = Selector.open();
+SelectionKey key = channel.register(selector, SelectionKey.OP_ACCEPT); //registers selector with the ACCEPT event
+// Selection key - can be stored to unregister, check for validity.
+
+int n = selector.select(); // server socket channel is listening to incomming requests
+// the select() call is blocking until events are available
+// n is the number of keys with available events.
+
+Set<Selectionkey> keys = selector.selectedKeys(); // the keys that got events are returned in a set
+for(SelectionKey key : keys) {
+    // stuff with the corresponding channel
+    if((key.readyOps() & SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT) { //check if a connection request
+        ServerSocketChannel channel = (ServerSocketChannel)key.channel();
+
+        SocketChannel socketChannel = channel.accept();
+        socketChannel.configureBlocking(false);
+        socketChanenl.register(selector, SelectionKey.OP_READ);
+    }
+    else if((key.readyOps() & SelectionKey.OP_READ) == SelectionKey.OP_READ) ){
+        SocketChannel channel = (SocketChannel)key.channel();
+        channel.accept(byteBuffer); //read data in a buffer
+
+        //clean up
+        byteBuffer.clear();
+        selectedKeys.remove(key);
+        key.cancel();
+        channel.close();
+    }
+}
+
+----
+
+=== Java NIO 2 - FileSystems
 
 
 
@@ -372,7 +423,7 @@ Few of the times we wish the speed of C and syntax of Java for doing some IO int
 public static long calculateCRC(File filename) {
      final int SIZE = 16 * 1024;
      try (FileInputStream in = new FileInputStream(filename);) {
-         FileChannel channel = in .getChannel();
+         FileChannel channel = in.getChannel();
          CRC32 crc = new CRC32();
          int length = (int) channel.size();
          MappedByteBuffer mb = channel.map(FileChannel.MapMode.READ_ONLY, 0, length);
