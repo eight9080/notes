@@ -98,6 +98,112 @@ Operations:
 
 ==== Write content to a file
 
+----
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+buffer.putInt(10);
+FileChannel fileChannel = FileChannel.open(Paths.get("files/ints.bin"), CREATE, WRITE);
+buffer.flip();
+fileChannel.write(byteBuffer);
+fileChannel.close();
+----
+
+==== Read content from a file
+
+----
+FileChannel fileChannel = FileChannel.open(Paths.get("files/int.bin"), READ);
+ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+fileChannel.read(byteBuffer);
+byteBuffer.flip();
+IntBuffer intBuffer = byteBuffer.asIntBuffer();
+int i = intBuffer.get();
+----
+
+==== Reading and writing to multiple Buffers
+
+===== Scattering Read Operation
+
+The Scattering read consists in reading from a single channel to an array of buffers.
+
+*ScatteringByteChannel* interface
+
+The reading process fills the first buffer before moving to the next one
+
+----
+FileChannel fileChannel = FileChannel.open(Paths.get("files/int.bin"), READ);
+ByteBuffer header = ByteBuffer.allocate(1024);
+ByteBuffer body = ByteBuffer.allocate(4096);
+ByteBuffer footer = ByteBuffer.allocate(128);
+ByteBuffer[] message = {header, body, footer};
+
+long bytesRead = fileChannel.read(message);
+----
+
+
+====== Gathering Write Operation
+
+The Gathering Write consists in writing from an array of buffers to a single Channel.
+
+*ScatteringByteChannel* interface
+
+The writing operation starts with the first buffer, then the next one and so on.
+
+* recommended with messages of fixed-length parts
+
+----
+ByteBuffer header = ByteBuffer.allocate(1024);
+ByteBuffer body = ByteBuffer.allocate(4096);
+ByteBuffer footer = ByteBuffer.allocate(128);
+
+header.putInt(10);
+headbodyer.putInt(10);
+footer.putInt(10);
+
+ByteBuffer[] message = {header, body, footer};
+
+FileChannel fileChannel = FileChannel.open(Paths.get("files/ints.bin"), CREATE, WRITE);
+long bytesWritten = fileChannel.write(message);
+fileChannel.close();
+----
+
+==== MappedByteBuffer
+
+* Buffer maps a file to memory +
+* Recommend for apps that read the same file many times. +
+* Can be used for a portion of a file +
+* Modes: READ, READ_WRITE, PRIVATE
+
+----
+FileChannel fileChannel = FileChannel.open(Paths.get("files/int.bin"), READ);
+MappedByteBuffer mappedBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
+CharBuffer charBuffer = StandardsCharsets.UTF_8.decode(mappedBuffer);
+----
+
+==== Charsets
+
+* US_ASCII, ISO_8859_1
+* UTF_8
+
+`encode()` takes a CharBuffer returns ByteBuffer
+
+`decode()` takes a ByteBuffer returns a Charbuffer
+
+----
+FileChannel channel = FileChannel.open(paths.get("file.txt"), StandardOpenOperation.READ);
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+channel.read(buffer);
+
+CharSet latin1 = StandardsCharsets.ISO_8859_1;
+CharBuffer utf8Buffer = latin1.decode(buffer);
+String result = new String(utf8buffer.array());
+
+CharSet utf8 = StandardsCharsets.UTF_8;
+ByteBuffer byteBuffer = utf8.encode(buffer);
+fileChannel.write(byteBuffer);
+----
+
+=== Java NIO 2
+
+
 
 
 
