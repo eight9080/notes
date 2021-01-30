@@ -262,6 +262,195 @@ for(SelectionKey key : keys) {
 
 === Java NIO 2 - FileSystems
 
+* FileSystems - factory
+* FileSystemProvider - factory for file systems, methods to create/move/copy/delete files, links and directories
+* FileSystem - create a path/ a watch service
+* FileStore - space info, security attributes
+
+----
+List<FileSystemProvider> providers =
+    FileSystemProvider.installedProviders(); //1
+
+FileSystem default =
+    providers.get(0).getFileSystem(URI.create("file:///)); //default path
+
+FileSystem default1 = FileSystems.getDeafault();
+
+----
+
+1. returns the default file system provider and the the JAR or ZIP file system provider
+
+*Get root directories*
+
+----
+FileSystem default = FileSystems.getDeafault();
+Iterable<Path> roots = default.getRootDirectories(); // c d e
+
+----
+
+*Get root directories*
+
+----
+FileSystem default = FileSystems.getDeafault();
+Iterable<FileStore> stores = default.getFileStores();
+
+FileStore store = stores.iterator().next();
+store.name(); //Data-1
+store.type(); //NTFS
+
+----
+
+==== Creating files with the File Systems API
+
+Java I/O
+
+* `newInputStream(Path, OpenOption)`
+* `newOutputStream(Path, OpenOption)`
+
+Java NIO
+
+* `newFileChannel(Path, ..)`
+* `newByteChannel(Path, ..)`
+* `newAsynchronousFileChannel(Path, ..)`
+
+===== Create directories
+
+* `fileSystem.createDirectory(file)`
+----
+File dir = new File("D:/tmp");
+FileSystem defaultFS = FileSystems.getDefault();
+defaultFS.createDirectory(dir);
+----
+
+* `fileSystemProvider.createDirectory(uri)`
+----
+URI dir = URI.create("file:///D:/tmp");
+FileSystemProvider fsp= ..;
+fsp.createDirectory(dir);
+----
+
+* `fileSystemProvider.createDirectory(path)`
+----
+Path dir = Paths.get("D:/tmp");
+//OR
+// Path dir = Paths.get(URI.cretae("file:///D:/tmp"));
+FileSystemProvider fsp= ..;
+fsp.createDirectory(dir);
+----
+
+==== Accessing file attributes
+
+* BasicFileAttributes (parent interface)- time information, size, type, filekey
+** DosFileAttributes - WIN specific attributes
+** PosixFileAttributes - UNIX specific attributes [group, owner, permissions]
+
+----
+Path path = Paths.get("D:/tmp/file.txt");
+FileSystem fileSystem = path.getFileSystem();
+FileSystemProvider provider= fileSystem.getProvider();
+DosFileAttributes attributes =
+    provider.readAttributes(path, DosFileAttributes.class);
+//OR
+DosFileAttributes attributes =
+    Files.readAttributes(path, DosFileAttributes.class);
+----
+
+==== Jar FileSystem
+
+* read/write zip files
+
+===== Create a zip
+
+----
+URI zipFile = URI.create("jar:file:D:/tmp/archive.zip");
+Map<String,String> options = new HashMap<>();
+options.put("create","true");
+
+FileSystem zipFS = FileSystems.newFileSystem(zipFile, options);
+----
+
+===== Adding an existing file to a zip
+
+----
+Path someFile = Paths.get("files/some.txt");
+Files.copy(someFile, zipFS.getPath("some.txt"));
+----
+
+===== Writing in a zip
+
+----
+Path target = zipFS.getPath("ints.bin");
+OutputStream os = zipFS.provider().newOutputStream(target, CREATE_NEW, WRITE);
+//OR
+ByteChannel channel = zipFS.provider().newByteChannel(target, options);
+----
+Example
+
+[source,java]
+----
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.HashMap;
+import java.util.Map;
+
+public class JarFileSystemOperations {
+
+	public static void main(String[] args) {
+
+		URI zip = URI.create("jar:file:///E:tmp/archive.zip");
+		Map<String, String> options = new HashMap<>();
+		options.put("create", "true");
+		// encoding
+
+		try (FileSystem zipFS = FileSystems.newFileSystem(zip, options);) {
+
+			Path dir = zipFS.getPath("files/");
+			zipFS.provider().createDirectory(dir);
+
+			Path aesop = Paths.get("files/aesop.txt");
+			Path target = zipFS.getPath("files/aesop-compressed.txt");
+
+			Files.copy(aesop, target);
+
+			Path binDir = zipFS.getPath("bin/");
+			Path binFile = zipFS.getPath("bin/ints.bin");
+
+			zipFS.provider().createDirectory(binDir);
+
+			OutputStream os =
+				zipFS.provider().newOutputStream(binFile, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+			DataOutputStream dos = new DataOutputStream(os);
+
+			dos.writeInt(10);
+			dos.writeInt(20);
+			dos.writeInt(30);
+			dos.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+}
+----
+
+
+
+
+
+
+
+
+
 
 
 
