@@ -1,3 +1,5 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
 = Executor Framework
 
 The Executor Framework provides several classes e.g. Executor, ExecutorService, and Executors for execution and creating thread pools. +
@@ -6,6 +8,8 @@ It also provides several built-in, ready to use thread pools like a pool of fixe
 The Job of that thread pool is to accept the task and execute if there is a free worker thread available, but ForJoinPool is a special kind of thread pool. They use a work-stealing pattern. All threads in a fork-join pool attempt to find and execute tasks submitted to the pool and/or created by other active tasks.
 
 The main difference between the Executor framework and ForkJoinPool is that the former provides a general-purpose thread pool, while the latter provides a special implementation that uses a work-stealing pattern for efficient processing of ForkJoinTask.
+
+image::concurrency/executorFrameworkDiagram.png[Executor Framwwork]
 
 == ForkJoinPool vs Executor Framework
 1. The main difference between ForkJoinPool and ThreadPoolExecutor is that ForkJoinPool is designed to accept and execute ForkJoinTask, which is a lightweight version of FutureTask, +

@@ -1,5 +1,17 @@
 = Concurrent programming
 
+== General
+
+Stack of layers:
+
+* Application
+* AdditionalFrameworks and Languages
+* Threading and synchronization packages
+* Java Virtual Machine (JNI) - Thread Scheduler
+* System Libraries
+* Operation System Kernel
+
+
 == Thread
 
 A thread is defined at the operating system level. +

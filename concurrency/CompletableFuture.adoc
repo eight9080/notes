@@ -1,4 +1,4 @@
-ifndef::imagesdir[:imagesdir: ../../images]
+ifndef::imagesdir[:imagesdir: ../images]
 
 = CompletableFuture
 
@@ -10,7 +10,7 @@ Java 8 introduced the CompletableFuture class.
 
 * contains 50 different methods for composing, combining, and executing asynchronous computation steps and handling errors
 
-image::completablefuture.png[Completable Future]
+image::concurrency/completablefuture.png[Completable Future]
 
 Can be in three states:
 
