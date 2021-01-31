@@ -443,19 +443,198 @@ public class JarFileSystemOperations {
 }
 ----
 
+=== Visiting Directory Trees
+
+==== Directory Stream and Matchers
+
+Directory stream
+
+- way of analyzing the content of a directory.
+- filter directories
+
+----
+Path dir  = Paths.get("D:/files");
+DirectoryStream<Path> directoryStream =
+    Files.newDirectoryStream(dir, path -> Files.isDirectory(path)); /2nd arg filter method
+DirectoryStream<Path> directoryStream =
+    Files.newDirectoryStream(dir, "*.java"); //path mathcer
+
+//File matcher
+Pathmatcher pathMatcher = FileSystems.getDefault().getPathMatcher("global:**/*.java");
+DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dir, pathMatcher:: matches);
+
+----
+
+DirectoryStream - is an Iterable (lazy structure)
+
+----
+DirectoryStream<Path> directoryStream = ...
+for(Path path: directoryStream){
+    //stuff
+}
+----
+
+===== Walking directory tree
+
+*Depth first approach* (java is using this)
+
+*Breadth first approach*
+
+Files.walk parmeters:
+
+* starting point - dir
+* max depth to be explored
+* option to follow the links or not
+----
+Path dir = Paths.get("F:/sources");
+Stream<path> paths = Files.walk(dir, 3, FileVisitOption.FOLLOW_LINKS);
+----
+
+Files.find
+
+* BiPredicate as a parameter
+
+----
+Path dir = Paths.get("D:/sources");
+PathMatcher pathMatch = FileSystems.getDefault().getPathMatcher("glob:**/*.java");
+
+Stream<Path> paths = Files.find(dir,
+    (path, attributes) -> pathMatcher.matches(path));
+----
+
+===== Visiting directory tree
+
+* it can be interrupted
+* can filter files
+
+Files.walkFileTree parameters:
+
+* file visitor -> interface FileVisitor
+
+----
+public interface FileVisitor<T> {
+    FileVisitResult preVisitDirectory(T dir, BasicFileAttributes attrs)
+        throws IOException;
+    FileVisitResult postVisitDirectory(T dir, IOException exc)
+        throws IOException;
+    FileVisitResult visitFile(T file, BasicFileAttributes attrs)
+        throws IOException;
+    FileVisitResult visitFileFailed(T file, IOException exc)
+        throws IOException;
+}
+
+public enum FileVisitResult {
+    /**
+     * Continue. When returned from a {@link FileVisitor#preVisitDirectory
+     * preVisitDirectory} method then the entries in the directory should also
+     * be visited.
+     */
+    CONTINUE,
+    /**
+     * Terminate.
+     */
+    TERMINATE,
+    /**
+     * Continue without visiting the entries in this directory. This result
+     * is only meaningful when returned from the {@link
+     * FileVisitor#preVisitDirectory preVisitDirectory} method; otherwise
+     * this result type is the same as returning {@link #CONTINUE}.
+     */
+    SKIP_SUBTREE,
+    /**
+     * Continue without visiting the <em>siblings</em> of this file or directory.
+     * If returned from the {@link FileVisitor#preVisitDirectory
+     * preVisitDirectory} method then the entries in the directory are also
+     * skipped and the {@link FileVisitor#postVisitDirectory postVisitDirectory}
+     * method is not invoked.
+     */
+    SKIP_SIBLINGS;
+}
+----
+* option follow links
+* depth
+
+*Find a file by name*
+
+[source,java]
+----
+public class FileFinder implements Filevisitor<Path> {
+    private String searchedFileName;
+    private Path found;
+    FileVisitResult postVisitDirectory (Path dir, basicFileAttributes attrs) {
+        return CONTINUE;
+    }
+    FileVisitResult visitFile(Path path, BasicFileAttributes attrs){
+        if(path.getName().equals(searchedFileName)){
+            this.found = path;
+            return TERMINATE;
+        }else{
+            return COTINUE;
+        }
+    }
+}
+
+----
 
 
+----
+Path dir = Paths.get("D:/sources");
+
+FileVisitor<Path> fileVisistor= ..
 
 
+Files.walkFileTree(dir, fileVisitor);
+
+----
+
+=== Listening to Directory Events
+
+WatchService
+
+----
+		Path dir = Paths.get(URI.create("file:///E:tmp/events"));
+		FileSystem fileSystem = dir.getFileSystem();
+
+		WatchService watchService = fileSystem.newWatchService();
+
+		WatchKey key = dir.register(watchService,
+				StandardWatchEventKinds.ENTRY_CREATE,
+				StandardWatchEventKinds.ENTRY_MODIFY,
+				StandardWatchEventKinds.ENTRY_DELETE);
+
+----
+
+WatchKey methods
+
+* take() - blocking call
+* poll() - non-blocking - can return null
+* poll(long,TimeUnit)
 
 
+----
+while (key.isValid()) {
+			WatchKey take = watchService.take();
+			List<WatchEvent<?>> events = take.pollEvents();
+			for (WatchEvent<?> event : events) {
+				if (event.kind() == StandardWatchEventKinds.OVERFLOW) {
+					continue;
+				} else if (event.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
 
+					Path path = (Path)event.context();
+					System.out.println("File creation: " + path + " - " + Files.probeContentType(path));
+				} else if (event.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
 
+					Path path = (Path)event.context();
+					System.out.println("File modified: " + path + " - " + Files.probeContentType(path));
+				} else if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
 
-
-
-
-
+					Path path = (Path)event.context();
+					System.out.println("File deleted: " + path + " - " + Files.probeContentType(path));
+				}
+			}
+			take.reset();
+		}
+----
 
 
 
