@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: ../images]
 = Concurrent programming
 
 == General
@@ -11,11 +12,17 @@ Stack of layers:
 * System Libraries
 * Operation System Kernel
 
-
 == Thread
 
 A thread is defined at the operating system level. +
 A thread is a set of instructions. +
+
+Java offers two types of threads: user threads and daemon threads.
+
+*User threads* are high-priority threads. The JVM will wait for any user thread to complete its task before terminating it.
+
+*Daemon threads* are low-priority threads whose only role is to provide services to user threads.
+
 
 The JVM itself, the Java Virtual Machine, works with several threads:
 
@@ -435,6 +442,8 @@ A WAITING thread can only run again when the notify() method is called.
 
 Getting the state `thread.getState()`
 
+image::concurrency/threadLifeCycle.png[Thread lifecycle]
+
 == Ordering Read/Write
 
 Synchronization
@@ -573,6 +582,21 @@ public enum Singleton {
     INSTANCE
 }
 ----
+
+
+== Java 8 concurrency
+=== Parallel Streams
+
+A parallel stream partitions a stream into multiple substreams that run concurrently & combine into a reduced result. +
+Aggregate operations in a parallel stream can be mapped to multiple cores.
+
+*ForkJoinPool size defaults to the number of cores available to the JVM*
+
+
+
+=== Completable Futures
+It supports dependent functions that trigger upon completion of asynchronous operations.
+
 
 
 
