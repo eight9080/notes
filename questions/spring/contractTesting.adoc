@@ -1,0 +1,39 @@
+= Spring Cloud Contarct Testing
+
+== Server / Producer side
+
+Dependency
+spring-cloud-starter-contract-verifie to our Producer pom 
+
+Plugin spring-cloud-contract-maven-plugin
+
+----
+<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<spring-cloud.version>Finchley.RC1</spring-cloud.version>
+	</properties>
+
+	<dependencies>
+		...
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-contract-verifier</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-contract-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<baseClassForTests>me.aboullaite.spring.cloud.springcloudcontractproducer.BookApiBase</baseClassForTests>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+  ----
