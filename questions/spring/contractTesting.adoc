@@ -37,3 +37,214 @@ Plugin spring-cloud-contract-maven-plugin
 		</plugins>
 	</build>
   ----
+  
+  Controller
+  
+  ----
+  @RestController
+@RequestMapping("/api/books")
+public class BookController {
+
+    @Autowired
+    BookService bookService;
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public Book createBook(@RequestBody Book book) {
+         return bookService.createNew(book);
+    }
+
+    @RequestMapping(value = "/{isbn}",
+            method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public Book updateBook(@PathVariable String isbn, @RequestBody Book book) {
+
+        return bookService.update(isbn,book);
+    }
+
+    @RequestMapping(value = "/{isbn}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Optional<Book> getByIsbn(@PathVariable String isbn) {
+        return bookService.findByIsbn(isbn);
+    }
+
+...
+}
+----
+
+
+To verify that the above controller really obeys the contract, We need necessarily to create a base test which is subclassed by all later generated tests:
+
+----
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+public class BookApiBase {
+
+    @Autowired
+    BookController bookController;
+
+    @MockBean
+    private BookRepository repository;
+
+    @Before
+    public void setup() {
+        Book book= new Book("123", "Ferok Book", "Fero Hero");
+        when(repository.findById(any(String.class))).thenReturn(Optional.of(book));
+        when(repository.save(any(Book.class))).thenReturn(book);
+
+        StandaloneMockMvcBuilder standaloneMockMvcBuilder = MockMvcBuilders.standaloneSetup(bookController);
+        RestAssuredMockMvc.standaloneSetup(standaloneMockMvcBuilder);
+    }
+}
+----
+
+Spring Cloud Contract automatically (and magically) generates JUnit tests from a given contract. 
+A simple contract would look something like below:
+
+----
+name: "should Create a book"
+request:
+  method: POST
+  url: /api/books
+  body:
+    isbn: "123"
+    author: "Fero Hero"
+    title: "Ferok Book"
+  headers:
+    Content-Type: application/json
+response:
+  status: 201
+  body:
+    isbn: "123"
+    author: "Fero Hero"
+    title: "Ferok Book"
+  headers:
+    Content-Type: application/json
+----
+
+
+Each contract defines a single `request`/`response` pair. 
+The contract above defines an API that consists of a POST request to the URL `/api/books` containing some data in the body and an expected response to that request, returning HTTP code 201 and the newly created book as body.
+
+Note that I've used a YAML file to define my contract, But [groovy DSL](http://cloud.spring.io/spring-cloud-static/spring-cloud-contract/1.2.4.RELEASE/single/spring-cloud-contract.html#_defining_the_contract) is also supported in Spring Cloud Contract. 
+The contract files are expected to be located under `src/test/resources/contracts` directory.
+
+When we run the build, the plugin (i.e `spring-cloud-contract-maven-plugin`) automatically generates a test class named `ContractVerifierTest` that extends our `BookApiBase` and puts it under `/target/generated-test-sources/contracts/`. The build will also add the stub jar in our local Maven repository so that it can be used by our consumer.
+
+The names of the test methods are derived from the prefix `validate_` concatenated with the names of our YAML test stubs. 
+For the above YAML file, the generated method name will be `validate_should_Create_a_book`:
+
+----
+public class ContractVerifierTest extends BookApiBase {
+
+	@Test
+	public void validate_should_Create_a_book() throws Exception {
+		// given:
+			MockMvcRequestSpecification request = given()
+					.header("Content-Type", "application/json")
+					.body("{\"isbn\":\"123\",\"author\":\"Fero Hero\",\"title\":\"Ferok Book\"}");
+
+		// when:
+			ResponseOptions response = given().spec(request)
+					.post("/api/books");
+
+		// then:
+			assertThat(response.statusCode()).isEqualTo(201);
+			assertThat(response.header("Content-Type")).isEqualTo("application/json;charset=UTF-8");
+		// and:
+			DocumentContext parsedJson = JsonPath.parse(response.getBody().asString());
+			assertThatJson(parsedJson).field("['title']").isEqualTo("Ferok Book");
+			assertThatJson(parsedJson).field("['isbn']").isEqualTo("123");
+			assertThatJson(parsedJson).field("['author']").isEqualTo("Fero Hero");
+	}
+}
+----
+
+== Client / Consumer Side
+
+On the Client side, we have to write our tests and make some configurations to execute it against the Provider Stub to maintain the contract, so any changes on the producer side would break the contract.
+
+My consumer is simply a [`FeignClient`](http://cloud.spring.io/spring-cloud-static/spring-cloud-netflix/1.4.4.RELEASE/single/spring-cloud-netflix.html#spring-cloud-feign) which will make an HTTP request to get the response from the generated stubs:
+
+----
+@FeignClient("bookservice")
+public interface BookClient {
+
+    @RequestMapping(method = RequestMethod.GET, path = "/api/books/{isbn}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Book getBook(@PathVariable("isbn") String isbn);
+
+    @RequestMapping(method = RequestMethod.POST, path = "/api/books", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Book createBook(@RequestBody Book book);
+
+...
+}
+----
+
+Add `spring-cloud-starter-contract-stub-runner` dependency to our consumer:
+
+----
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
+			<scope>test</scope>
+		</dependency>
+----
+
+The last step is to setup the `Stub Runner` in our tests to automatically download the required stubs. 
+To achieve that we have to pass the `@AutoConfigureStubRunner` annotation:
+
+----
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureStubRunner(
+        ids = "me.aboullaite.spring.cloud:spring-cloud-contract-producer:+:stubs:9090",
+        stubsMode = StubRunnerProperties.StubsMode.LOCAL)
+public class BookClientTest {
+
+    @Autowired
+    private BookClient bookClient;
+
+    @Test
+    public void getBookByisbnCompliesToContract() {
+        Book book = bookClient.getBook("123");
+        Assertions.assertThat(book.getIsbn()).isEqualToIgnoringCase("123");
+    }
+
+    @Test
+    public void createBookCompliesToContract() {
+        Book book= new Book("123", "Ferok Book", "Fero Hero");
+        Book createdBook = bookClient.createBook(book);
+        Assertions.assertThat(createdBook.getIsbn()).isEqualToIgnoringCase("123");
+    }
+}
+----
+
+For our example, the ids property of the `@AutoConfigureStubRunner` annotation specifies:
+
++ `me.aboullaite.spring.cloud`: the groupId of our artifact
++ `spring-cloud-contract-producer` — the artifactId of the producer stub jar
++ `9090` — the port on which the generated stubs will run
+
+Since we fixed the `stubsMode` option to `LOCAL` then the stubs will be downloaded from our local Maven repo. Once the test context got booted up, Spring Cloud Contract Stub Runner will automatically start a WireMock server inside our test and feed it with the stubs generated from the server side.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Source: https://aboullaite.me/a-practical-introduction-to-spring-cloud-contract/[Spring Cloud Contract]
