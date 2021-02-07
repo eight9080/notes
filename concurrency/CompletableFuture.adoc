@@ -537,5 +537,97 @@ Combining two results
 ----
 CompletableFuture<Long> cf1 = ..
 CompletableFuture<User> cf2 = ..
-CompletableFuture<Void> = cf1.thenAcceptBoth(cf2, (id, name)-> logger.info("stuff"));
+CompletableFuture<Void> cf3 = cf1.thenAcceptBoth(cf2, (id, name)-> logger.info("stuff"));
+CompletableFuture<List<User>> cf4 = cf1.thenCombine(cf2, (id, name)-> query(id, name));
 ----
+
+Picking on of the results - first who completes wins
+----
+CompletableFuture<Long> cf1 = ..
+CompletableFuture<Long> cf2 = ..
+CompletableFuture<Void> cf3 = cf1.acceptEither(cf2, (id, name)-> logger.info("stuff"));
+CompletableFuture<User> cf4 = cf1.applyToEither(cf2, (id)-> readUser(id));
+CompletableFuture<Void> cf5 = cf1.runAfterEither(cf2, loger.info("complete stuff"));
+----
+
+Combining n results
+----
+CompletableFuture<Long> cf1 = ..
+CompletableFuture<User> cf2 = ..
+CompletableFuture<String> cf3 = ..
+CompletableFuture<Void> cf4 = CompletableFuture.allOf(cf1, cf2, cf3);
+CompletableFuture<?> cf4 = CompletableFuture.anyOf(cf1, cf2, cf3); //first result
+----
+
+==== Where is task run ?
+
+A task triggered by another task is executed in the same thread as the triggering task.
+
+or you can change it in a diffenre thread pool.
+
+----
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L)) // Common FJ Pool
+                 .thenApply(list -> readUsers(list)); // same thread as first operation
+
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L)) // Common FJ Pool
+                 .thenApplyAsync(list -> readUsers(list)); // same pool of threads
+
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L)) // Common FJ Pool
+                 .thenApplyAsync(list -> readUsers(list), executor); // in the provided pool of threads
+
+----
+
+=== Exception in a CompletionStage pipeline
+
+----
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L))
+                 .thenApply(list -> readUsers(list));
+
+cf2.join() -> throw a CompletionException
+cf2.get() -> throw an ExecutionException
+----
+
+Three patters:
+
+* exceptionally()
+----
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L))
+                 .thenApply(list -> readUsers(list));
+                 .exceptionally(exception -> List.of());
+----
+** if no exception -> returns the value provided by the function from thenApply
+** if an exception is thrown -> the function is executed and the result it gives is sent to the subsequent tasks
+
+* whenComplete()
+----
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L))
+                 .thenApply(list -> readUsers(list));
+                 .whenComplete(
+                    (list, exception) -> {
+                        if(list != null) logger.info("the list of users has been read");
+                        else logger.error("An exception has been raised");
+                    }
+                 );
+----
+** one of the objects will be null
+
+* handle()
+----
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L))
+                 .thenApply(list -> readUsers(list));
+                 .handle(
+                    (list, exception) -> {
+                        if(list != null) {
+                                logger.info("the list of users has been read");
+                                return list;
+                        }
+                        else {
+                            logger.error("An exception has been raised");
+                             return new ArrayList<>();
+                        }
+                    }
+                 );
+----
+
+
+
