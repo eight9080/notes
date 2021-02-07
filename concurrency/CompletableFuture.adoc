@@ -6,7 +6,7 @@ The Future interface was added in Java 5 to serve as a result of an asynchronous
 
 Java 8 introduced the CompletableFuture class.
 
-* it implements the Future interface and the *CompletionStage* interface.
+* It implements the *Future* interface and the *CompletionStage* interface.
 
 * contains 50 different methods for composing, combining, and executing asynchronous computation steps and handling errors
 
@@ -462,3 +462,80 @@ public class StreamsUtils {
 ----
 Source: https://github.com/douglascraigschmidt/LiveLessons.git[Git repo]
 
+== CompletionStage
+
+=== Tasks
+
+* Runnable
+* Callable
+
+=== Completable Future
+No return value - works with Runnable
+----
+Runnable task = () -> System.out.println("Hello world!");
+CompletableFuture<Void> completableFuture =  CompletableFuture.runAsync(task);
+----
+With return value - works with Supplier, no checked exceptions
+----
+Supplier<String> task = () -> readInput("variable");
+CompletableFuture<String> completableFuture =  CompletableFuture.runAsync(task);
+----
+
+==== Running in a different thread
+
+By default, the async tasks are run in the Common Fork / Join Pool.
+
+Or pass a custom executor service
+
+----
+Runnable task = () -> System.out.println("Hello world!");
+ExecutorService service = Executors.newSingleThreadExecutor();
+CompletableFuture<Void> completableFuture =  CompletableFuture.runAsync(task, service);
+----
+
+Methods:
+
+* complete(value)
+** if done -> nothing
+** if it is not -> completes it and returns the value
+
+* obtrudeValue(value)
+** if done -> forces tge returned value to value
+** if it is not -> completes it and returns the value
+
+* completeExceptionally(throwable)
+** forces the completion if the task is not done
+* obtrudeException(throwable)
+** forces the completion even if the task is done
+
+
+=== Trigger a task
+----
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L))
+                 .thenApply(list -> readUsers(list));
+----
+
+Logging a message - no input
+----
+cf2.thenRun(()-> logger.info("The list of users has been read"));
+----
+
+Consume the input
+----
+cf2.thenAccept(users -> logger.info(users.size()+" users have been read"));
+----
+
+==== Composition of futures
+thenCompose = flatMap
+----
+CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> remoteService())
+                 .thenCompose(list -> fetchFromDB(list));
+----
+
+Combining two results
+
+----
+CompletableFuture<Long> cf1 = ..
+CompletableFuture<User> cf2 = ..
+CompletableFuture<Void> = cf1.thenAcceptBoth(cf2, (id, name)-> logger.info("stuff"));
+----
