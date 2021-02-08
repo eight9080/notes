@@ -1,0 +1,23 @@
+= Parallel Functional Programming
+
+== Concepts
+
+*Throughput* - how much work is done in a given unit of time
+
+*Scalability* - how well a task can be broken up and run on multiple processor cores
+
+*Latency* - the time required to wait for something and then to perform the operation
+
+When to use:
+
+* when tasks are independent
+* when there is lots of data to be processed
+* when threads neither block nor share mutable state
+* when there are many cores
+
+*Concurrency is about dealing with lots of things at once. Parallelism is about doing lots of things at once.*
+
+An application can be concurrent — but not parallel, which means that it processes more than one task at the same time, but no two tasks are executing at the same time instant.
+
+An application can be parallel — but not concurrent, which means that it processes multiple sub-tasks of a task in multi-core CPU at the same time.
+
