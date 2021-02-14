@@ -1,0 +1,194 @@
+= Stream
+
+== Streams internals
+
+Three phases:
+
+* Split - uses the spliterator to convert a data source into a stream (make chunks)
+* Apply - process the elements in the stream
+* Combine - Trigger intermediate operation processing & create a single result
+
+
+== Spliterator
+
+It can be used for traversing and partitioning sequences.
+
+=== Methods
+
+* tryAdvance - boolean tryAdvance(Consumer<? super T> action)
+This is the main method used for stepping through a sequence. The method takes a Consumer that’s used to consume elements of the Spliterator one by one sequentially and returns false if there’re no elements to be traversed.
+----
+public String call() {
+    int current = 0;
+    while (spliterator.tryAdvance(a -> a.setName(article.getName()
+      .concat("- published by Author")))) {
+        current++;
+    }
+
+    return Thread.currentThread().getName() + ":" + current;
+}
+----
+
+* trySplit
+The trySplit method tries to split it into two parts. Then the caller process elements, and finally, the returned instance will process the others, allowing the two to be processed in parallel.
+
+----
+  Spliterator<Article> split1 = Executor.generateElements().spliterator();
+    Spliterator<Article> split2 = split1.trySplit();
+
+    assertThat(new Task(split1).call())
+      .containsSequence(Executor.generateElements().size() / 2 + "");
+    assertThat(new Task(split2).call())
+      .containsSequence(Executor.generateElements().size() / 2 + "");
+----
+
+=== Custom Implementation
+
+----
+public class WordMatchSpliterator
+       extends Spliterators.AbstractSpliterator<SearchResults.Result> {
+    /**
+     * The phrase matcher.
+     */
+    private final Matcher mWordMatcher;
+
+    /**
+     * Constructor initializes the fields and super class.
+     */
+    public WordMatchSpliterator(String input,
+                                String word) {
+        super(Long.MAX_VALUE, ORDERED | NONNULL);
+
+        // Create a regex that matches on a word boundary.
+        String regexWord =
+            "\\b"
+            + word.trim()
+            + "\\b";
+
+        mWordMatcher = Pattern
+            // Compile the regex, which will ignore case.
+            .compile(regexWord,
+                     Pattern.CASE_INSENSITIVE)
+
+            // Create a Matcher for the regex on the input.
+            .matcher(input);
+    }
+
+    /**
+     * Attempt to advance the spliterator by one word match.
+     */
+    public boolean tryAdvance(Consumer<? super SearchResults.Result> action) {
+        // If there's no match then we're done with the iteration.
+        if (!mWordMatcher.find())
+            return false;
+        else {
+            // Create a new Result object indicating where the index
+            // starts.
+            action.accept(new SearchResults.Result(mWordMatcher.start()));
+            return true;
+        }
+    }
+}
+----
+
+Usage
+
+----
+// Use a WordMatchSpliterator to add the indices of all
+                        // places in the input where word matches.
+                        StreamSupport
+                                // Create a sequential stream of Result objects that
+                                // record where the word matched the input (if it did).
+                                .stream(new WordMatchSpliterator(mInput, word),
+                                        false)
+
+                                // This terminal operation triggers aggregate operation
+                                // processing and returns a list of Results.
+                                .collect(toList())
+----
+
+Source: LiveLessons Parallel Streams
+
+== Collector
+
+`public interface Collector<T, A, R> {...}`
+
+* T – the type of objects that will be available for collection,
+* A – the type of a mutable accumulator object,
+* R – the type of a final result.
+
+----
+private class ImmutableSetCollector<T>
+  implements Collector<T, ImmutableSet.Builder<T>, ImmutableSet<T>> {...}
+----
+
+* Supplier<ImmutableSet.Builder<T>> supplier()
+* BiConsumer<ImmutableSet.Builder<T>, T> accumulator()
+* BinaryOperator<ImmutableSet.Builder<T>> combiner()
+* Function<ImmutableSet.Builder<T>, ImmutableSet<T>> finisher()
+* Set<Characteristics> characteristics()
+
+The supplier() method returns a Supplier instance that generates an empty accumulator instance:
+----
+@Override
+public Supplier<ImmutableSet.Builder<T>> supplier() {
+    return ImmutableSet::builder;
+}
+----
+
+The accumulator() method returns a function that is used for adding a new element to an existing accumulator object.
+----
+@Override
+public BiConsumer<ImmutableSet.Builder<T>, T> accumulator() {
+    return ImmutableSet.Builder::add;
+}
+----
+
+The combiner() method returns a function that is used for merging two accumulators together:
+----
+@Override
+public BinaryOperator<ImmutableSet.Builder<T>> combiner() {
+    return (left, right) -> left.addAll(right.build());
+}
+----
+
+The finisher() method returns a function that is used for converting an accumulator to final result type, so in this case:
+----
+@Override
+public Function<ImmutableSet.Builder<T>, ImmutableSet<T>> finisher() {
+    return ImmutableSet.Builder::build;
+}
+----
+
+
+The characteristics() method is used to provide Stream with some additional information that will be used for internal optimizations.
+
+----
+@Override public Set<Characteristics> characteristics() {
+    return Sets.immutableEnumSet(Characteristics.UNORDERED);
+}
+----
+
+* CONCURRENT
+Indicates that this collector is concurrent, meaning that the result container can support the accumulator function being called concurrently with the same result container from multiple threads.
+* IDENTITY_FINISH
+Indicates that the finisher function is the identity function and can be elided.
+* UNORDERED
+Indicates that the collection operation does not commit to preserving the encounter order of input elements.
+
+Usage:
+----
+List<String> givenList = Arrays.asList("a", "bb", "ccc", "dddd");
+
+ImmutableSet<String> result = givenList.stream()
+  .collect(toImmutableSet());
+----
+
+
+
+
+
+
+
+Source: https://www.baeldung.com/java-8-collectors[Collectors]
+
