@@ -8,7 +8,7 @@ Maintaining access between new and legacy systems can force the new system to ad
 Isolate the different subsystems by placing an anti-corruption layer between them. This layer translates communications between the two systems, allowing one system to remain unchanged while the other can avoid compromising its design and technological approach.
 
 [.left.text-center]
-image::anticorruption.png[anticorruption pattern]
+image::patterns/anticorruption.png[anticorruption pattern]
 
 The anti-corruption layer contains all of the logic necessary to translate between the two systems. The layer can be implemented as a component within the application or as an independent service.
 
