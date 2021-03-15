@@ -1,4 +1,4 @@
-ifndef::imagesdir[:imagesdir: ../images]
+ifndef::imagesdir[:imagesdir: ./imagesC]
 = Concurrent programming
 
 == General
@@ -442,7 +442,7 @@ A WAITING thread can only run again when the notify() method is called.
 
 Getting the state `thread.getState()`
 
-image::concurrency/threadLifeCycle.png[Thread lifecycle]
+image::threadLifeCycle.png[Thread lifecycle]
 
 == Ordering Read/Write
 

@@ -1,4 +1,4 @@
-ifndef::imagesdir[:imagesdir: ../images]
+ifndef::imagesdir[:imagesdir: ./imagesC]
 
 = Executor Framework
 
@@ -9,7 +9,7 @@ The Job of that thread pool is to accept the task and execute if there is a free
 
 The main difference between the Executor framework and ForkJoinPool is that the former provides a general-purpose thread pool, while the latter provides a special implementation that uses a work-stealing pattern for efficient processing of ForkJoinTask.
 
-image::concurrency/executorFrameworkDiagram.png[Executor Framwwork]
+image::executorFrameworkDiagram.png[Executor Framwwork]
 
 == ForkJoinPool vs Executor Framework
 1. The main difference between ForkJoinPool and ThreadPoolExecutor is that ForkJoinPool is designed to accept and execute ForkJoinTask, which is a lightweight version of FutureTask, +

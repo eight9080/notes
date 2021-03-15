@@ -1,5 +1,117 @@
+ifndef::imagesdir[:imagesdir: ./imagesC]
 = ForkJoinPool
 
 == Overview
 The fork-join pool provides a high performance, fine-grained task execution framework for Java data parallelism.
+
+.Solve (problem)
+
+ if (problem is small enough)
+    solve problem directly
+            (sequential algorithm)
+ else
+    split problem into independent parts
+    fork new sub-tasks to solve each part
+    join all sub-tasks
+    compose result from sub-results
+
+Subtasks:
+
+* run in parallel on different cores
+* can also run concurrently in different threads on a single core
+
+Join - waits for a sub-tasks to finish & merge the results
+
+image::forkJoin.png[Fork Join Pool]
+
+== Structure
+
+=== ForkJoinPool Class
+
+ForkJoinPool implements ExecutorService interface +
+Other implementations of ExecutorService execute runnables or callables.
+
+image::hierarchyExecutor.png[Hierarchy]
+
+The ForkJoinPool executes *ForkJoinTasks*
+
+==== ForkJoinTask
+
+image::forkJoinTaskHierarchy.png[Hierarchy]
+
+* associates a chunk of data along with a computation of that data
+* is lighter weight than a Java thread
+
+fork() doesn't run the task, but places it on a *work queue* in the calling worker thread.
+
+join()
+
+* returns the result of a child task to the parent task that forked it.
+* doesn't block the calling thread
+* it uses a worker thread to run tasks
+
+==== Methods of ForkJoinPool
+
+Clients insert new fork-join tasks onto a fork-join pool's shared queued, which feeds work-stealing queues managed by worker threads.
+
+image::forkJoinPoolDiagram.png[ForkJoinPool]
+
+|===
+|void | `execute(ForkJoinTask<T>)`| async execution
+|T    | `invoke(ForkJoinTask<T>)`| performs the given task, returning its result upon completion
+|ForkJoinTask<T>    | `submit(ForkJoinTask<T>)`| submits a ForkJoinTask for execution, returns a Future
+|===
+
+The ForkJoinPool size defaults to the number of cores available to Java runtime.
+
+==== Methods of ForkJoinTask
+
+fork()
+
+- enables a task to create sub-tasks that run in parallel
+- pushes the task on the head of the deque owned by the current worker thread
+
+join()
+
+- returns the result of a previously fork'd computation when it is done
+- defines a sync point
+
+invoke() - sync computation
+
+==== Sub classes of ForkJoinTask
+
+RecursiveAction - does not return a result
+`void compute()`
+
+RecursiveTask - does return a result
+`V compute()`
+
+
+=== Worker Threads
+
+Each worker thread runs a loop to get work
+
+A worker thread has a double ended queue ( deque ) that servers as its main source of tasks.
+
+If a task run by a worker thread calls `fork()` the new task is pushed on the head of the worker's deque.
+
+A worker thread processes its deque in LIFO order. (stack)
+
+`join()` - pitches in to pop & execute sub-tasks
+
+=== Work Stealing
+
+Worker threads only block if there are no tasks available to run.
+
+Each worker thread checks other dequeues in the pool to find other tasks to run.
+
+To maximize core utilization, idle worker threads steal work from the tail of busy threads' dequeues. (poll method)
+
+Tasks are stolen in FIFO order. (queue)
+
+
+
+
+
+
 
