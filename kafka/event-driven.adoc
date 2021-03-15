@@ -14,3 +14,112 @@ Kafka is designed to move data, operating on that data as it does so. It’s abo
 *Kafka is a streaming platform*
 
 image::kafkaBroker.png[Kafka Broker]
+
+== Kafka Broker
+
+The underlying abstraction is a *partitioned log*, essentially a set of append-only files spread over a number of machines.
+
+A Kafka cluster is a distributed system, spreading data over many machines both for fault tolerance and for linear scale-out.
+
+The system is designed to handle a range of use cases:
+
+- from high-throughput streaming, where only the latest messages matter
+- to mission-critical use cases where messages and their relative ordering must be preserved with the same guarantees as you’d expect from a DBMS
+
+=== The log
+
+The log-structured approach is itself a simple idea: a collection of messages, appended sequentially to a file. When a service wants to read messages from Kafka, it “seeks” to the position of the last message it read, then scans sequentially, reading messages in order while periodically recording its new position in the log
+
+image::kafkaLog.png[Kafka Log]
+
+Both reads and writes are sequential operations.
+In fact, when you read messages from Kafka, the server doesn’t even import them into the JVM (Java virtual machine). Data is copied directly from the disk buffer to the network buffer (zero copy)
+
+The log is O(1) when either reading or writing messages to a partition, so whether the data is on disk or cached in memory matters far less.
+
+=== Linear Scalability
+
+Kafka is really many logs, spanning many different machines.
+
+Production clusters typically start at three machines with larger clusters in the hundreds.
+
+When you read and write to a topic, you’ll typically be reading and writing to all of them, partitioning your data over all the machines you have at your disposal. Scaling is thus a pretty simple affair: add new machines and rebalance.
+
+Consumption can also be performed in parallel, with messages in a topic being spread over several consumers in a consumer group.
+
+image::kafkaCluster.png[Kafka Cluster]
+
+=== Maintaining Strong Ordering Guarantees
+
+The first is that messages that require relative ordering need to be sent to the same partition. (*Kafka provides ordering guarantees only within a partition.*)
+
+You supply *the same key for all messages that require a relative order*.
+
+So a stream of customer information updates would use the CustomerId as their partitioning key. All messages for the same customer would then be routed to the same partition, and hence be strongly ordered
+
+* Key's map messages to partitions.
+* Partitions are strongly ordered.
+* Consumers in a group are allocated entire partitions,
+so ordering guarantees are always upheld.
+
+=== Compacted Topics
+
+By default, topics in Kafka are retention-based: messages are retained for some configurable amount of time.
+
+*Compacted topics* - a special type of topic that manages keyed datasets—that is, data that has a primary key (identifier)
+
+* retain only the most recent events, with any old events, for a certain key, being removed
+
+Compacted topics work a bit like simple log-structure merge-trees (LSM trees). The topic is scanned periodically, and old messages are removed if they have been superseded (based on their key)
+
+=== Security
+
+Client authentication is provided through either Kerberos or Transport Layer Security (TLS) client certificates, ensuring that the Kafka cluster knows who is making each request.
+
+There is also a Unix-like permissions system, which can be used to control which users can access which data. Network communication can be encrypted, allowing messages to be securely sent across untrusted networks.
+
+== Events
+
+*Commands*
+
+Commands are actions—requests for some operation to be performed by another service, something that will change the state of the system. Commands execute synchronously and typically indicate completion, although they may also include a result.
+
+*Events*
+
+Events are both a fact and a notification. They represent something that happened in the real world but include no expectation of any future action. They travel in only one direction and expect no response (sometimes called “fire and forget”), but one may be “synthesized” from a subsequent event.
+
+*Queries*
+
+Queries are a request to look something up. Unlike events or commands, queries are free of side effects; they leave the state of the system unchanged.
+
+|===
+||Behavior/state change |	Includes a response |
+
+|Command |Requested to happen |Maybe
+|Event | Just happened |Never
+|Query |None           |Always
+|===
+
+
+*Sharing always increases the coupling on whatever we decide to share.*
+
+_Functional couplings are optional. Core data couplings are essential._
+
+
+=== Using Events for Notification
+
+Most message brokers provide a publish-subscribe facility where the logic for how messages are routed is defined by the receivers rather than the senders; this process is known as _receiver-driven routing_ - which makes the system pluggable
+
+==== The Event Collaboration Pattern
+
+To build fine-grained services using events, a pattern called Event Collaboration is often used. This allows a set of services to collaborate around a single business workflow, with each service doing its bit by listening to events, then creating new ones.
+
+The lack of any one point of central control means systems like these are often termed *choreographies*: each service handles some subset of state transitions, which, when put together, describe the whole business process. This can be contrasted with orchestration, where a single process commands and controls the whole workflow from one place—for example, via a process manager.
+
+image::eventCollaboration.png[Event Collaboration]
+
+
+
+
+
+
