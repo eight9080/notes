@@ -10,7 +10,7 @@
 </dependency>
 ----
 
-=== Topics
+== Topics
 ----
 bin/kafka-topics.sh --create \
   --zookeeper localhost:2181 \

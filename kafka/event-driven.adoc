@@ -1,0 +1,16 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= Event-Driven Systems
+
+Kafka provides an asynchronous protocol for connecting programms together.
+
+*A broker* is a separate piece of infrastructure that broadcasts messages to any programs that are interested in them, as well as storing them for as long as is needed.
+
+*Events are business facts that have value to more than one service and are worth keeping around.*
+
+A Kafka cluster is a *distributed system* at heart, providing high availability, storage, and linear scale-out.
+
+Kafka is designed to move data, operating on that data as it does so. It’s about real-time processing first, long-term storage second.
+
+*Kafka is a streaming platform*
+
+image::kafkaBroker.png[Kafka Broker]
