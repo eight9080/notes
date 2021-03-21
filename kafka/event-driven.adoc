@@ -118,6 +118,32 @@ The lack of any one point of central control means systems like these are often 
 
 image::eventCollaboration.png[Event Collaboration]
 
+== Event Sourcing
+
+Event Sourcing is just the observation that events (i.e., state changes) are a core element of any system.
+
+A replayable log turns ephemeral messaging into messaging that remembers.
+
+Event Sourcing ensures every state change in a system is recorded, much like a version control system.
+
+The application of Event Sourcing means the event, not the database record, is the source of truth. Making events first-class entities
+
+Event Sourcing ensures that the state a service communicates and the state a service saves internally are the same.
+
+*CQRS (Command Query Responsibility Segregation)* separates the write path from the read path and links them with an asynchronous channel
+
+=== Materialized Views
+
+Writes go into Kafka on the command side (rather than updating a database table directly). We can transform the event stream in a way that suits our use case, typically using Kafka Streams or KSQL, then materialize it as a precomputed query or materialized view.
+
+If an event stream is the source of truth, you can have as many different views in as many different shapes, sizes, or technologies as you may need. Each is focused on the use case at hand.
+
+image::kStreamViews.png[K Stream]
+
+*Deltas*
+
+The rule of thumb is record exactly what you receive, immutably
+
 
 
 
