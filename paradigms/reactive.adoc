@@ -1,0 +1,35 @@
+= Reactive System
+
+== Overview
+A reactive system is an architectural style that allows multiple individual applications to be as a single unit, reacting to its surroundings, while remaining aware of each other.
+
+Reactive Systems in a nutshell is an Architectural and Design pattern of building large scale, responsive, resilient, self healing systems where individual components talk to each other over Asynchronous Messaging.
+
+== Main properties
+
+*Responsive*
+
+The system responds in a timely manner if at all possible. +
+It demonstrates the self healing nature of reactive systems in which once bleeding begins, it is detected quickly and system takes appropriate actions to mitigate it.
+
+*Resilient*
+
+The system stays responsive in the face of failure. +
+Resilience is achieved by *replication, containment, isolation and delegation*.  +
+Failures are contained within each component, isolating components from each other and thereby ensuring that parts of the system can fail and recover without compromising the system as a whole.
+
+*Elastic*
+
+ The system stays responsive under varying workload. + 
+ Reactive Systems can react to changes in the input rate by increasing or decreasing the resources allocated to service these inputs. +
+ Reactive Systems support predictive, as well as Reactive, scaling algorithms by providing relevant live performance measures. +
+ They achieve elasticity in a cost-effective way on commodity hardware and software platforms.
+ 
+ *Message Driven* 
+ 
+ Reactive Systems rely on asynchronous message-passing to establish a boundary between components that ensures loose coupling, isolation and location transparency. +
+ Employing explicit *message-passing* enables load management, elasticity, and flow control by shaping and monitoring the message queues in the system and applying back-pressure when necessary. +
+ Non-blocking communication allows recipients to only consume resources while active, leading to less system overhead.
+ 
+ 
+
