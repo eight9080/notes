@@ -15,6 +15,13 @@ To ensure availability, we can add replicas for the data. As to components of th
 
 Source: https://www.puncsky.com/blog/2016/02/14/crack-the-system-design-interview/
 
+== Cassandra
+Cassandra is set up to be Available and Partition tolerant.
+This means that Cassandra can be distributed on multiple machines (Partition tolerance). +
+By having multiple instances available, Cassandra can handle the fact that instances are unavailable and it can spread the load accros the available instances (Availability).
+
+
+
 
 High Availability - Cold, Warm, Hot
 
