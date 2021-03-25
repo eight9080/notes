@@ -1,0 +1,71 @@
+= Event-Driven Patterns
+
+Sets of microservices can be logically combined in one bounded context. 
+
+When no new data is created, data is to be consumed from its source using microservices which expose that data.
+
+API composition is to be used as the querying style when aggregating data spanning multiple contexts. + 
+CQRS and event sourcing are restricted for use only within a bounded context. 
+
+By constraining CQRS to bounded context the owner of the data can guard the consistency of the data between command and query systems.
+
+CQRS patterns are a natural fit for message based replication of the data. +
+Since messages are used for replicating, event sourcing is a natural fit for storing the data. +
+However, specific needs of querying may come with specific needs for storage.
+
+Event Sourcing
+
+Event sourcing provides a complete log of every state change ever made to an object, so troubleshooting is easier and it preserves the history of aggregates. +
+By expressing the user intent as an ordered log of immutable events, event sourcing gives the business an audit and compliance log which also has the added benefit of providing data provenance. +
+It enables resilient applications; rolling back applications amounts to rewinding the event log and reprocessing data. It has better performance characteristics; 
+writes and reads can be scaled independently. It enables a loosely coupled application architecture; +
+one that makes it easier to move towards a microservices-based architecture.
+
+Event sourcing enables building a forward-compatible application architecture—the ability to add more applications in the future that need to process the same event but create adifferent materialized view.
+
+Store as a Service
+
+Ownership of data -> Any microservice can only directly access its own data. 
+
+Data Consistency 
+
+Orchestration based SAGA +
+An orchestrator tells the participants what local transactions to execute. 
+This keeps the local services simple and provides clear insight in the orchestration flows. +
+
+Choreography based SAGA +
+Each local transaction publishes domain events that trigger local transactions in other services. 
+This breaks up and spreads the flow control over all individual services, making it harder to control. +
+Correcting failedtransactions and testing these mechanisms becomes very complex
+
+Communication style the consumed services determine the communication style, a SAGA can deal with a mixture of
+synchronous and asynchronous, parallel and sequential calls.
+Saga comes with complexity, measures are to be taken to protect against potential issues coming from this complexity. 
+
+SAGA principles:
+* Set the hardest to compensate transaction at the end of the chain
+* Set the most likely to fail transaction at the beginning
+* The orchestrator should persistently store state, always but even more so when crossing bounded contexts.
+* Participants in a SAGA should provide compensating transactions for their services
+
+A way to thoroughly deal with idempotency in an event-driven architecture could be to implement an identifier generated based on the event content yet with some slight unique logic behind it to guarantee it is not replicated
+over systems. If implemented correctly, each consumer would know if it has already processed the event based on the identifier. 
+
+
+
+
+
+
+=== Definitions
+
+Non Blocking 
+
+A system or service that allows access to the resource if it is available otherwise it immediately returns informing the caller that the resource is not currently available
+or that the operation has been initiated and not yet completed. +
+Asynchronous services are inherently non-blocking. A non-blocking API to a resource allows the caller the option to do other work rather than be blocked waiting on the
+resource to become available. +
+This may be complemented by allowing the client of the resource to register for getting notified when the resource is available or the operation has completed.
+
+Idempotency
+
+When an operation can be applied multiple times without changing the result beyond the initial operation.
