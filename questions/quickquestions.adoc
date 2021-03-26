@@ -9,14 +9,35 @@ technologies used on previous projects
 * Can you give some example of functional interfaces
 * What is a default method why were needed/introduced?
 
+* Difference between a stream and a collection
+* What Is the Difference Between Intermediate and Terminal Operations?
+
+* Guidelines for Making a class Immutable
 
 == Java collections
+* How HashMap works in Java ?
+* Can we put two elements with equal hash code to one hash map?
+* What is the importance of hashCode() and equals() methods ? 
+* The difference between HashSet and TreeSet ? 
+
+* Differences between ConcurrentHashMap and Collections.synchronizedMap()
 
 == Concurrency
+* What are the states in the lifecycle of a Thread?
+* What are numerous ways in which a thread can enter the waiting state?
+* What is deadlock - how to avoid it ?
+* What is Thread Pool?
+* Which types of thread pool do you know/ have used?
+* How is the safety of a thread achieved? https://github.com/eight9080/notes/blob/master/questions/concurrency.adoc#how-is-the-safety-of-a-thread-achieved[Answer] 
 
 == Spring
+* What is difference between DI and IOC in spring? 
+* What are important Spring Modules?
 
 == Testing
 
 == Infrastructure
+
+== Microservices
+* examples of resilience patters
 
