@@ -56,4 +56,18 @@ technologies used on previous projects
 == System design
 * horizontal vs vertical scaling
 * design a system to send emails when a order is confirmed and is delivered.  
+* how can you make the application to be ready for cloud 
+* twelve factors: 
+** codebase - GIT revision control
+** dependencies - isolate dependencies
+** config - store config per env
+** backing services - attached resources
+** build/run - separate stages
+** process - stateless processes
+** port binding - export services via port binding 
+** concurrency - scale out
+** disponibility - maximize robustness
+** dev/prod parity
+** logs- treat logs as event streams
+** admin process - run admin/management tasks as one-off processess
 
