@@ -1,0 +1,22 @@
+= Questions
+
+== Previous experience
+technologies used on previous projects
+
+== Java core / Java 8
+* What is a Lambda expression and what it is used for. 
+* What is a FunctionalInterface? what conditions are needed for a interface to be functional interface? 
+* Can you give some example of functional interfaces
+* What is a default method why were needed/introduced?
+
+
+== Java collections
+
+== Concurrency
+
+== Spring
+
+== Testing
+
+== Infrastructure
+
