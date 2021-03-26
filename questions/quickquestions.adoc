@@ -18,7 +18,11 @@ technologies used on previous projects
 * How HashMap works in Java ?
 * Can we put two elements with equal hash code to one hash map?
 * What is the importance of hashCode() and equals() methods ? 
+* How does HashMap handle collisions in java?
 * The difference between HashSet and TreeSet ? 
+* What is the difference between fail-fast and fail-safe iterator?
+* What is difference between size and capacity of HashMap/ArrayList What is difference between size and capacity of HashMap/ArrayList[Answer]
+* What is Load Factor in HashMap Context?
 
 * Differences between ConcurrentHashMap and Collections.synchronizedMap()
 
@@ -35,6 +39,8 @@ technologies used on previous projects
 * What are important Spring Modules?
 
 == Testing
+* What testing did you perform for a feature/release?
+
 
 == Infrastructure
 
