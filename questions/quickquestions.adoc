@@ -45,6 +45,7 @@ technologies used on previous projects
 == Testing
 * What testing did you perform for a feature/release?
 * Types of testing 
+* contract testing - how to ensure contract between tests
 
 == Infrastructure
 * Docker container vs docker image
@@ -104,3 +105,6 @@ Microservice A checks with the certificate authority that the certificate belong
 Microservice A sends its certificate to microservice B and also shares a session encryption key (encrypted with the public key of microservice B).
 Microservice B checks with the certificate authority that the certificate it received belongs to microservice A.
 With both microservices mutually authenticated and a session key created, communication between them can be encrypted and sent via the secure link.
+
+* The difference between symmetric and asymmetric encryption?
+Symmetric encryption uses the same key to encrypt and decrypt, while asymmetric encryption uses different keys for encryption and decryption. Asymmetric encryption is commonly used to secure an initial key-sharing conversation, but then the actual conversation is secured using symmetric crypto. Communication using symmetric crypto is usually faster due to the slightly simpler math involved in the encryption/decryption process and because the session setup doesn’t involve PKI certificate checking.”
