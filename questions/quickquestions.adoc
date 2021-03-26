@@ -13,6 +13,7 @@ technologies used on previous projects
 * What Is the Difference Between Intermediate and Terminal Operations?
 
 * Guidelines for Making a class Immutable
+* Java memory model
 
 == Java collections
 * How HashMap works in Java ?
@@ -37,13 +38,22 @@ technologies used on previous projects
 == Spring
 * What is difference between DI and IOC in spring? 
 * What are important Spring Modules?
+* What happens  
+* Spring beans scopes
+* Types of DI
 
 == Testing
 * What testing did you perform for a feature/release?
-
+* Types of testing 
 
 == Infrastructure
+* Docker container vs docker image
+* Docker container vs virtual machine 
 
 == Microservices
 * examples of resilience patters
+
+== System design
+* horizontal vs vertical scaling
+* design a system to send emails when a order is confirmed and is delivered.  
 
