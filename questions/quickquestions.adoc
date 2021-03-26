@@ -71,3 +71,36 @@ technologies used on previous projects
 ** logs- treat logs as event streams
 ** admin process - run admin/management tasks as one-off processess
 
+== Security 
+* What are Client certificates?
+
+Client certificates is a digital certificate used to make authenticated requests to a remote server. It is termed as a client certificate.
+
+* HTTPS TLS SSL
+
+TLS is the new name for SSL. Namely, SSL protocol got to version 3.0; TLS 1.0 is "SSL 3.1". TLS versions currently defined include TLS 1.1 and 1.2. Each new version adds a few features and modifies some internal details. We sometimes say "SSL/TLS".
+
+HTTPS is HTTP-within-SSL/TLS. SSL (TLS) establishes a secured, bidirectional tunnel for arbitrary binary data between two hosts. HTTP is a protocol for sending requests and receiving answers, each request and answer consisting of detailed headers and (possibly) some content. HTTP is meant to run over a bidirectional tunnel for arbitrary binary data; when that tunnel is an SSL/TLS connection, then the whole is called "HTTPS".
+
+To explain the acronyms:
+
+"SSL" means "Secure Sockets Layer". This was coined by the inventors of the first versions of the protocol, Netscape (the company was later bought by AOL).
+"TLS" means "Transport Layer Security". The name was changed to avoid any legal issues with Netscape so that the protocol could be "open and free" (and published as a RFC). It also hints at the idea that the protocol works over any bidirectional stream of bytes, not just Internet-based sockets.
+"HTTPS" is supposed to mean "HyperText Transfer Protocol Secure", which is grammatically unsound. Nobody, except the terminally bored pedant, ever uses the translation; "HTTPS" is better thought of as "HTTP with an S that means SSL". Other protocol acronyms have been built the same way, e.g. SMTPS, IMAPS, FTPS... all of them being a bare protocol that "got secured" by running it within some SSL/TLS.
+
+
+* Who would you secure the comunicattion between two services?
+Mutual TLS (or mTLS) refers to transport layer security that uses a two-way encrypted channel between the server and client. Today, mTLS is the preferred protocol for securing communications among microservices in cloud native applications.
+
+While transport layer security (TLS) has been used to secure traffic between clients and servers on the internet for many years, it typically uses unidirectional identification — where a server presents a certificate to prove its identity to a client. A basic example of this one-way authentication is when you access your bank account online. The server sends your computer a certificate to prove it is actually the bank you are connecting to. That same certificate includes a public encryption key that is used to create a cryptographically secure encrypted link between you and the bank over which data passes.
+
+Mutual TLS extends the client-server TLS model to include authentication of both parties. Where the bank relies on other, application-specific mechanisms to confirm a client’s identity — such as a user name and password (often accompanied by two-factor authentication) — mTLS uses x.509 certificates to identify and authenticate each microservice. Each certificate contains a public encryption key and an identity, and is signed by a trusted certificate authority who proves that the certificate represents the entity presenting it.
+
+In mTLS, each microservice in a service mesh verifies the other’s certificate and uses the public keys to create encryption keys unique to each conversation. This enables the communications between pairs of microservices to be authenticated and encrypted.
+
+Microservice A sends a request for the certificate of microservice B.
+Microservice B replies with its certificate and requests the certificate of Microservice A.
+Microservice A checks with the certificate authority that the certificate belongs to Microservice B.
+Microservice A sends its certificate to microservice B and also shares a session encryption key (encrypted with the public key of microservice B).
+Microservice B checks with the certificate authority that the certificate it received belongs to microservice A.
+With both microservices mutually authenticated and a session key created, communication between them can be encrypted and sent via the secure link.
