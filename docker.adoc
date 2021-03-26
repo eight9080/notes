@@ -343,6 +343,37 @@ $ docker container rm -f $(docker container ls -aq)
 
 Source: https://www.baeldung.com/docker-images-vs-containers[Docker images]
 
+=== Docker vs Virtual machines
+
+A container image is a lightweight, stand-alone, executable package of a piece of software that includes everything needed to run it.
+
+Docker is the service to run multiple containers on a machine (node) which can be on a vitual machine or on a physical machine.
+
+A virtual machine is an entire operating system (which normally is not lightweight).
+
+Docker Containers have the following benefits: 
+
+* Light-weight
+* Applications run in isolation
+* Occupies less space
+* Easily portable and highly secure
+* Short boot-up time
+
+Docker is a container-based model where containers are software packages used for executing an application on any operating system
+In Docker, the containers share the host OS kernel
+Here, multiple workloads can run on a single OS
+
+A virtual machine (VM) is a computing environment or software that aids developers to access an operating system via a physical machine.
+ they use user space along with the kernel space of an OS
+
+It does not share the host kernel
+
+Each workload needs a complete OS or hypervisor 
+
+Since VM uses a separate OS; it causes more resources to be used
+
+Virtual machines don’t start quickly and lead to poor performance
+
 
 
 
