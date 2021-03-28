@@ -1,0 +1,106 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= Architecture Parts
+
+Features:
+
+* Consistency
+* Availability
+* Reliability
+
+
+image::asIsArch.png[AS IS]
+
+== Operational Architecture Characteristics
+
+* reliablity
+
+The ability of a system or component to function under stated conditions for a specified period of time.
+
+* availability
+
+Availability (A) is a ratio of the expected value of the uptime of a system to the aggregate of the expected values of up and down time
+Another equation for availability (A) is a ratio of the Mean Time Between Failure (MTBF) and Mean Time To Repair (MTTR), or
+
+image::availabilityFormula.png[Formula]
+
+A software system crashed 20 times in an year and for each crash, it takes 2 minutes to restart. Calculate availability in that year
+
+A system has 24/7 (i.e. 'round the clock) availability.
+In minutes -> it needs to be available for +
+365 (days) * 24 (hours) * 60 (minutes) = 525600 minutes.
+
+MTBF - amount of time divided by the number of failures (20). +
+MTBF = 525600 / 20 =26280 (minutes MTBF).
+
+Availability = MTBF/(MTBF+MTTR) gives:+
+26280 (MTBF) / (26280+2) = 0.99992390229054105471425310098166 -
+or approx. 99.99% availability.
+
+image::HAtable.png[High Availability Table]
+
+
+Architecture Characteristics:
+
+* data integrity
+* workflow
+* reliability
+* availability
+* maintainability
+* testability
+* scalability
+
+== Quantum
+
+=== Single Static Quantum
+* Layered Monolith
+* Modular Monolith
+* Microkernel
+
+image::singleArchQ.png[Single Static Quantum]
+
+* Event-driven Architecture
+* Service-based architecture
+
+image::singleArchQ2.png[Single Static Quantum2]
+
+* With UI
+
+image::serviceWithUI.png[Services with UI]
+
+=== Microservice Quanta (no UI)
+
+image::microservices.png[Microservices]
+
+=== Multi-quanta > 4
+* Micro-front ends
+
+image::mictofrontends.png[Microfrontends]
+
+== Decomposition
+=== Service granularity
+
+Granularity disintegrators:
+
+* service functionality
+* code volatility
+* scalability and throughput
+* fault tolerance
+* data security
+
+Granularity integrators:
+
+* database transactions
+* data dependencies
+* workflow and choreography
+
+Problems:
+
+* slow performance due to latency and security
+* reliability and data consistency
+
+
+
+
+
+
+
