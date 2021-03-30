@@ -79,7 +79,84 @@ SAGA principles:
 A way to thoroughly deal with idempotency in an event-driven architecture could be to implement an identifier generated based on the event content yet with some slight unique logic behind it to guarantee it is not replicated
 over systems. If implemented correctly, each consumer would know if it has already processed the event based on the identifier. 
 
+=== Application Patterns
 
+Decomposition -> by business capability
+
+Database architecture:
+
+* shared database - anti-pattern - removes scalability
+* database per service - database per bounded context - allowed to have multiple microservices connect to a DB within the same bounded context
+
+Quering:
+
+* API composition
+* CQRS - one or more copies of the data are stored in a format optimized for reads. Data replication restrics the use of CQRS to within the boundries of a bounded context. 
+
+Testing:
+
+* Service Integration Contract Test 
+* Service Component Test
+
+Data consistency:
+
+* Saga 
+* Event sourcing - restrict to use inside bounded context
+* Application events/ database triggers/ transaction log tailing - restrict to use inside bounded context
+
+UI:
+
+* Server side page fragment composition - NO
+* Client-side UI composition 
+
+Observability:
+
+* Audit Logging
+* Application metrics
+
+Cross cutting concerns:
+
+* Externalized configuration
+
+Security:
+
+* JWT
+
+Communication style:
+
+* Messaging 
+preference for synchronous communication over bounded contexts for primary calls, the async message based communication - for secondary flows
+* Remote procedure invocation
+
+Reliability:
+
+* Circuit Breaker
+
+Discovery:
+
+* Client-side discovery
+* Self registration
+
+Observability:
+
+* Distributed tracing
+* Health check API
+* Exception tracking
+* Log Aggregation
+* Log deployments and changes
+
+Deployment:
+
+* Multiple services per host
+Micro services from multiple bounded contexts can not be combined on a single host, since it would make it impossible to update in isolation. Also scaling for load on a bounded context becomes a challenge. A bounded context owner can choose to combine several micro services of the same context on a single host.
+* Single service per host
+* Serverless deployment
+* Service per container
+
+Discovery:
+
+* Service registry
+* Server-side discovery
 
 
 
