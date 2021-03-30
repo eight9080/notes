@@ -1,5 +1,33 @@
 = Event-Driven Patterns
 
+== Types of events
+
+Content driven events: 
+
+* Atomic/raw native events
+A message containing something that occurred as it occurs on a data asset +
+Totally depend on the asset technology
+Events consumption implies strong coupling with the data assets and that’s why the atomic native events must not be consumed outside of bounded context(service)
+* Atomic standard
+A standard representation of atomic native events.
+Atomic Standard events should be taken in the same way as building blocks REST APIs are. They allow lightly coupled designs by fulfilling a contract between the parts.
+* Derived standard
+A standardized representation of a business fact, that fulfill certain business needs for a specific purpose, with the same standard representation rules explained before. +
+Usually include references to domain entities, but not the entire entity avoiding unnecessary data duplication and event enrichment.
+* Derived native
+An event that contains derived information in a format and structure tailor-made for a specific consumer or use case, therefore using the native format and definitions of that consumer.
+
+Purpose driven events:
+* Command
+A message needed in order to communicate any building block with different technical components from other services.
+The content is only relevant for an application or domain +
+The owner of the schema is always on the consumer side although in the other types of events the owner is the producer.
+* Intra-App
+Any message needed under the responsibilities of a building block in order to communicate its different technical parts.
+
+
+== Patterns
+
 Sets of microservices can be logically combined in one bounded context. 
 
 When no new data is created, data is to be consumed from its source using microservices which expose that data.
