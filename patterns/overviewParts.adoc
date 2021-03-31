@@ -98,9 +98,71 @@ Problems:
 * slow performance due to latency and security
 * reliability and data consistency
 
+== Managing flows
+
+Orchestration:
+
+* centralized workflow
+* services are generally more tightly coupled due to orchestrator
+* less responsiveness and performance
+* better control of sagas (state) and error handling
+
+* error handling
+* state management
 
 
+Choreography:
 
+* distributed workflow
+* services are generally less coupled (handoffs)
+* better responsiveness and performance
+* complex saga (state) management and error handling
+
+== Semantic vs syntactic coupling
+
+semantic - work domain
+
+syntatic - how you solve the problem
+
+Strict contract
+
+
+|===
+|+ |-
+
+|guaranteed contract fidelity
+|versioning communication
+
+|managed through versioning
+|deprecation strategy
+
+|exact contract is known
+|brittle and tight coupling
+
+|contains types and constraints
+|
+|===
+
+
+Loose contract:
+
+|===
+|+ |-
+
+|loose service coupling
+|requires fitness functions
+
+|easy to evolve contract
+|less certainty in contracts
+
+|always backward compatible
+|requires documentation
+
+|immune from implementation changes
+|
+|===
+
+=== Contract versioning
 
 
 
