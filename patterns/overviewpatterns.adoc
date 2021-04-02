@@ -1,0 +1,7 @@
+= Patters & Principles
+
+== API Router
+
+The API Routers will perform the link between global and local demarcation using a predefined interface.
+API: to define a Global API and all the countries have to implement such Global API. Therefore the countries will response in the same standard way
+Event: The local systems will be able to publish local events in the Global event bus in a standard way with a predefined format
