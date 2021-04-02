@@ -1,0 +1,144 @@
+= Cybersecurity
+
+Git repo: https://github.com/The-Art-of-Hacking/h4cker
+
+Certification map: https://pauljerimy.com/security-certification-roadmap/
+
+== Concepts
+A *vulnerability* is an exploitable weakness in a system or its design.
+
+Vulnerabilities can be found in protocols, operating systems, applications, hardware, and system designs.
+
+List vulnerabilities: https://owasp.org/www-community/vulnerabilities/
+
+Vendors, security researchers, and vulnerability coordination centers typically assign vulnerabilities an identifier that’s disclosed to the public - *Common Vulnerabilities and Exposures* (CVE).
+
+An *exploit* is software or a sequence of commands that takes advantage of a vulnerability in order to cause harm to a system or network.
+
+A *threat* is any potential danger to an asset.
+
+A *countermeasure* is a safeguard that somehow mitigates a potential risk.
+
+=== CIA Triad
+
+==== Confidentiality
+Confidentiality is the property, that information is not made available or disclosed to unauthorized individuals, entities, or processes.
+
+No1 -> Encryption
+
+* Data In Transit - tls
+* Data at Rest - encrypt
+* Data in Use
+
+=== Integrity
+Integrity is the ability to make sure that a system and its data has not been altered or compromised.
+
+It ensures that the data is an accurate and unchanged
+representation of the original secure
+data.
+
+Hashing (signing)
+
+=== Availability
+
+Availability refers that a system or application must be “available” to authorized users at all times.
+
+
+Common Vulnerability Scoring System (CVSS) - uses CIA triad
+
+== Attacks
+
+=== Basic Port Scan
+Involves scanning a predetermined TCP/UDP port by sending a specifically configured packet that contains the port number of the port that was selected.
+
+=== TCP Scan
+A TCP-based scan of a series of ports on a machine to determine port availability.
+
+=== TCP SYN Scan
+The scanner sends a SYN packet, and if the target responds with a SYN-ACK packet, the scanner typically responds with an RST packet.
+
+=== TCP ACK Scan
+ TCP ACK scans are typically used when trying to see if a firewall is deployed and its rule sets.
+
+=== Stealth Scan
+Designed to go undetected by network auditing tools
+
+=== Social Engineering
+
+This could be done through email or misdirection of web pages, which results in the user clicking something that leads to the attacker gaining information.
+
+=== Phishing
+
+Wheretheattackerpresentsalink that looks like a valid, trusted resource to a user. +
+When the user click sit,he is prompted to disclose confidential information such as his username and password.
+
+=== Pharming
+
+The attacker uses this technique to direct a customer’s URL from a valid
+resource to a malicious one that could be made to appear as the valid site to the user.
+
+=== Malvertising
+The act of incorporating malicious ads on trusted websites
+
+=== Privilege Escalation Attacks
+
+Privilege escalation is the process of taking some level of access (whether authorized or not) and achieving an even greater level of access (elevating the user’s privileges).
+
+=== Backdoors
+A backdoor application can be installed by the attacker to either allow future access or collect information to use in further attacks.
+
+=== Code execution
+One of the most devastating actions available to an attacker is the ability to execute code within a device.
+
+=== Man-in-the Middle Attacks
+The main purpose is eavesdropping, so the attacker can see all the traffic.
+
+=== Denial-of- service (DoS) and distributed DoS (DDoS)
+• DirectDDoSattacks
+• Reflected
+• AmplificationDDoSattacks
+
+=== Spoofing Attacks
+A spoofing attack is when an attacker impersonates another device to execute an attack.
+
+=== Password Attacks
+Password-resetting attacks
+
+Password cracking:
+the attacker needs tools such as extractors for hash guessing, rainbow tables for looking up plaintext passwords, and password sniffers to extract authentication information.
+
+Password sniffing:
+The threat actor just sniffs authentication packets between a client and server and extracts password hashes or enough authentication information to begin the cracking process.
+
+Password capturing:
+This is typically done by using key loggers or Trojan horses.
+
+=== Wireless Attacks
+
+The attacker basically installs an access point and can create a backdoor and obtain access to the network and its systems.
+
+Evil twin attack:
+Basically the attacker purchases a wireless access point, plugs it into the network, and configures it exactly the same as the existing network.
+
+Bluejacking:
+The attacker sends unsolicited messages to another device via Bluetooth.
+
+IV attack:
+The attacker can cause some modification on the Initialization Vector (IV) of a wireless packet that is encrypted during transmission.
+
+== Public Key Cryptography
+
+A *cipher* is a set of rules, which can also be called an algorithm, about how to perform encryption or decryption.
+
+
+
+
+
+
+
+
+
+
+
+
+
