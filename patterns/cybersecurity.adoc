@@ -130,10 +130,187 @@ The attacker can cause some modification on the Initialization Vector (IV) of a 
 
 A *cipher* is a set of rules, which can also be called an algorithm, about how to perform encryption or decryption.
 
+=== Symetric encryption
+
+Block ciphers +
+A block cipher is a symmetric key cipher (meaning the same key is used to encrypt and decrypt) that operates on a group of bits called a block.
+
+Examples:
+
+* Advanced Encryption Standard (AES)
+* Triple Digital Encryption Standard (3DES)
+* Digital Encryption Standard (DES)
+* Blowfish
+
+Stream cipher +
+A stream cipher is a symmetric key cipher (meaning the same key is used to encrypt and decrypt), where the plaintext data to be encrypted is done a bit at a time against the bits of the key stream, also called a cipher digit stream.
+
+=== Asymmetric Algorithms
+
+An example of an asymmetric algorithm is a public key algorithm.
+Use two different keys that mathematically work together as a pair
+Examples: RSA, Diffie-Hellman, DSA, ElGamal
+
+=== Hashing
+
+Hashing is a method used to verify data integrity.
+
+* one-way function
+
+|===
+|Algorithm |Operation |Status |Alternative |QCR - quantum computer resistant
+
+|DES	|Encryption	|Avoid	|AES	|—
+|3DES	|Encryption	|Legacy	|AES	|—
+|RC4	|Encryption	|Avoid	|AES	|—
+|AES-CBC mode |Encryption |Acceptable |AES-GCM |✓ (256-bit)
+|AES-GCM mode |Authenticated encryption |NGE |— |✓ (256-bit)
+
+|DH-768, -1024  |Key exchange |Avoid   |DH-3072 (Group 15) |-
+|RSA-768, -1024 |Encryption   |Avoid   |RSA-3072 |-
+|DSA-768, -1024 |Authentication |Avoid |DSA-3072 |-
+
+|DH-2048  |Key exchange    |Acceptable  |ECDH-256  |-
+|RSA-2048 |Encryption      |Acceptable  |—         |-
+|DSA-2048 |Authentication  |Acceptable  |ECDSA-256 |-
+
+|DH-3072  |Key exchange  |Acceptable  |ECDH-256  |-
+|RSA-3072 |Encryption    |Acceptable  |- |-
+|DSA-3072 |Authentication |Acceptable |ECDSA-256 |-
+
+|MD5	|Integrity	|Avoid	|SHA-256	|—
+|SHA-1 |Integrity |Legacy |SHA-256 |—
+
+|SHA-256 |Integrity |NGE |SHA-384 |-
+|SHA-384 |Integrity |NGE |- |✓
+|SHA-512 |Integrity |NGE |- |✓
+
+|HMAC-MD5	|Integrity	|Legacy	|HMAC-SHA-256	|—
+|HMAC-SHA-1	|Integrity	|Acceptable	|HMAC-SHA-256	|—
+|HMAC-SHA-256	|Integrity	|NGE	|—	|✓
+
+|ECDH-256  |Key exchange   |Acceptable |ECDH-384 |—
+|ECDSA-256 |Authentication |Acceptable |ECDSA-384 |—
+
+|ECDH-384 |Key exchange |NGE |- |-
+|ECDSA-384 |Authentication |NGE |- |-
+
+|===
+
+QCR = quantum computer resistant. +
+NGE = next generation encryption.
 
 
+== Incident response
+A computer security incident is a violation or imminent threat of violation of computer security policies, acceptable use policies, or standard security practices.
 
+==  Network and Host Telemetry
+Logs from network devices such as firewalls, routers,
+and switches can prove useful when you’re proactively detecting or responding to a security incident.
 
+For example, brute-force attacks against a router, switch, or firewall can be detected by system log (syslog) messages that could reveal the suspicious activity.
+
+*Syslog* messages from transit network devices can provide insight into and context for security events that might not be available from other sources.
+
+NetFlow provides detailed network telemetry
+
+Internet Protocol Flow Information Export (IPFIX) is a network flow standard. +
+IPFIX was created to create a common, universal standard of export for flow information from routers, switches, firewalls, and other infrastructure devices.
+
+Open Source NetFlow Analysis Tools:
+
+• NFdump
+• SiLK
+• ELK
+• https://github.com/robcowart/elastiflow
+
+Network Packet Capture:
+
+• tcpdump, which is an open source packet capture utility that runs on Linux and Mac OS X systems
+• Wireshark, which is one of the most popular open source packet capture utilities used by many professionals
+• Netscout enterprise packet capture solutions
+
+==  Security Monitoring
+
+• Location based on just the IP address of the endpoint or DNS hostname
+• Application logs
+• Processes running on the machine
+• Personal firewalls
+• Intrusion detection/prevention systems
+• Antivirus or antimalware
+• Web security logs (from a web security appliance)
+• Email security logs (from an email security appliance)
+• Advanced malware protection logs
+
+• Mandatory password protection
+• Jailbreak detection
+• Remote wipe
+• Remote lock
+• Device encryption
+• Data encryption
+• Geolocation
+• Malware detection
+• VPN configuration and management
+• Wi-Fi configuration and management
+
+*Data normalization* is the process of capturing, storing, and analyzing data (security-related events, in this case) so that it exists in only one form.
+
+Security Information and Event Management (SIEM)
+
+5-Tuple: Source IP Address, Source Port, Destination IP Address, Destination Port, Protocol
+
+==  Access Control Models
+Access controls are used in the process of granting, preventing, or revoking access to an object.
+
+=== Identification
+A secure identity should be unique in the sense that two users should be able to identify themselves unequivocally.
+
+=== Authentication
+Authentication is the process of proving the identity of a subject or user.
+
+* Authentication by knowledge
+
+e.g: a user providing a password
+The disadvantage of using this method is that once the information is lost or stolen, an attacker would be able to successfully authenticate.
+
+* Authentication by Ownership
+
+e.g. use of a token or smart card
+
+* Authentication by Characteristic - biometric
+
+=== Multifactor Authentication
+
+An authentication system is considered strong if it uses at least two different authentication methods.
+
+=== Authorization
+A policy or rule needs to be established to describe in which cases a subject should be able to access the resource.
+
+• *Implicit deny*: If no rule is specified for the transaction of the subject/object, the authorization policy should deny the transaction.
+• *Need to know*: A subject should be granted access to an object only if the access is needed to carry out the job of the subject.
+
+=== Accounting
+
+Accounting is the process of auditing and monitoring what a user does once a specific resource is accessed.
+
+Commercial classification: Confidential, Private, Sensitive, Public
+
+Access Control Models:
+
+• Discretionary access control (DAC)
+• Mandatory access control (MAC)
+• Role-based access control (RBAC)
+• Attribute-based access control (ABAC)
+
+== Virtual Private Networks (VPNs)
+
+• Point-to-Point Tunneling Protocol (PPTP)
+• Layer 2 Forwarding (L2F) protocol
+• Layer 2 Tunneling Protocol (L2TP)
+• Generic Routing Encapsulation (GRE)
+• Multiprotocol Label Switching (MPLS)
+• Internet Protocol Security (IPsec)
+• Secure Sockets Layer (SSL)
 
 
 
