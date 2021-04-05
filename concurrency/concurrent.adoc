@@ -23,7 +23,6 @@ Java offers two types of threads: user threads and daemon threads.
 
 *Daemon threads* are low-priority threads whose only role is to provide services to user threads.
 
-
 The JVM itself, the Java Virtual Machine, works with several threads:
 
 - There are threads for the garbage collection.
