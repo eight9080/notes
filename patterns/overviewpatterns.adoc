@@ -35,6 +35,8 @@ Besides the usual input and output channels the Dynamic Router uses an additiona
 
 The exposed interface in the Federated is not the same with the underlying systems that are federated, or well the data saved on them is complementary, imposing and adding data logic to the Bridge in which the bridge can enrich the request with some data combination  in some requests for the same domain.
 
+image::images/apiFederation.png[]
+
 === Content Enricher
 
 How do we communicate with another system if the message originator does not have all the required data items available?
@@ -51,6 +53,9 @@ That imply that aggregation must be done to offer cross-domain information, as h
 However the Global ID with Local ID mapping is not going to be done at this level -> retrieve with GLOBAL ID's. If a mapping need to be done, will be done in a Bridge API before the retrieval of the information to be aggregated.
 
 https://microservices.io/patterns/data/api-composition.html[API Composition]
+
+image::apiComposition.png[]
+
 
 == Aggregated Observability
 
