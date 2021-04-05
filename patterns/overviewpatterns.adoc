@@ -5,3 +5,30 @@
 The API Routers will perform the link between global and local demarcation using a predefined interface.
 API: to define a Global API and all the countries have to implement such Global API. Therefore the countries will response in the same standard way
 Event: The local systems will be able to publish local events in the Global event bus in a standard way with a predefined format
+
+E.g. Anti-corruption Layer
+
+Integration with local systems:
+* The API Router will consume local standards raw events
+* The API Router will publish Global Domain event.
+
+Implementation of the needed resilience patterns, as cuircuit breaking per routed hosts 
+
+"Create an isolating layer to provide clients with functionality in terms of their own domain model. The layer talks to the other system through its existing interface, requiring little or no modification to the other system. Internally, the layer translates in both directions as necessary between the two models."
+Eric Evans — Domain Driven Design
+
+* An ACL is a key piece of the system and will need to be configured, released and monitored like the rest of the applications. This adds to the total cost of ownership of the entire system due to maintenance overhead.
+
+* An ACL, being an extra cushion, can add network latency to calls made between the participating subsystems.
+
+* An ACL is meant to exist temporarily during a migration, preventing a legacy system from corrupting a new design which will entirely replace it. It’s unlikely (albeit not impossible) that the business will decide to keep the old system and the ACL that connects it. Teams sometimes fall prey to over-investing in the ACL only to throw it away at the end. 
+
+https://www.enterpriseintegrationpatterns.com/patterns/messaging/DynamicRouter.html[Dynamic Router]
+
+Use a Dynamic Router, a Router that can self-configure based on special configuration messages from participating destinations.
+
+Besides the usual input and output channels the Dynamic Router uses an additional control channel. During system start-up, each potential recipient sends a special message to the Dynamic Router on this control channel, announcing its presence and listing the conditions under which it can handle a message. The Dynamic Router stores the 'preferences' for each participant in a rule base. When a message arrives, the Dynamic Router evaluates all rules and routes the message to the recipient whose rules are fulfilled. This allows for efficient, predictive routing without the maintenance dependency of the Dynamic Router on each potential recipient.
+
+== Federation API
+
+
