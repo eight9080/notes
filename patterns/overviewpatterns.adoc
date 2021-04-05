@@ -1,5 +1,7 @@
 = Patters & Principles
 
+https://microservices.io/patterns/index.html[Patterns]
+
 == API Router
 
 The API Routers will perform the link between global and local demarcation using a predefined interface.
@@ -30,5 +32,41 @@ Use a Dynamic Router, a Router that can self-configure based on special configur
 Besides the usual input and output channels the Dynamic Router uses an additional control channel. During system start-up, each potential recipient sends a special message to the Dynamic Router on this control channel, announcing its presence and listing the conditions under which it can handle a message. The Dynamic Router stores the 'preferences' for each participant in a rule base. When a message arrives, the Dynamic Router evaluates all rules and routes the message to the recipient whose rules are fulfilled. This allows for efficient, predictive routing without the maintenance dependency of the Dynamic Router on each potential recipient.
 
 == Federation API
+
+The exposed interface in the Federated is not the same with the underlying systems that are federated, or well the data saved on them is complementary, imposing and adding data logic to the Bridge in which the bridge can enrich the request with some data combination  in some requests for the same domain.
+
+=== Content Enricher
+
+How do we communicate with another system if the message originator does not have all the required data items available?
+
+Use a specialized transformer, a Content Enricher, to access an external data source in order to augment a message with missing information.
+
+The Content Enricher uses information inside the incoming message (e.g. key fields) to retrieve data from an external source. After the Content Enricher retrieves the required data from the resource, it appends the data to the message. The original information from the incoming message may be carried over into the resulting message or may no longer be needed, depending on the specific needs of the receiving application.
+
+https://www.enterpriseintegrationpatterns.com/patterns/messaging/DataEnricher.html[Content Enricher]
+
+== Composition API
+
+That imply that aggregation must be done to offer cross-domain information, as happens in reporting scenarios in which several sources of information need to be aggregated and combined due to the microservices nature of the platform or due to global+local integration. +
+However the Global ID with Local ID mapping is not going to be done at this level -> retrieve with GLOBAL ID's. If a mapping need to be done, will be done in a Bridge API before the retrieval of the information to be aggregated.
+
+https://microservices.io/patterns/data/api-composition.html[API Composition]
+
+== Aggregated Observability
+
+Due to the highly distributed nature of a microservice architecture, to have a consistent vision of what happened in a given request could be tough because the requests are served jumping from one component to another with several instances each of them. A common way to achieved that is to produce information per service instance and aggregated them later to have a global view.
+
+Every service needs to expose:
+
+* business activities
+* telemetry data
+* availability data 
+* alerting data
+* activity data
+
+https://docs.microsoft.com/en-us/dotnet/architecture/cloud-native/observability-patterns [Observability Patterns]
+https://sre.google/sre-book/monitoring-distributed-systems/
+
+
 
 
