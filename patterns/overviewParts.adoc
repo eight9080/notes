@@ -162,7 +162,136 @@ Loose contract:
 |
 |===
 
-=== Contract versioning
+== Contract versioning
+
+Example json schema
+----
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "title": "Product",
+   "description": "A product from Acme's catalog",
+   "type": "object",
+   "properties": {
+      "id": {
+         "description": "The unique identifier for a product",
+         "type": "integer"
+      },
+      "name": {
+         "description": "Name of the product",
+         "type": "string"
+      },
+      "price": {
+         "type": "number",
+         "minimum": 0,
+         "exclusiveMinimum": true
+      }
+   },
+   "required": ["id", "name", "price"]
+}
+----
+
+* apply versioning at the header level
+
+Accept: application/vnd.service.trade.v2+json
+
+
+== Data access
+
+* interservice communication
+
+Good for:
+
+* large data volume
+* low responsiveness
+
+|===
+|-
+
+|network and security latency
+|scalability and throughput
+|fault tolerance (dependencies)
+
+|===
+
+* data replication
+
+Good for:
+
+* reporting
+* data aggregation
+
+|===
+|+ |-
+
+|network and security latency
+|data consistency issues
+
+|scalability and throughput
+|data ownership issues
+
+|fault tolerance
+
+|===
+
+* in-memory replicated cache
+
+Good for:
+
+* low data volume
+* high responsiveness
+
+e.g. Hazelcast, Ignite, gemfire, coherence
+
+|===
+|Header 1 |Header 2
+
+|network and security latency
+|eventually consistent
+
+|fault tolerance
+|data volume issues
+
+|data consistency
+|update rate issues
+
+|data ownership
+|
+|===
+
+* data domain
+
+Good for:
+
+* multiple owners (write)
+* high responsiveness
+
+|===
+|Header 1 |Header 2
+
+|network and security latency
+|change control
+
+|scalability and throughput
+|data ownership (read/write responsibility)
+
+|fault tolerance
+|broader bounded context
+
+|data consistency
+|
+
+|data ownership
+|
+
+|eventual consistency
+|
+
+|data volume
+|
+
+|update rate
+|
+|===
 
 
 
