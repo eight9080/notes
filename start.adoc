@@ -26,3 +26,25 @@ https://medium.com/@jeeyoungk/how-sharding-works-b4dec46b3f6
 
 Consistent caching
 https://www.toptal.com/big-data/consistent-hashing
+
+
+Availablity/System design
+
+https://medium.com/javarevisited/25-software-design-interview-questions-to-crack-any-programming-and-technical-interviews-4b8237942db0
+
+https://www.educative.io/courses/web-application-software-architecture-101?affiliate_id=5073518643380224
+
+https://igotanoffer.com/blogs/tech/latency-throughput-availability-system-design-interview
+
+https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/twitter/README.md
+
+https://github.com/shieldfy/API-Security-Checklist
+
+https://github.com/donnemartin/system-design-primer#latency-numbers-every-programmer-should-know
+
+https://www.geeksforgeeks.org/design-twitter-a-system-design-interview-question/
+
+https://www.fullstack.cafe/blog/system-design-interview-questions
+
+https://searchapparchitecture.techtarget.com/tip/3-microservices-resiliency-patterns-for-better-reliability
+
