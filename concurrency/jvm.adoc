@@ -1,0 +1,185 @@
+= JVM
+
+== Thread
+
+- a thread of execution in a program
+
+In the Hotspot JVM there is a direct mapping between a Java Thread and a native operating system Thread.
+
+After preparing all of the state for a Java thread such as:
+
+* thread-local storage
+* allocation buffers
+* synchronization objects
+* stacks
+* the program counter
+
+-> the native thread is created.
+
+The native thread is reclaimed once the Java thread terminates.
+
+The operating system is therefore responsible for scheduling all threads and dispatching them to any available CPU.
+
+Once the native thread has initialized it invokes the run() method in the Java thread.
+
+When the run() method returns, uncaught exceptions are handled, then the native thread confirms if the JVM needs to be terminated as a result of the thread terminating
+
+When the thread terminates all resources for both the native and Java thread are released.
+
+=== JVM System Threads
+
+The background threads run in addition to the *main thread*, which is created as part of invoking public static void main(String[]), and any threads created by the main thread.
+
+The main background system threads in the Hotspot JVM are:
+
+* VM thread
+
+This thread waits for operations to appear that require the JVM to reach a safe-point.
+
+The type of operations performed by this thread are "stop-the-world" garbage collections, thread stack dumps, thread suspension and biased locking revocation.
+
+* Periodic task thread
+- responsible for timer events (i.e. interrupts) that are used to schedule execution of periodic operations
+
+* GC threads
+- support the different types of garbage collection activities that occur in the JVM
+
+* Compiler threads
+- These threads compile byte code to native code at runtime
+
+* Signal dispatcher thread
+- This thread receives signals sent to the JVM process and handle them inside the JVM by calling the appropriate JVM methods.
+
+
+=== Each Thread contains
+
+Each thread of execution has the following components:
+
+* Program Counter (PC)
+- Address of the current instruction (or opcode) unless it is native.
+- The JVM uses the PC to keep track of where it is executing instructions, the PC will in fact be pointing at a memory address in the Method Area.
+
+* Stack
+- Each thread has its own stack that holds a frame for each method executing on that thread.
+- A new frame is created and added (pushed) to the top of stack for every method invocation. The frame is removed (popped) when the method returns normally or if an uncaught exception is thrown during the method invocation.
+
+* Native Stack
+- Not all JVMs support native methods, however, those that do typically create a per thread native method stack.
+-  If a JVM has been implemented using a C-linkage model for Java Native Invocation (JNI) then the native stack will be a C stack.
+- A native method can typically (depending on the JVM implementation) call back into the JVM and invoke a Java method. Such a native to Java invocation will occur on the stack (normal Java stack); the thread will leave the native stack and create a new frame on the stack (normal Java stack).
+
+* Stack restrictions
+- A stack can be a dynamic or fixed size. If a thread requires a larger stack than allowed a StackOverflowError is thrown. (-Xss size)
+- If a thread requires a new frame and there isn’t enough memory to allocate it then an OutOfMemoryError is thrown.
+
+* Frame
+- A new frame is created and added (pushed) to the top of stack for every method invocation.
+- The frame is removed (popped) when the method returns normally or if an uncaught exception is thrown during the method invocation.
+
+Each frame contains:
+
+* Local variable array
+* Return value
+* Operand stack
+* Reference to runtime constant pool for class of the current method
+
+* Local Variables Array
+- The array of local variables contains all the variables used during the execution of the method, including a reference to *this*, all method parameters and other locally defined variables.
+- For class methods (i.e. static methods) the method parameters start from zero, however, for instance method the zero slot is reserved for this.
+
+A local variable can be:
+boolean, byte, char, long, short, int, float, double, reference, returnAddress
+
+All types take a single slot in the local variable array except long and double which both take two consecutive slots because these types are double width (64-bit instead of 32-bit).
+
+* Operand Stack
+- The operand stack is used during the execution of byte code instructions in a similar way that general-purpose registers are used in a native CPU.
+- Most JVM byte code spends its time manipulating the operand stack by pushing, popping, duplicating, swapping, or executing operations that produce or consume values.
+
+* Dynamic Linking
+- Each frame contains a reference to the runtime constant pool. The reference points to the constant pool for the class of the method being executed for that frame. This reference helps to support dynamic linking.
+
+- When a Java class is compiled, all references to variables and methods are stored in the class's constant pool as a symbolic reference. A symbolic reference is a logical reference not a reference that actually points to a physical memory location.
+
+- The JVM implementation can choose when to resolve symbolic references, this can happen when the class file is verified, after being loaded, called eager or static resolution, instead this can happen when the symbolic reference is used for the first time called lazy or late resolution.
+
+- Binding is the process of the field, method or class identified by the symbolic reference being replaced by a direct reference, this only happens once because the symbolic reference is completely replaced. If the symbolic reference refers to a class that has not yet been resolved then this class will be loaded.
+
+
+=== Shared amongst threads
+
+==== Heap
+
+- The Heap is used to allocate class instances and arrays at runtime.
+- Arrays and objects can never be stored on the stack because a frame is not designed to change in size after it has been created.
+- The frame only stores references that point to objects or arrays on the heap. (objects are not removed when a method ends)
+- Instead objects are only removed by the garbage collector.
+
+The heap is divided into three sections:
+
+* Young Generation
+** Often split between Eden and Survivor
+* Old Generation (also called Tenured Generation)
+* Permanent Generation
+
+
+==== Memory Management
+Objects and Arrays are never explicitly de-allocated instead the garbage collector automatically reclaims them.
+
+Typically this works as follows:
+
+- New objects and arrays are created into the young generation
+- *Minor garbage collection* will operate in the young generation. Objects, that are still alive, will be moved from the eden space to the survivor space.
+- *Major garbage collection*, which typically causes the application threads to pause, will move objects between generations. Objects, that are still alive, will be moved from the young generation to the old (tenured) generation.
+- The permanent generation is collected every time the old generation is collected. They are both collected when either becomes full.
+
+==== Non-Heap Memory
+Objects that are logically considered as part of the JVM mechanics are not created on the Heap.
+
+The non-heap memory includes:
+
+* Permanent Generation that contains
+** the method area
+** interned strings
+* Code Cache used for compilation and storage of methods that have been compiled to native code by the JIT compiler
+
+==== Just In Time (JIT) Compilation
+Java byte code is interpreted however this is not as fast as directly executing native code on the JVM’s host CPU.
+
+To improve performance the Oracle Hotspot VM looks for “hot” areas of byte code that are executed regularly and compiles these to native code. The native code is then stored in the code cache in non-heap memory.
+
+In this way the Hotspot VM tries to choose the most appropriate way to trade-off the extra time it takes to compile code verses the extra time it take to execute interpreted code.
+
+==== Method area
+
+The method area stores per-class information such as:
+
+* Classloader Reference
+* Run Time Constant Pool: Numeric constants, Field references , Method References,  Attributes
+* Field data
+   ** Per field: Name, Type, Modifiers, Attributes
+* Method data
+   ** Per method: Name, Return Type, Parameter Types (in order), Modifiers, Attributes
+* Method code
+  ** Per method: Bytecodes, Operand stack size,  Local variable size, Local variable table, Exception table
+  *** Per exception handler: Start point, End point, PC offset for handler code, Constant pool index for exception class being caught
+
+==== Class File Structure
+
+* *magic, minor_version, major_version* -> specifies information about the version of the class and the version of the JDK this class was compiled for.
+* constant_pool
+* access_flags -> provides the list of modifiers for this class.
+* this_class -> index into the constant_pool providing the fully qualified name of this class i.e. com/test/foo/Bar
+* super_class -> index into the constant_pool providing a symbolic reference to the super class i.e. java/lang/Object
+* interfaces -> array of indexes into the constant_pool providing a symbolic references to all interfaces that have been implemented.
+* fields -> array of indexes into the constant_pool giving a complete description of each field.
+* methods -> array of indexes into the constant_pool giving a complete description of each method signature, if the method is not abstract or native then the bytecode is also present.
+* attributes -> array of different value that provide additional information about the class including any annotations with RetentionPolicy.CLASS or RetentionPolicy.RUNTIME
+
+==== Classloader
+
+
+
+
+
+Source: https://blog.jamesdbloom.com/JVMInternals.html[JVM internals]
