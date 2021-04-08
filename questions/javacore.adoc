@@ -7,7 +7,7 @@ Java Heap space is used by java runtime to allocate memory to Objects and JRE cl
 
 Garbage Collection runs on the heap memory to free the memory used by objects that doesn’t have any reference. Any object created in the heap space has global access and can be referenced from anywhere of the application.
 
-*Java* Stack Memory
+*Java Stack Memory*
 
 Stack in java is a section of memory which contains methods, local variables and reference variables. Local variables are created in the stack.
 

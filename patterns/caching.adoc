@@ -1,0 +1,82 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= Caching
+
+== Topologies
+
+=== Distributed cache
+
+image::distributedCache.png[Distributed cache]
+
+=== Replicated cache
+
+image::replicatedCache.png[Replicated]
+
+=== Near cache
+
+image::nearCache.png[Near cache]
+
+|===
+|property |replicated cache |distributed cache |near cache
+
+|optimization
+|performance
+|consistency
+|balanced
+
+|cache size
+|small cache
+|large cache
+|large cache
+
+|type of data
+|relatively static
+|transactional
+|relatively static
+
+|update frequency
+|relatively low
+|high update rate
+|relativery low
+
+|fault tolerance
+|high
+|low
+|low
+
+|responsivness
+|high
+|medium
+|variable
+
+|===
+
+== Data Sharing
+
+Latency:
+
+* network
+* security ( maybe redo checks)
+* database
+
+Infinispan - support partial replication
+
+image::spaceBasedArch.png[Spaced based architecture]
+
+== Cache eviction strategies
+
+* Time to live policy (TTL) +
+cache items are evicted based on a timeout parameter
+
+* archive policy (ARC) +
+cache items are evicted based on a date from when they were created (not when they were added to the cache)
+
+* Least Frequently Used Policy (LFU) +
+cache items are evicted that are accessed the least amount of times
+
+* Least Recently Used Policy (LRU) +
+cache items are evicted that haven’t been used recently
+
+* random replacement policy (RR) +
+cache items are evicted randomly
+
+
