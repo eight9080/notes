@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: ./imagesC]
 = JVM
 
 == Thread
@@ -59,6 +60,8 @@ Each thread of execution has the following components:
 - Address of the current instruction (or opcode) unless it is native.
 - The JVM uses the PC to keep track of where it is executing instructions, the PC will in fact be pointing at a memory address in the Method Area.
 
+image::stack.png[Stack]
+
 * Stack
 - Each thread has its own stack that holds a frame for each method executing on that thread.
 - A new frame is created and added (pushed) to the top of stack for every method invocation. The frame is removed (popped) when the method returns normally or if an uncaught exception is thrown during the method invocation.
@@ -75,6 +78,8 @@ Each thread of execution has the following components:
 * Frame
 - A new frame is created and added (pushed) to the top of stack for every method invocation.
 - The frame is removed (popped) when the method returns normally or if an uncaught exception is thrown during the method invocation.
+
+image::frame.png[Frame]
 
 Each frame contains:
 
@@ -114,6 +119,8 @@ All types take a single slot in the local variable array except long and double 
 - Arrays and objects can never be stored on the stack because a frame is not designed to change in size after it has been created.
 - The frame only stores references that point to objects or arrays on the heap. (objects are not removed when a method ends)
 - Instead objects are only removed by the garbage collector.
+
+image::heap.png[Heap]
 
 The heap is divided into three sections:
 
@@ -177,6 +184,64 @@ The method area stores per-class information such as:
 * attributes -> array of different value that provide additional information about the class including any annotations with RetentionPolicy.CLASS or RetentionPolicy.RUNTIME
 
 ==== Classloader
+
+* The JVM starts up by loading an initial class using the bootstrap classloader.
+* The class is then linked and initialized before public static void main(String[]) is invoked.
+* The execution of this method will start the *loading, linking and initialization* of additional classes and interfaces as required.
+
+image::classLinking.png[]
+
+===== Loading
+* the process of finding the class file that represents the class or interface type with a particular name and reading it into a *byte array*.
+* the bytes are parsed to confirm they represent a Class object and have the *correct major and minor versions*.
+* Any class or interface named as a direct superclass is also loaded.
+* a class or interface object is created from the binary representation
+
+===== Linking
+* the process of taking a class or interface verifying and preparing the type and its direct superclass and superinterfaces.
+
+Linking consists of three steps *verifying, preparing and optionally resolving*.
+
+* *Verifying* is the process of confirming the class or interface is structurally correct and obeys the semantic requirements of Java.
+
+* *Preparing* involves *allocation of memory for static storage* and any data structures used by the JVM such as method tables. Static fields are created and initialized to their default values, however, no initializers or code is executed at this stage as that happens as part of initialization.
+
+* *Resolving* is an optional stage which involves checking symbolic references by loading the referenced classes or interfaces and checking the references are correct.
+
+===== Initialization
+Initialization of a class or interface consists of executing the class or interface initialization method <clinit>
+
+===== Classloader Types
+
+Each classloader delegates to its parent classloader (that loaded it) except the bootstrap classloader which is the top classloader.
+
+image::classloader.png[Classloader]
+
+* Bootstrap Classloader
+** implemented as native code because it is instantiated very early as the JVM is loaded.
+** The bootstrap classloader is responsible for loading the basic Java APIs, including for example rt.jar.
+** It only loads classes found on the boot classpath which have a higher level of trust
+
+* Extension Classloader
+** loads classes from standard Java extension APIs such as security extension functions.
+
+* System Classloader
+** the default application classloader, which loads application classes from the classpath.
+
+* User Defined Classloaders
+** can alternatively be used to load application classes.
+** A user defined classloader is used for a number of special reasons including run time reloading of classes or *separation between different groups of loaded classes* typically required by web servers such as Tomcat.
+
+
+=== Interned Strings (String Table)
+The Java Language Specification requires that identical string literals, that contain the same sequence of Unicode code points, must refer to the same instance of String. In addition if String.intern() is called on an instance of String a reference must be returned that would be identical to the reference return if the string was a literal.
+
+
+
+
+
+
+
 
 
 
