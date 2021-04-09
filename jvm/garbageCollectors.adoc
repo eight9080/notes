@@ -1,0 +1,100 @@
+ifndef::imagesdir[:imagesdir: ./img]
+= JVM Garbage Collectors
+
+Garbage Collection tracks each and every object available in the JVM heap space and removes unused ones.
+
+* *Mark* – it is where the garbage collector identifies which pieces of memory are in use and which are not
+* *Sweep* – this step removes objects identified during the “mark” phase
+
+== Types of Garbage Collector
+
+JVM has four types of GC implementations:
+
+* Serial Garbage Collector
+* Parallel Garbage Collector
+* CMS Garbage Collector
+* G1 Garbage Collector
+
+===  Serial Garbage Collector
+
+* it basically works with *a single thread*.
+* It works by holding all the threads of an application.
+* this GC implementation freezes all application threads when it runs. -> *stop the world event*
+* not a good idea to use it in multi-threaded applications like server environments.
+
+To enable:
+----
+java -XX:+UseSerialGC -jar Application.java
+----
+
+image::serialGC.png[Serial GC]
+
+===  Parallel Garbage Collector
+
+* default GC of the JVM and sometimes called *Throughput Collectors*
+* uses *multiple threads* for managing heap space. But it also freezes other application threads while performing GC.
+* It is used if we want to execute a long process (like batch processing) and where long pauses are acceptable
+
+Properties:
+
+- numbers of garbage collector threads `XX:ParallelGCThreads=<N>.`
+- maximum pause time goal (gap [in milliseconds] between two GC) `XX:MaxGCPauseMillis=<N>`
+- maximum throughput target (measured regarding the time spent doing garbage collection versus the time spent outside of garbage collection)  `-XX:GCTimeRatio=<N>.`
+- maximum heap footprint (the amount of heap memory that a program requires while running) `-Xmx<N>`
+
+To enable:
+----
+java -XX:+UseParallelGC -jar Application.java
+----
+
+image::parallelGC.png[Parallel GC]
+
+===  Concurrent Mark Sweep (CMS) Garbage Collector
+
+* uses multiple garbage collector threads for garbage collection.
+* It's designed for applications that prefer *shorter garbage collection pauses*, and that can afford to *share processor resources* with the garbage collector while the application is running.
+* It does not freeze the application's threads during the garbage collection.
+
+To enable:
+----
+java -XX:+UseParNewGC -jar Application.java
+----
+
+image::cmsGC.png[CMS GC]
+
+Java 9 - deprecated, Java 14 - removed
+
+=== G1 Garbage Collector
+* designed for applications running on multi-processor machines with large memory space (more than 4GB).
+* G1 collector will replace the CMS collector since it's more performance efficient.
+
+* G1 collector partitions the heap into a set of equal-sized heap regions (usually 1MB to 32MB), each a contiguous range of virtual memory.
+* When performing garbage collections, G1 shows a concurrent global marking phase (i.e. phase 1 known as Marking) to determine the liveness of objects throughout the heap.
+* After the mark phase is completed, G1 knows which regions are mostly empty. It collects in these areas first, which usually yields a significant amount of free space (i.e. phase 2 known as Sweeping).
+* Garbage-First.
+
+To enable:
+----
+java -XX:+UseG1GC -jar Application.java
+----
+
+image::G1GC.png[G1GC]
+
+== Performance
+
+=== Strings
+
+Reducing the unnecessary use of memory by creating too many instances of the same String:`-XX:+UseStringDeduplication` as a JVM parameter.
+
+
+
+
+
+
+
+
+
+
+
+
+
