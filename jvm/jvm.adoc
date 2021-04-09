@@ -1,4 +1,3 @@
-ifndef::imagesdir[:imagesdir: ./images]
 = JVM
 
 == Thread
@@ -60,8 +59,7 @@ Each thread of execution has the following components:
 - Address of the current instruction (or opcode) unless it is native.
 - The JVM uses the PC to keep track of where it is executing instructions, the PC will in fact be pointing at a memory address in the Method Area.
 
-image::images/stack.png[Stack]
-
+image::img/stack.png[Stack]
 
 * Stack
 - Each thread has its own stack that holds a frame for each method executing on that thread.
