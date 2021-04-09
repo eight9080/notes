@@ -1,4 +1,4 @@
-ifndef::imagesdir[:imagesdir: ./imagesC]
+ifndef::imagesdir[:imagesdir: ./images]
 = JVM
 
 == Thread
@@ -60,7 +60,8 @@ Each thread of execution has the following components:
 - Address of the current instruction (or opcode) unless it is native.
 - The JVM uses the PC to keep track of where it is executing instructions, the PC will in fact be pointing at a memory address in the Method Area.
 
-image::stack.png[Stack]
+image::images/stack.png[Stack]
+
 
 * Stack
 - Each thread has its own stack that holds a frame for each method executing on that thread.
@@ -236,15 +237,29 @@ image::classloader.png[Classloader]
 === Interned Strings (String Table)
 The Java Language Specification requires that identical string literals, that contain the same sequence of Unicode code points, must refer to the same instance of String. In addition if String.intern() is called on an instance of String a reference must be returned that would be identical to the reference return if the string was a literal.
 
-
-
-
-
-
-
-
-
-
-
-
 Source: https://blog.jamesdbloom.com/JVMInternals.html[JVM internals]
+
+== Tools profiling
+
+* Visual VM
+* jClarity
+
+* JOL Java Object Layout https://github.com/openjdk/jol
+
+* JITWatch
+
+== GENERATING HEAP DUMPS
+=== Command line
+ - XX:+HeapDumpOnOutOfMemoryError
+
+=== CLI
+- jmap -dump:format=b,file=heap.hprof <pid> ▸ jhsdb jmap —binaryheap —pid <pid>
+- jcmd <pid> GC.heap_dump heap.hprof
+
+=== GUI
+* jConsole
+* VisualVM
+* MAT (Eclipse)
+
+
+
