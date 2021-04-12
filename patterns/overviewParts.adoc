@@ -266,7 +266,7 @@ Good for:
 * high responsiveness
 
 |===
-|Header 1 |Header 2
+|+ |-
 
 |network and security latency
 |change control
@@ -292,6 +292,63 @@ Good for:
 |update rate
 |
 |===
+
+== Architecture Characteristics
+
+=== Performance
+
+* Average Response Times
+* Maximum Response Times
+
+=== Scalability
+
+* measure and track average response times across number of users or business requests
+* measure and track timeouts across number of users or business requests
+
+=== Elasticity
+
+=== Fault Tolerance
+
+* measure and track number of users impacted by a system or service crash
+* measure and track number of requests impacted by a system or service crash
+
+=== Deployability
+
+* measure and track number of actual hours spent to deploy
+* measure and track failed deployments or errors resulting from deployment
+* measure and track the frequency of deployment
+
+=== Component Coupling
+
+* the extent to which components know about each other
+
+*afferent coupling* - the degree to which other components are dependent on the target component (incomming coupling)
+
+*efferent coupling* - the degree to which the target component is dependent on other components (outgoing coupling)
+
+*temporal coupling* - components are coupled due to non-static or timing dependencies
+
+*external coupling* - multiple components share an externally imposed protocol or data format(e.g. rest)
+
+*control coupling* - one component passes information to another component on what to do
+
+*data coupling* - the degree to which components are bound to a shared data context
+
+=== Component Cohesion
+the degree and manner to which the operations of a component are related to one another
+
+=== Metrics
+
+* DIT (depth of inheritance tree)
+* WMC (weighted methods/class; sum of CC)
+* CE (efferent coupling count)
+* CA (afferent coupling count)
+* LCOM (Lack of Cohesion in Methods)
+
+
+
+
+
 
 
 

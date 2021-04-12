@@ -443,6 +443,19 @@ Getting the state `thread.getState()`
 
 image::threadLifeCycle.png[Thread lifecycle]
 
+=== The Scheduler
+Access to the CPU is controlled by the process scheduler. This uses a queue known as the *run queue as a waiting area* for threads or processes that are eligible to run but which must wait their turn for the CPU. +
+The job of the scheduler is to respond to interrupts, and to manage access to the CPU cores.
+
+The OS scheduler moves threads on and off the single core in the system. +
+At the end of the time quantum (often 10 ms or 100 ms in older operating systems), the scheduler moves the thread to the back of the run queue to wait until it reaches the front of the queue and is eligible to run again.
+
+==== Context Switches
+
+A context switch is the process by which the OS scheduler removes a currently running thread or task and replaces it with one that is waiting.
+
+A context switch can be a costly operation, whether between user threads or from user mode into kernel mode (sometimes called a mode switch).
+
 == Ordering Read/Write
 
 Synchronization
