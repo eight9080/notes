@@ -238,6 +238,24 @@ The Java Language Specification requires that identical string literals, that co
 
 Source: https://blog.jamesdbloom.com/JVMInternals.html[JVM internals]
 
+== HotSpot
+
+The approach taken by the HotSpot virtual machine is to analyze the runtime behavior of your program and intelligently apply optimizations where they will benefit performance the most.
+
+=== Just-in-Time Compilation
+
+Java programs begin their execution in the bytecode interpreter, where instructions are performed on a virtualized stack machine. This abstraction from the CPU gives the benefit of class file portability, but to get maximum performance your program must execute directly on the CPU, making use of its native features.
+
+HotSpot achieves this by compiling units of your program from interpreted bytecode into native code. The units of compilation in the HotSpot VM are the method and the loop ->  *Just-in-Time (JIT) compilation*
+
+JIT compilation works by *monitoring the application* while it is running in interpreted mode and observing the parts of code that are *most frequently executed*.
+
+During this analysis process, programmatic trace information is captured that allows for more sophisticated optimization.
+
+Once execution of a particular method passes a threshold, the profiler will look to *compile and optimize that particular section of code*.
+
+image::HotSpot.png
+
 == Tools profiling
 
 * Visual VM
