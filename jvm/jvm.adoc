@@ -254,7 +254,7 @@ During this analysis process, programmatic trace information is captured that al
 
 Once execution of a particular method passes a threshold, the profiler will look to *compile and optimize that particular section of code*.
 
-image::HotSpot.png
+image::HotSpot.png[HotSpot]
 
 == Tools profiling
 
