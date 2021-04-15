@@ -75,6 +75,29 @@ image::stack.png[Stack]
 - A stack can be a dynamic or fixed size. If a thread requires a larger stack than allowed a StackOverflowError is thrown. (-Xss size)
 - If a thread requires a new frame and there isn’t enough memory to allocate it then an OutOfMemoryError is thrown.
 
+* Stack size +
+The JVM will create stacks at the same time it creates the owning thread. +
+If we don't specify a size for the stacks, the JVM will create one with a default size. Usually, this default size depends on the operating system and computer architecture. +
+Some of the default sizes as of Java 14:
+** Linux/x86 (64-bit): 1 MB
+** macOS (64-bit): 1 MB
+** Oracle Solaris (64-bit): 1 MB
+** On Windows, the JVM uses the system-wide stack size
+
+To change the stack size, `-Xss` tuning flag
+
+----
+-Xss1m
+-Xss1024k
+----
+
+`-XX:ThreadStackSize` tuning flag to configure the stack size
+----
+java -XX:ThreadStackSize=1024
+----
+
+min value 1MB max value 1GB
+
 * Frame
 - A new frame is created and added (pushed) to the top of stack for every method invocation.
 - The frame is removed (popped) when the method returns normally or if an uncaught exception is thrown during the method invocation.
