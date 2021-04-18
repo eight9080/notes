@@ -30,6 +30,13 @@ Leaves it in a consistent, legal state when done
 * Thread releases the monitor +
 Other threads can now acquire
 
+=== Threads
+Native Threads - limit
+
+* interrupt -> InterruptedException
+** rethrow the exception
+** catch and return without rethrowing exception
+
 === Volatile
 * What does volatile do?
 Provides 1 operation to or from main memory +
@@ -46,6 +53,19 @@ A *static synchronized method locks the Class object*, because there’s no inst
 *Locking an Object [ ] doesn’t lock the individual objects.*
 
 *Java’s locks are reentrant*
+
+=== Making a field changes visible
+
+* volatile
+* making final - no changes
+* read/writes synchronized
+
+=== Issues threads
+
+==== Thread contention
+Essentially thread contention is a condition where one thread is waiting for a lock/object that is currently being held by another thread. Therefore, this waiting thread cannot use that object until the other thread has unlocked that particular object.
+
+
 
 == Modern JDK Concurrency Classes
 

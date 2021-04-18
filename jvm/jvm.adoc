@@ -301,5 +301,11 @@ image::HotSpot.png[HotSpot]
 * VisualVM
 * MAT (Eclipse)
 
+=== Stack checking
+
+* `jstack -le`
+
+
+
 
 
