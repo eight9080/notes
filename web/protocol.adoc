@@ -1,0 +1,11 @@
+= Protocol
+
+== HTTP 2
+
+* *Binary protocol*: Less readable by humans but more machine friendly, the HTTP/2 framing layer is a binary framed protocol.
+* *Multiplexing*: This refers to interwoven requests and responses. _Multiple requests run at the same time on the same connection_.
+* *Server push*: The server can decide to send additional resources to the client.
+* *Single connection to server*: HTTP/2 uses a single communication line (TCP connection) per origin (domain).
+* *Header compression*: HTTP/2 relies on HPACK compression to reduce headers. This has a significant impact on redundant bytes.
+* *Encrypted*: Most of the data that's transferred over the wires is encrypted.
+
