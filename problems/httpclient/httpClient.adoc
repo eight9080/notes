@@ -132,3 +132,557 @@ HttpRequest requestBodyOfFile = HttpRequest.newBuilder()
   .build();
 ----
 
+=== Authenticate
+
+----
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .header("Authorization", basicAuth("username", "password"))
+  ...
+  .build();
+
+HttpResponse<String> response
+  = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+private static String basicAuth(String username, String password) {
+  return "Basic " + Base64.getEncoder().encodeToString(
+    (username + ":" + password).getBytes());
+}
+----
+
+=== Timeout
+
+----
+HttpRequest request = HttpRequest.newBuilder()
+  .uri(URI.create("https://reqres.in/api/users/2"))
+  .timeout(Duration.of(5, ChronoUnit.MILLIS))
+  .build();
+----
+
+=== Send Async request
+
+----
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .uri(URI.create("https://reqres.in/api/users/2"))
+  .build();
+
+client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+  .thenApply(HttpResponse::body)
+  .exceptionally(e -> "Exception: " + e)
+  .thenAccept(System.out::println)
+  .get(30, TimeUnit.SECONDS); // or join()
+----
+
+==== Sending multiple requests concurrently
+
+----
+List<URI> uris = Arrays.asList(
+  new URI("https://reqres.in/api/users/2"),      // one user
+  new URI("https://reqres.in/api/users?page=2"), // list of users
+  new URI("https://reqres.in/api/unknown/2"),    // list of resources
+  new URI("https://reqres.in/api/users/23"));    // user not found
+
+HttpClient client = HttpClient.newHttpClient();
+
+List<HttpRequest> requests = uris.stream()
+  .map(HttpRequest::newBuilder)
+  .map(reqBuilder -> reqBuilder.build())
+  .collect(Collectors.toList());
+
+CompletableFuture.allOf(requests.stream()
+  .map(req -> client.sendAsync(
+     req, HttpResponse.BodyHandlers.ofString())
+  .thenApply((res) -> res.uri() + " | " + res.body() + "\n")
+  .exceptionally(e -> "Exception: " + e)
+  .thenAccept(System.out::println))
+  .toArray(CompletableFuture<?>[]::new))
+  .join();
+----
+
+==== Custom Executor
+
+----
+ExecutorService executor = Executors.newFixedThreadPool(5);
+
+HttpClient client = HttpClient.newBuilder()
+  .executor(executor)
+  .build();
+----
+
+=== Cookie Manager
+
+----
+CookieManager cm = new CookieManager();
+cm.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+
+HttpClient client = HttpClient.newBuilder()
+  .cookieHandler(cm)
+  .build();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .header("Authorization",
+          "Bearer mT8JNMyWCG0D7waCHkyxo0Hm80YBqelv5SBL")
+  .uri(URI.create("https://gorest.co.in/public-api/users/1"))
+  .build();
+
+HttpResponse<String> response
+  = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+System.out.println("Status code: " + response.statusCode());
+System.out.println("\n Body: " + response.body());
+
+CookieStore cookieStore = cm.getCookieStore();
+System.out.println("\nCookies: " + cookieStore.getCookies());
+----
+
+=== Handling response body types
+----
+BodyHandlers.ofByteArray()
+BodyHandlers.ofFile()
+BodyHandlers.ofString()
+BodyHandlers.ofInputStream()
+BodyHandlers.ofLines()
+----
+
+==== String
+
+----
+HttpResponse<String> responseOfString
+  = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+System.out.println("Status code: " + responseOfString.statusCode());
+System.out.println("Body: " + responseOfString.body());
+----
+
+==== File
+
+----
+HttpResponse<Path> responseOfFile = client.send(
+  request, HttpResponse.BodyHandlers.ofFile(
+    Path.of("response.json")));
+
+System.out.println("Status code: " + responseOfFile.statusCode());
+System.out.println("Body: " + responseOfFile.body());
+----
+
+==== Byte array
+
+----
+HttpResponse<byte[]> responseOfByteArray = client.send(
+  request, HttpResponse.BodyHandlers.ofByteArray());
+
+System.out.println("Status code: "
+  + responseOfByteArray.statusCode());
+System.out.println("Body: "
+  + new String(responseOfByteArray.body()));
+----
+
+==== Input Stream
+
+----
+HttpResponse<InputStream> responseOfInputStream = client.send(
+  request, HttpResponse.BodyHandlers.ofInputStream());
+
+System.out.println("\nHttpResponse.BodyHandlers.ofInputStream():");
+System.out.println("Status code: "
+  + responseOfInputStream.statusCode());
+
+byte[] allBytes;
+try (InputStream fromIs = responseOfInputStream.body()) {
+  allBytes = fromIs.readAllBytes();
+}
+
+System.out.println("Body: "
+  + new String(allBytes, StandardCharsets.UTF_8));
+----
+
+==== Stream of strings
+
+----
+HttpResponse<Stream<String>> responseOfLines = client.send(
+  request, HttpResponse.BodyHandlers.ofLines());
+
+System.out.println("Status code: " + responseOfLines.statusCode());
+System.out.println("Body: "
+  + responseOfLines.body().collect(toList()));
+----
+
+=== JSON
+
+Custom implementation of HttpResponse.BodyHandler that relies on a JSON parser to convert the response into Java objects
+
+----
+public class JsonBodyHandler<T>
+    implements HttpResponse.BodyHandler<T> {
+
+  private final Jsonb jsonb;
+  private final Class<T> type;
+
+  private JsonBodyHandler(Jsonb jsonb, Class<T> type) {
+    this.jsonb = jsonb;
+    this.type = type;
+  }
+
+  public static <T> JsonBodyHandler<T>
+      jsonBodyHandler(Class<T> type) {
+    return jsonBodyHandler(JsonbBuilder.create(), type);
+  }
+
+  public static <T> JsonBodyHandler<T> jsonBodyHandler(
+      Jsonb jsonb, Class<T> type) {
+    return new JsonBodyHandler<>(jsonb, type);
+  }
+
+  @Override
+  public HttpResponse.BodySubscriber<T> apply(
+    HttpResponse.ResponseInfo responseInfo) {
+
+    return BodySubscribers.mapping(BodySubscribers.ofByteArray(),
+      byteArray -> this.jsonb.fromJson(
+        new ByteArrayInputStream(byteArray), this.type));
+  }
+}
+----
+
+Usage:
+
+* GET
+
+----
+Jsonb jsonb = JsonbBuilder.create();
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest requestGet = HttpRequest.newBuilder()
+  .uri(URI.create("https://reqres.in/api/users/2"))
+  .build();
+
+HttpResponse<User> responseGet = client.send(
+  requestGet, JsonBodyHandler.jsonBodyHandler(jsonb, User.class));
+
+User user = responseGet.body();
+----
+
+* Update
+
+----
+user.getData().setEmail("newemail@gmail.com");
+
+HttpRequest requestPut = HttpRequest.newBuilder()
+.header("Content-Type", "application/json")
+.uri(URI.create("https://reqres.in/api/users"))
+.PUT(HttpRequest.BodyPublishers.ofString(jsonb.toJson(user)))
+.build();
+
+HttpResponse<User> responsePut = client.send(
+requestPut, JsonBodyHandler.jsonBodyHandler(jsonb, User.class));
+
+User updatedUser = responsePut.body();
+----
+
+=== Compression
+
+To request compressed responses, we have to send the Accept-Encoding header with the .gzip value.
+
+----
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .header("Accept-Encoding", "gzip")
+  .uri(URI.create("https://davidwalsh.name"))
+  .build();
+----
+
+Check the response
+
+----
+HttpResponse<InputStream> response = client.send(
+  request, HttpResponse.BodyHandlers.ofInputStream());
+
+String encoding = response.headers()
+  .firstValue("Content-Encoding").orElse("");
+
+if ("gzip".equals(encoding)) {
+  String gzipAsString = gZipToString(response.body());
+  System.out.println(gzipAsString);
+} else {
+  String isAsString = isToString(response.body());
+  System.out.println(isAsString);
+}
+
+public static String gzipToString(InputStream gzip)
+    throws IOException {
+
+  byte[] allBytes;
+  try (InputStream fromIs = new GZIPInputStream(gzip)) {
+    allBytes = fromIs.readAllBytes();
+  }
+
+  return new String(allBytes, StandardCharsets.UTF_8);
+}
+
+
+public static String isToString(InputStream is) throws IOException {
+
+  byte[] allBytes;
+  try (InputStream fromIs = is) {
+    allBytes = fromIs.readAllBytes();
+  }
+
+  return new String(allBytes, StandardCharsets.UTF_8);
+}
+----
+
+=== Handling form data
+
+* no built-in support for triggering POST requests with x-www-form-urlencoded -> a custom BodyPublisher class.
+
+----
+public class FormBodyPublisher {
+
+  public static HttpRequest.BodyPublisher ofForm(
+      Map<Object, Object> data) {
+
+    StringBuilder body = new StringBuilder();
+
+    for (Object dataKey: data.keySet()) {
+      if (body.length() > 0) {
+        body.append("&");
+      }
+
+      body.append(encode(dataKey))
+        .append("=")
+        .append(encode(data.get(dataKey)));
+    }
+
+    return HttpRequest.BodyPublishers.ofString(body.toString());
+  }
+    private static String encode(Object obj) {
+        return URLEncoder.encode(obj.toString(), StandardCharsets       .UTF_8);
+  }
+}
+----
+
+Usage:
+
+----
+Map<Object, Object> data = new HashMap<>();
+data.put("firstname", "John");
+data.put("lastname", "Year");
+data.put("age", 54);
+data.put("avatar", "https://avatars.com/johnyear");
+
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .header("Content-Type", "application/x-www-form-urlencoded")
+  .uri(URI.create("http://jkorpela.fi/cgi-bin/echo.cgi"))
+  .POST(FormBodyPublisher.ofForm(data))
+  .build();
+
+HttpResponse<String> response = client.send(
+  request, HttpResponse.BodyHandlers.ofString());
+----
+
+=== Downloading a resource
+
+----
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .uri(URI.create("http://.../hibernate-core-5.4.2.Final.jar"))
+  .build();
+
+HttpResponse<Path> response
+  = client.send(request, HttpResponse.BodyHandlers.ofFile(
+    Path.of("hibernate-core-5.4.2.Final.jar")));
+----
+
+OR
+
+----
+import static java.nio.file.StandardOpenOption.CREATE;
+...
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .uri(URI.create("http://...downloadfile.php
+    ?file=Hello.txt&cd=attachment+filename"))
+  .build();
+
+HttpResponse<Path> response = client.send(request,
+  HttpResponse.BodyHandlers.ofFileDownload(Path.of(
+    System.getProperty("user.dir")), CREATE));
+----
+
+=== HTTP/2 server push
+
+The HTTP Client API supports this HTTP/2 feature via the PushPromiseHandler interface.
+
+PushPromiseHandler relies on three coordinates, as follows:
+
+* The initiating client send request (initiatingRequest)
+* The synthetic push request (pushPromiseRequest)
+* The acceptor function, which must be successfully invoked to accept the push promise (acceptor)
+
+* A push promise is accepted by invoking the given acceptor function.
+* The acceptor function must be passed a non-null BodyHandler, which is used to handle the promise's response body.
+* The acceptor function will return a CompletableFuture instance that completes the promise's response.
+
+----
+private static final List<CompletableFuture<Void>>
+  asyncPushRequests = new CopyOnWriteArrayList<>();
+
+private static HttpResponse.PushPromiseHandler<String>
+  pushPromiseHandler() {
+
+    return (HttpRequest initiatingRequest,
+      HttpRequest pushPromiseRequest,
+      Function<HttpResponse.BodyHandler<String>, CompletableFuture<HttpResponse<String>>> acceptor) -> {
+          CompletableFuture<Void> pushcf =
+              acceptor.apply(HttpResponse.BodyHandlers.ofString())
+              .thenApply(HttpResponse::body)
+              .thenAccept((b) -> System.out.println(
+                "\nPushed resource body:\n " + b));
+
+            asyncPushRequests.add(pushcf);
+
+          System.out.println("\nJust got promise push number: " +
+            asyncPushRequests.size());
+          System.out.println("\nInitial push request: " +
+            initiatingRequest.uri());
+          System.out.println("Initial push headers: " +
+            initiatingRequest.headers());
+          System.out.println("Promise push request: " +
+            pushPromiseRequest.uri());
+          System.out.println("Promise push headers: " +
+            pushPromiseRequest.headers());
+        };
+      }
+----
+
+Usage:
+
+----
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+  .uri(URI.create("https://http2.golang.org/serverpush"))
+  .build();
+
+client.sendAsync(request,
+    HttpResponse.BodyHandlers.ofString(), pushPromiseHandler())
+  .thenApply(HttpResponse::body)
+  .thenAccept((b) -> System.out.println("\nMain resource:\n" + b))
+  .join();
+
+asyncPushRequests.forEach(CompletableFuture::join);
+
+System.out.println("\nFetched a total of " +
+  asyncPushRequests.size() + " push requests");
+----
+
+To return a push promise handler that accumulates push promises, and their responses, into the given map, then we can rely on the PushPromiseHandler.of():
+
+----
+private static final ConcurrentMap<HttpRequest,
+  CompletableFuture<HttpResponse<String>>> promisesMap
+    = new ConcurrentHashMap<>();
+
+private static final Function<HttpRequest,
+  HttpResponse.BodyHandler<String>> promiseHandler
+    = (HttpRequest req) -> HttpResponse.BodyHandlers.ofString();
+
+public static void main(String[] args)
+    throws IOException, InterruptedException {
+
+  HttpClient client = HttpClient.newHttpClient();
+
+  HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://http2.golang.org/serverpush"))
+    .build();
+
+    client.sendAsync(request,
+      HttpResponse.BodyHandlers.ofString(), pushPromiseHandler())
+    .thenApply(HttpResponse::body)
+    .thenAccept((b) -> System.out.println("\nMain resource:\n" + b))
+    .join();
+
+  System.out.println("\nPush promises map size: " +
+    promisesMap.size() + "\n");
+
+  promisesMap.entrySet().forEach((entry) -> {
+    System.out.println("Request = " + entry.getKey() +
+      ", \nResponse = " + entry.getValue().join().body());
+  });
+}
+
+private static HttpResponse.PushPromiseHandler<String>
+  pushPromiseHandler() {
+
+    return HttpResponse.PushPromiseHandler
+      .of(promiseHandler, promisesMap);
+  }
+----
+
+=== WebSocket
+
+The HTTP Client supports the WebSocket protocol. In API terms, the core of the implementation is the java.net.http.WebSocket interface.
+
+----
+HttpClient client = HttpClient.newHttpClient();
+
+WebSocket webSocket = client.newWebSocketBuilder()
+  .buildAsync(URI.create("ws://stream.meetup.com/2/rsvps"),
+    wsListener).get(10, TimeUnit.SECONDS);
+----
+
+Listener implementation
+
+----
+public class Main {
+
+  public static void main(String[] args) throws
+      InterruptedException, ExecutionException, TimeoutException {
+
+    Listener wsListener = new Listener() {
+
+      @Override
+      public CompletionStage<?> onText(WebSocket webSocket,
+          CharSequence data, boolean last) {
+        System.out.println("Received data: " + data);
+
+        return Listener.super.onText(webSocket, data, last);
+      }
+
+      @Override
+      public void onOpen(WebSocket webSocket) {
+        System.out.println("Connection is open ...");
+        Listener.super.onOpen(webSocket);
+      }
+
+      @Override
+      public CompletionStage<? > onClose(WebSocket webSocket,
+          int statusCode, String reason) {
+        System.out.println("Closing connection: " +
+          statusCode + " " + reason);
+
+        return Listener.super.onClose(webSocket, statusCode, reason);
+      }
+    };
+
+    HttpClient client = HttpClient.newHttpClient();
+
+    WebSocket webSocket = client.newWebSocketBuilder()
+      .buildAsync(URI.create(
+        "ws://stream.meetup.com/2/rsvps"), wsListener)
+      .get(10, TimeUnit.SECONDS);
+
+    TimeUnit.SECONDS.sleep(10);
+
+    webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "ok");
+  }
+}
+----
