@@ -44,6 +44,10 @@ Queue and Deque - interfaces
 *ArrayBlockingQueue* - a bounded blocking queue built on an array
 
 * Bounded means that we create a blocking queue with a certain amount of cells, a certain size of the array, and once this queue is full, it does not extend itself. Adding elements to it would not be possible.
+* circular structure
+* fixed length
+* most memory efficient blocking queue
+* sigle lock for put() and take()
 
 *ConcurrentLinkedQueue* - an unbounded blocking queue
 

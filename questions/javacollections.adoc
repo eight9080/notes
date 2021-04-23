@@ -50,7 +50,7 @@ A priority queue in Java is a special type of queue wherein all the elements are
 * The objects of the priority queue are ordered by default in natural order.
 * A Comparator can be used for custom ordering of objects in the queue.
 * The head of the priority queue is the least element based on the natural ordering or comparator based ordering. When we poll the queue, it returns the head object from the queue.
-* If multiple objects are present of same priority the it can poll any one of them randomly.
+* If multiple objects are present of same priority it can poll any one of them randomly.
 * PriorityQueue is not thread safe. Use PriorityBlockingQueue in concurrent environment.
 * It provides O(log(n)) time for add and poll methods.
 
