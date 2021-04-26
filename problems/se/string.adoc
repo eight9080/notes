@@ -1,0 +1,35 @@
+= Basic string problems
+
+== Counting duplicates characters
+----
+public Map<Character, Long> countDuplicateCharacters(String str) {
+
+  Map<Character, Long> result = str.chars()
+    .mapToObj(c -> (char) c)
+    .collect(Collectors.groupingBy(c -> c, Collectors.counting()));
+
+  return result;
+}
+----
+
+== ASCII
+
+ASCII characters:
+
+* unprintable control codes between 0-31
+* printable characters between 32-127
+* extended ASCII codes between 128-255
+
+Counting also UNICODE
+
+----
+public static Map<String, Long> countDuplicateCharacters(String str) {
+
+  Map<String, Long> result = str.codePoints()
+    .mapToObj(c -> String.valueOf(Character.toChars(c)))
+    .collect(Collectors.groupingBy(c -> c, Collectors.counting()));
+
+  return result;
+}
+----
+
