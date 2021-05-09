@@ -1,0 +1,81 @@
+ifndef::imagesdir[:imagesdir: ./images]
+
+= TLS - Transport Layer Security
+
+== Overview
+* A cryptographic protocol for secure internet communication
+* An agreed message and handshake structure for parties to:
+** Agree cryptographic parameters
+** Establish secret keys
+** Authenticate identities
+** Transmit messages
+
+image::tlsformat.png[TLS format]
+
+== The TLS Handshake
+
+The TLS handshake protocol is used to establish parameters for the remainder of the session:
+
+* Agree ciphers and protocols
+* Establish shared secrets
+* Authenticate the server(and the client)
+* Be robust to tampering and attack
+
+=== Cipher suites
+
+image::cipherSuite.png[Cipher Suite]
+
+=== Flow
+
+1. Client Hello:
+
+** Max supported TLS version
+** Random number
+** List of supported cipher suites
+
+2. Server Hello:
+** Chosen TLS version
+** Random number
+** Chosen cipher suite
+
+3. Certificate:
+** The server sends public key certificate +
+__PKI The client checks that the public key certificate is valid using a root certificate__
+
+4. ServerKeyExchange:
+
+** Key exchange parameters
+** Key exchange public value
+** Digital signature +
+__Authentication: The client checks that the digital signature is valid__
+
+5. Certificate request (for the client certificate - if mutual TLS)
+
+6. ServerHelloDone
+
+7. Client responds with certificate (for mTLS)
+
+8. ClientKeyExchange
+
+** Key exchange public value
+(Establish a master secret)
+
+9. ChangeCipherSpec
+
+Finished: MAC(summary) of all previous messages
+
+TLS 1.2:
+
+image::TLSHandshake.png[TLS Handshake]
+
+== TLS 1.3
+
+* Major handshake improvements
+* All ciphers removed except for modern AEAD
+* Key exchange and authentication separated from ciphers
+
+
+
+
+
+
