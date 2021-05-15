@@ -74,6 +74,23 @@ image::TLSHandshake.png[TLS Handshake]
 * All ciphers removed except for modern AEAD
 * Key exchange and authentication separated from ciphers
 
+Differences:
+
+* The handshake embeds the key exchange into the hello messages
+* The client guesses a key sharing algorithm in the ClientHello step
+* If the key is not supported, the server sends a HelloRetryRequest
+* Encryption begins during the second message
+
+image::tls1.3.png[TLS 1.3 Handshake]
+
+
+0-RTT Resumption:
+
+In app data, the server can send a pre shared key for use in next request.
+
+image::0RTT.png[0-RTT Resumption]
+
+== Public Key Infrastructure - PKI
 
 
 
