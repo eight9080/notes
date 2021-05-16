@@ -155,7 +155,7 @@ Verify a certificate chain
 
 `openssl verify -CAfile ca.cert.pem -untrusted int.cert.pem server.cert.pem`
 
-==== Testing a Server Handshake
+=== Testing a Server Handshake
 
 `openssl s_client -CAfile ca.cert.pem localhost:8282`
 
