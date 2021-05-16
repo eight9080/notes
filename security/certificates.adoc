@@ -14,3 +14,155 @@ The CA’s role is to accept certificate applications, authenticate applications
 
 Source https://www.verisign.com/en_US/website-presence/online/ssl-certificates/index.xhtml[verisign]
 
+== How to create certificates
+
+Source: https://github.com/mikepound/tls-exercises/tree/master/ca[Certs ssl config]
+
+=== The Signing Process
+
+1. Generate a new public key / private key pair, and an associated certificate (usually stored as .pem files)
+2. Generate a certificate signing request (CSR)
+3. Provide the CA with the above, at which point they will sign the certificate with their private key
+
+==== Root and Intermediate Certificates
+All CAs have at least *one root key pair*.
+
+The private keys of these are so protected that they are used rarely, often stored on machine without a network connection, in a secured room. Typically root certificates have a long lifespan, and are used to sign a handful of *intermediate certificates*.
+
+These are used to perform actual day to day signing activities, usually through automated systems.
+
+===== Creating CA - root certification authority
+
+Generate root key pair
+
+----
+openssl genrsa -aes256 -out private/ca.key.pem 4096
+
+Enter pass phrase for ca.key.pem: xxxx
+Verifying - Enter pass phrase for ca.key.pem: xxxx
+----
+
+Create a root certificate, signed using the certificates own private key. +
+All root certificates are signed this way, also note that a CSR isn't required for the root certificate.
+
+----
+openssl req -config openssl.cfg -key private/ca.key.pem
+    -new -x509 -days 7300 -sha256 -extensions v3_ca -out certs/ca.cert.pem
+
+Enter pass phrase for ca.key.pem: experttls
+
+...
+
+Country Name (2 letter code) [GB]:
+State or Province Name [England]:
+Locality Name []:
+Organization Name [Expert TLS]:
+Organizational Unit Name [IT Training]:
+Common Name []:Expert TLS Root CA
+Email Address []:
+----
+
+===== The intermediate authority
+
+Creating an intermediate key pair
+
+----
+openssl genrsa -aes256 -out intermediate/private/intermediate.key.pem 4096
+
+Enter pass phrase for intermediate.key.pem: experttls
+Verifying - Enter pass phrase for intermediate.key.pem: experttls
+----
+
+The certificate for this key pair will need to be *signed by the root certificate*. To do this we generate a certificate signing request using the openssl req command:
+
+----
+openssl req -config intermediate/openssl.cfg -new -sha256
+    -key intermediate/private/intermediate.key.pem -out intermediate/csr/intermediate.csr.pem
+
+Enter pass phrase for intermediate.key.pem: experttls
+
+...
+
+Country Name (2 letter code) [GB]:
+State or Province Name [England]:
+Locality Name []:
+Organization Name [Expert TLS]:
+Organizational Unit Name [IT Training]:
+Common Name []:Expert TLS Int CA
+Email Address []:
+----
+
+Creating the certificate, which we sign with the root CA key using the openssl ca command:
+
+----
+openssl ca -config openssl.cnf -extensions v3_intermediate_ca -days 3650 -notext -md sha256
+    -in intermediate/csr/intermediate.csr.pem
+    -out intermediate/certs/intermediate.cert.pem
+
+Enter pass phrase for ca.key.pem: experttls
+Sign the certificate? [y/n]: y
+----
+
+===== Using the CA
+
+Generate the key
+----
+openssl genrsa -aes256 -out intermediate/private/server.key.pem 2048
+
+Enter pass phrase for server.key.pem: experttls
+Verifying - Enter pass phrase for server.key.pem: experttls
+----
+
+Generate the CSR:
+----
+openssl req -config intermediate/openssl.cfg
+-key intermediate/private/server.key.pem
+-new -sha256 -out intermediate/csr/server.csr.pem
+
+Enter pass phrase for server.key.pem: experttls
+
+...
+
+Country Name (2 letter code) [GB]:
+State or Province Name [England]:
+Locality Name []:
+Organization Name [Expert TLS]:
+Organizational Unit Name [IT Training]:
+Common Name []:Expert TLS Server
+Email Address []:
+----
+
+*your common name (CN) matches the domain name*
+
+sign using the intermediate certificate (not the root!):
+----
+openssl ca -config intermediate/openssl.cfg -extensions server_cert -days 375 -notext
+    -md sha256 -in intermediate/csr/server.csr.pem
+      -out intermediate/certs/server.cert.pem
+----
+
+== Other Commands
+
+Check a certificate `openssl x509 -noout -text -in server.cert.pem`
+
+Convert to DER format `openssl x509 -in server.cert.pem -out server.cert.cer`
+
+Copy a certificate and a key to a pkcs12 file
+`openssl pkcs12 -export -in server.cert.pem -inkey server.key.pem -name "server" -out server.p12`
+
+Verify a certificate chain
+`openssl verify -CAfile ca-chain.cert.pem server.cert.pem`
+
+`openssl verify -CAfile ca.cert.pem -untrusted int.cert.pem server.cert.pem`
+
+==== Testing a Server Handshake
+
+`openssl s_client -CAfile ca.cert.pem localhost:8282`
+
+----
+openssl s_client -debug -CAfile ca.cert.pem localhost:8282
+
+openssl s_client -tls1_3 -CAfile ca.cert.pem localhost:8282
+
+openssl s_client -tlsextdebug –state -CAfile ca.cert.pem localhost:8282
+----
