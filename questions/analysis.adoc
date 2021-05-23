@@ -1,0 +1,101 @@
+= General Questions
+
+== PO
+
+How would you characterize our role as Product Owner/ CJE?
+
+*When was the last time you told a stakeholder “No”?
+How did you approach this situation, and what was the reason for it?*
+
+Saying “no” is an essential qualification—and empowerment—for each Product Owner. For example, it is required to protect the team from a stakeholder’s pet project of a doubtful value. Or to put an end to silo thinking and local optimization within the organization. Product owners create value by shipping the right product and maximizing the amount of work deliberately not done. Because of that, the organization has to respect a “no” from them. Otherwise, they will not fulfill their role: maximizing the product’s value across the whole organization. Applying “Scrum” without an empowered Product Owner creates a great “Waterfall 2.0” process. The Product Owner’s empowerment to decide over the Product Backlog can therefore act as a litmus test of the organization’s adoption of agile principles.
+
+*How do you collaborate with the other Scrum Team members?*
+
+*What roles would you deem necessary for a cross-functional Scrum Team delivering software?*
+
+Generally speaking, in an ideal world, the members of a cross-functional team cover all skills that are required by the Scrum Team to deliver value to customers independently. This may work for a product at an early stage when one team is handling everything. When the organization needs to scale, dealing with interdependencies—here: other teams—becomes a necessity. Depending on that, the actual composition of a team highly depends on what the team is delivering. Typical roles in cross-functional teams are business or data analysts, UX and UI designers, Developers (front-end, back-end), QA Developers, and probably DevOps engineers.
+
+*In what Scrum events shall the Product Owner be participating?*
+
+The Product Owner is expected to participate in all events: Daily Scrums, Sprint Planning, Sprint Review, and Sprint Retrospectives. Otherwise, the Product Owner cannot answer possible questions quickly, and impediments cannot be solved in a timely fashion, which would contradict the core of being agile.
+
+*Is it necessary to have a product vision to be successful as a Product Owner?*
+
+Absolutely. Or, to cite Lewis Carroll: “If you don’t know where you’re going, any road will get you there.” The agile product stack starts with the vision and strategy of the company. It then is broken down into a product portfolio—where applicable—and the product roadmap for each service and product, and ends with the corresponding Product Backlogs and Sprint Backlogs. The Product Owner needs to be familiar with all levels of the agile product stack.
+
+*How do you learn about new ideas and requirements?*
+
+Here, Product Owner candidates should explain their ideas of a product discovery process: From idea, via hypothesis, and experiment and validation. There are various ways to come up with ideas: Through analyzing market needs, industry trends, your data (analytics, NPS, etc.), and the competition. Also, regular sessions with stakeholders, such as sales and customer care, and the Scrum Team(s) tend to be fruitful. Empowering team members to spend a part of their work-time on new ideas is also a powerful practice. (Think of Gmail.) Most importantly, observing customers regularly by running continuous user tests is an effective way of gaining insights for new features, products, and services. This approach is even more useful when the whole Scrum Team actively participates in the process.
+
+*What practices and frameworks can you hire to learn about your customers’ needs?*
+
+The candidate should name a few of the leading agile frameworks, such as Jobs-to-be-done, Lean UX, Lean Startup, Design Sprints, Service Design, design ethnography, and lean user testing, NPS, Voice of the Customer, and others.
+
+*How do you include user research in the product discovery process?*
+
+User research, or better: user testing, should be a continuous, regular exercise in any product-driven organization. It’s a vital part of the agile build-measure-learn cycle. Practically, this means that communicating with UX designers and researchers becomes an integral part of the work of the PO and the entire Scrum Team. (Ideally, they belong to the team itself.) Also, customer feedback is continuously gathered by running frequent user interviews and observations. Moreover, these ideas also apply to technical projects, for example, API services.
+
+*How much time do you allocate to user research and understanding your customers’ needs?*
+
+Spending 50 % of their time with customers would be great. However, if it’s less than 10 %, and if no one else is handling product discovery on behalf of the Product Owner, the product discovery process needs to be improved. For example, by relieving the PO from administrative tasks, such as user story writing. (Note: the Product Owner is not primarily a user story author.)
+
+*How do you organize the collaboration with stakeholders and improve it over time?*
+
+Communication and transparency are critical to effective collaboration with stakeholders. There are various ways to establish and improve this communication over time. For example, institute regular meetings with each stakeholder or have stakeholders name product ambassadors, who then act as “liaison officers” and train them accordingly. Arrange workshops with stakeholders and ambassadors, and ask your Scrum Master and the Developers to join the effort. Team up with the user experience people and run, for example, user journey or user story mapping workshops. Or invite stakeholders to Product Backlog refinement sessions to explain a user story’s value to the rest of the Scrum Team. Sprint Reviews and user interviews are also well suited to improve collaboration and communication over time.
+
+*How do you communicate with uncooperative stakeholders?*
+
+An often promising way to deal with uncooperative stakeholders is to win them over by demonstrating the value of agile product development. Early in the transition process, it is advisable to educate them with product-related workshops on agile principles. Proven examples are user story mapping or product roadmap planning workshops. (It is recommended to secure the help of an experienced coach at this stage.) It has also proven to help establish a close communication schedule with the stakeholders, for example, by having regular meetings. Also, educating members from stakeholder teams to act as “liaison officers” to the product organization significantly improves cooperation. It mitigates the usual feeling of losing control on the stakeholders’ side. At a later stage, typical agile events, such as Sprint Reviews, also work well by demonstrating what value the Scrum Team created for them. Generally, it is a process that will take time, and there are no shortcuts available. As a last resort, if everything else hasn’t worked out, the PO might need support from a C-level sponsor. (Read more: 11 Proven Stakeholder Communication Tactics during an Agile Transition.)
+
+*How can you say that a requirement is good or perfect?*
+
+A requirement is said to be perfect if it is Specific, Measurable Attainable Relevant, and Timely or in short SMART. The description of a condition should be specific, and all the parameters required for success should be measurable. All the needed resources should be attainable and relevant to the project. All the conditions/elements should be revealed timely.
+
+*What is the purpose of the Requirement Traceability Matrix?*
+
+It records all the requirements given by a client and ensures that all the necessities are met.
+
+*What is business modelling?*
+Business modelling is a step- by -step approach for identifying the value proposition for operating the business.
+
+The key attributes of business modelling to develop a strategic plan for an organization are:
+
+Vision
+Mission
+Objectives
+Strategies
+Action plan
+
+*Explain your typical work tactic for a project?*
+
+It is one of the most crucial business analyst interview questions asked by a recruiting manager to assess your work strategy, teamwork, and project management skills.
+
+*What documents are needed by a business analyst? Which documents have you prepared in your previous works?*
+
+A project lifecycle uses many documents, and it depends on the utilization process of a business analyst.
+
+Initiation document
+System Requirements Specifications document
+Business requirement document
+Functional requirement document
+Requirements Traceability Matrix
+Use case Specifications document
+Change Request Document
+Gap Analysis Document
+
+*What are the various kinds of diagrams you use as a business analyst? How do they impact the work?*
+
+Your hiring manager may ask this role specific question to ensure that you understand standard business analysis documents and how to apply them to a client's case. You must list your past experiences and examples to validate your credibility and value.
+
+The most used diagram models by business analysts are:
+
+Flowcharts – These are the diagrammatic depiction of the complete flow of the system. They make it easy for all the stakeholders, whether technical or technical, to understand the operation.
+Activity Diagram – These diagrams illustrate the diverse activities and their flow across various departments.
+Use case Diagrams – These diagrams model the functionality of a system using a set of actions, functions, and services that the system/project needs to perform.
+
+*If there are multiple stakeholders in a project, how do you influence them? Also, explain how you would work with a difficult stakeholder?*
+
+*How can you manage the post-implementation and pre-implementation problems of a project?*
+
+*During the development of a system, how do you manage frequently changing customers' requirements?*
+
