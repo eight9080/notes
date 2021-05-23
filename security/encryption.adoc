@@ -1,0 +1,165 @@
+ifndef::imagesdir[:imagesdir: ./images]
+
+= Encryption
+
+== Overview
+
+image::encryptionGeneral.png[Encryption]
+
+XOR is a binary operator between two values that returns true if either one input or the other is true, but not both
+
+|===
+|I 1 |I 2 |Output 3
+
+|0 |0 |0
+|1 |0 |1
+|0 |1 |1
+|1 |1 |0
+|===
+
+A XOR B XOR A = B
+
+== Symmetric Cryptography
+
+* Stream cipher
+* Block cipher
+
+Nonce - number used once
+
+=== Stream cipher
+
+Approximate a one-time pad by generating an infinite pseudo-random keystream
+
+image::streamCiphers.png[Stream ciphers]
+
+=== Block Ciphers
+*  Block ciphers take an input of a fixed size, and return an output of the same size
+*  Block ciphers attempt to hide the transformation from message to ciphertext through confusion, and diffusion
+
+SP-Networks:
+
+* Repeated substitution and permutation operations
+** Replacing bytes with others
+** Swapping bytes around
+
+The Advanced Encryption Standard (AES) is an SP-Network
+
+==== AES (Advanced Encryption Standard)
+* Key length of 128, 192 or 256-bits
+* 10, 12 or 14 rounds
+* Each Round: SubBytes, ShiftRows, MixColumns, Key Addition
+
+=== Modes of operation
+
+Modes of operation combine multiple instances of block encryption into a usable protocol
+
+==== Electronic Code Book (ECB)
+* Just encrypt each block one after another
+* Weak to redundant data divulging patterns
+
+image::ECB.png[ECB]
+
+==== Cipher Block Chaining (CBC)
+XOR the output of each cipher block with the next input.
+(with issues)
+
+* slow
+* no parallelization
+IV - Initialization vector
+
+image::CBC.png[CBC]
+
+==== Counter Mode (CTR)
+
+Encrypting a counter to produce a stream cipher
+
+* can be parallelized
+
+image::CTR.png[CTR]
+
+== Asymmetric Cryptography
+
+Two keys: a public key and a private key
+
+_It is computationally infeasible to calculate a private from a public key_
+
+=== Key Exchange
+
+==== Diffie-Hellman
+
+Two parties can jointly *agree a shared secret over an insecure channel*
+
+Steps:
+
+1. Alice and Bob agree on a large prime [BLUE]#p#, and a generator [BLUE]#g# that is a primitive root of p
+2. Alice chooses a private value [RED]#a# at random, then sends Bob a public (g power a) mod p
+3. Bob chooses a private value [RED]#b# at random, then sends Alice a public (g power b) mod p
+4. Alice computes ((g power b) power a) mod p, which is actually (g power ab) mod p
+5. Bob computes ((g power a) power b) mod p, which is actually (g power ab) mod p
+
+==== Elliptic Curve Cryptography
+
+Elliptic curves are a drop-in replacement for the mathematics underpinning regular Diffie-Hellman
+
+* more efficient than DFH
+
+Elliptic curves are much stronger than traditional public-key schemes for the same key length.
+
+Use Ephemeral Mode:
+
+* In most protocols, running Diffie-Hellman in ephemeral mode forces a new key exchange every time
+
+== Public-Key Cryptography
+
+=== RSA
+
+* RSA is the most common method for general public key cryptography • It provides both encryption and/or authentication
+* RSA provides us with two keys:
+
+** Public (e,n)
+** Private (d)
+
+e - small number +
+d - much larger number +
+n - very large semi-prime number n = p*q
+
+* The keys (e, n) and (d) are reversible – either can be used for encryption, and the other used for decryption
+* Everyone knows the public key, only the owner knows the private key
+* This leads us to two very useful use cases for RSA:
+
+1. Encryption only the owner can read
+2. Signing that must have been performed by the owner
+
+=== DSA
+• The main alternative to RSA is The Digital Signature Algorithm (DSA)
+• It acts a lot like RSA, but uses mathematics similar to Diffie- Hellman
+• It doesn’t encrypt, but can be used for signing messages
+
+== Hash Functions
+
+Takes a message of any length, and returns a pseudorandom hash of
+fixed length
+
+Strong Hash Functions:
+
+1. Given a hash, we can’t reverse it
+2. Given a message and its hash, we can’t find another message that hashes to the same thing
+3. We can’t find any two messages that have the same hash
+4. For the same input the same hash is computed
+
+Usually hash functions iteratively jumble blocks of a message after another.
+
+== Message Authentication Code
+
+Hashing lets us ensure that a message(symmetric encryption) hasn’t been altered
+
+Ciphertext:C | h(K|C)
+
+HMAC is the most common approach, it splits a key in two and hashes twice
+
+== Digital Signatures – Hashing + PK
+• Hashes are used with RSA and DSA to create digital signatures
+• They prove the authenticity of the sender
+
+image::digitalSignatures.png[Digital Signatures]
+
