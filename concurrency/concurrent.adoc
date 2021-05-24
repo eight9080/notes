@@ -132,6 +132,15 @@ public class Person {
 }
 ----
 
+===== Rules
+
+* Two threads can execute concurrently a synchronized static method and a non-static method of the same class. The threads acquire locks on different objects.
+
+* Two threads cannot concurrently execute two different synchronized static methods (or the same synchronized static method) of the same class.
+The first thread acquires a class-level lock.
+
+* Two threads can concurrently execute non-synchronized, synchronized static, and synchronized non-static methods
+
 ==== Multiple synchronized methods
 
 [source,java]
@@ -430,9 +439,9 @@ public class ProducerConsumer {
 
 * New - when a thread is created new Thread()
 * Runnable - once the start method was invoked it is eligible to be run
-* Terminated - once the task is complted
-* Blocked - waiting at the entrance of a synchronized block
-* Waiting - parked using a wait call
+* Terminated - once the task is completed
+* Blocked - waiting at the entrance of a synchronized block (When a thread is trying to execute I/O tasks or synchronized blocks)
+* Waiting - parked using a wait call (A thread, t1, that waits (without a timeout period) for another thread, t2, to finish)
 * Timed_waiting - parked using a sleep(timeout) or wait(timeout) call
 
 The thread scheduler can run the threads in the state RUNNABLE. +

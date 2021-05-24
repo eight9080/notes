@@ -112,7 +112,7 @@ OpenJDK 64-Bit Server VM AdoptOpenJDK (build 11.0.10+9, mixed mode)
 
 === ScheduledThreadPoolExecutor
 • Common choice of threadpool for many applications
-•  Schedule events to execute at a fixed rate
+• Schedule events to execute at a fixed rate
 • Returns a ScheduledFuture for pending execution
 • Good for controlled concurrency work
 

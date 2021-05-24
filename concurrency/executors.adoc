@@ -24,6 +24,12 @@ The third type of common use of ThreadPoolExecutor is a fixed thread pool, where
 
 Read more: https://javarevisited.blogspot.com/2016/12/difference-between-executor-framework-and-ForkJoinPool-in-Java.html[Executor]
 
+== Thread Pool
+
+A thread pool is a collection of threads that can be used to execute tasks.
+
+A thread pool is responsible for managing the creation, allocation, and life cycles of its threads and contributing to better performance.
+
 == Executor Pattern
 
 * Creating pools of ready to use threads and using them
@@ -70,6 +76,45 @@ A task can be removed from the waiting queue -> If the task has been started by 
 * Runnable as a task -> cannot return anything or raise an exception
 * There is no way to know when the task is done.
 
+=== ThreadPoolExecutor
+
+A fully-fledged implementation of ExecutorService, named ThreadPoolExecutor.
+
+----
+ThreadPoolExecutor(
+  int corePoolSize,
+  int maximumPoolSize,
+  long keepAliveTime,
+  TimeUnit unit,
+  BlockingQueue<Runnable> workQueue,
+  ThreadFactory threadFactory,
+  RejectedExecutionHandler handler)
+----
+
+* _corePoolSize_: The number of threads to keep in the pool, even if they are idle (unless allowCoreThreadTimeOut is set)
+* _maximumPoolSize_: The maximum number of allowed threads
+* _keepAliveTime_: When this time has elapsed, the idle threads will be removed from the pool (these are idle threads that exceed corePoolSize)
+* _unit_: The time unit for the keepAliveTime argument
+* _workQueue_: A queue for holding the instances of Runnable (only the Runnable tasks submitted by the execute() method) before they are executed
+* _threadFactory_: This factory is used when the executor creates a new thread
+* _handler_: When ThreadPoolExecutor cannot execute a Runnable due to saturation, this is when the thread bounds and queue capacities are full (for example, workQueue has a fixed size and maximumPoolSize is set as well)—it gives the control and decision to this handler
+
+Optimization:
+
+* Number of CPUs (Runtime.getRuntime().availableProcessors())
+* Target CPU utilization (in range, [0, 1])
+* Wait time (W)
+* Compute time (C)
+
+----
+Number of threads = Number of CPUs * Target CPU utilization * (1 + W/C)
+----
+
+*For _compute-intensive tasks_ (usually small tasks), it can be a good idea to benchmark the thread pool with the number of threads equal with to number of processors or number of processors + 1 (to prevent potential pauses).*
+
+
+*For _time-consuming and blocking tasks_ (for example, I/O), a larger pool is better since threads will not be available for scheduling at a high rate. Also, pay attention to interferences with other pools (for example, database connections pools, and socket connection pools).*
+
 === Callable interface
 
 [source, java]
@@ -100,11 +145,30 @@ Future.get -> blocking method, returns the object returned by the task:
 
 Get also can receive a timeout.
 
+=== Thread pool via Executors
+
+`newSingleThreadExecutor` - a thread pool that manages only one thread with an *unbounded queue*, which only executes one task at a time
+
+`ExecutorService executor = Executors.newSingleThreadExecutor();`
+
 *Cached Thread Pool* `newCachedThreadPool`
 
 * creates threads on demand
 * keeps unused threads for 60s
 * then terminates them
+* the core pool size is 0 and the maximum pool size is Integer.MAX_VALUE
+
+`ExecutorService executor = Executors.newCachedThreadPool();`
+
+`newFixedThreadPool()` - a thread pool with a fixed number of threads and an *unbounded queue*
+
+* the core pool size and the maximum pool size are equal to the specified size
+
+`ExecutorService executor = Executors.newFixedThreadPool(5);`
+
+`newWorkStealingThreadPool()` - a thread pool based on a work-stealing algorithm (it acts as a layer over a fork/join framework)
+
+`ExecutorService executor = Executors.newWorkStealingPool();`
 
 
 *Scheduled Thread Pool* `newScheduledThreadPool(poolSize)`
@@ -112,11 +176,20 @@ Get also can receive a timeout.
 * creates a pool of threads
 * returns a ScheduledExecutorService
 
-The ScheduledExecutorService:
+The ScheduledExecutorService - is an ExecutorService that can schedule tasks for execution after a given delay, or execute periodically.
 
 * schedule(task,delay)
 * scheduleAtFixedRate(task,delay,period)
 * scheduleWithFixedRate(task,initialDelay, delay)
+
+`ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);`
+
+===== Use cases
+
+A large number of small tasks: *work-stealing thread pool* (best results),
+fixed thread pool, cache thread pool(worse)
+
+A small number of time-consuming tasks: the work-stealing thread pool worked as a regular thread pool, cache(worse)
 
 ==== Shutting down
 
