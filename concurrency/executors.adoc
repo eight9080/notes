@@ -184,7 +184,7 @@ The ScheduledExecutorService - is an ExecutorService that can schedule tasks for
 
 `ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);`
 
-===== Use cases
+==== Use cases
 
 A large number of small tasks: *work-stealing thread pool* (best results),
 fixed thread pool, cache thread pool(worse)

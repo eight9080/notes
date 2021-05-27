@@ -3,10 +3,18 @@
 == Concepts
 
 *Throughput* - how much work is done in a given unit of time
+In the context of parallel computing, throughput is *the number of single computations that can be performed simultaneously*. For example, if, at t1, we can perform four simultaneous computations, C1, C2, C3, and C4, then the throughput is four.
 
 *Scalability* - how well a task can be broken up and run on multiple processor cores
 
 *Latency* - the time required to wait for something and then to perform the operation
+End-to-end time taken to perform a single computation. If Compute1 represents a single computation that starts at t1 and ends at t2, then we can say the following:
+
+*Latency = t2-t1*
+
+*Elasticity*  - The ability of the infrastructure to react to a sudden increase in processing requirements by provisioning more resources
+
+
 
 When to use:
 
