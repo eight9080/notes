@@ -1,0 +1,163 @@
+= Communication Patterns
+
+== Synchronous Messaging Patterns
+
+The business logic of a given microservice is dependent on one or more other microservices or systems.
+
+=== Request-Response Pattern
+
+* one microservice (which acts as the client) sends a request and waits for a response from one or more other microservices or systems
+* The business logic of the client application *blocks* until it receives the response
+* the communication channel has *to be kept open* until the response is received by the client application.
+* waits until either it receives the response data, or the maximum time that the client intends to wait is reached (which is known as a time-out)
+* a query-based interaction.
+
+* Most external-facing services are implemented using this pattern
+
+* select this pattern whenever you need interactive communication among microservices or with external consumers or systems
+
+* *Each service in the chain can introduce a potential performance bottleneck or downtime, which impacts all other services in the chain*.
+
+=== Remote Procedure Calls Pattern
+
+A given microservice can build a certain piece of business logic as a function and make it available for remote invocation by a consumer that resides in a separate process.
+
+* for the client should be similar with making a local procedure call
+
+* The underlying RPC framework handles all the complexities of the remote method invocation over the network and hides the details of the underlying network communication from the application developer.
+
+* as the service developer is to come up with a service definition that outlines the details of the remote methods that you expose to the consumers, service name, name resolution, and data types that the service uses to exchange information
+* *interface definition language (IDL)*
+
+* RPC implementations allow you to use the service definition to generate client- and server-side code that handles the low-level protocol details of the RPC communication
+
+* client/server stubs
+
+Steps Client side:
+
+* the client application calls the client stub with the required parameters. This is a *local function call*, as the client stub resides within the client’s process or address space.
+*  Then the client stub *serializes* (or marshals) the details of the remote service call into an *encoded binary message*, and the RPC runtime component passes the message to the underlying network transport layer to invoke the remote server application.
+
+Steps Server side:
+
+* the network transport layer passes the call message to the RPC runtime, which invokes the corresponding server stub
+* The server stub deserializes (or unmarshals) the binary message and resolves the server procedure, mapping parameters and data types. Then it can call the corresponding server application’s remote procedure, where the server-side business logic resides.
+* Once the server’s business logic is executed, it returns the response data types to the server stub, which *marshals it to the reply message*.
+
+* Then the server hands over the message to the RPC runtime, which sends it back to the client application over the network transport layer.
+
+Final client side:
+
+* the client stub unmarshals the return parameters, and execution returns to the client application.
+
+Implementations :
+
+* gRPC - using HTTP2 as the communication protocol and and Protocol Buffers as the data serialization format
+
+RPC-based communication is often suitable for building the *communication among services that are used internally*.
+
+
+|===
+|Pattern |When to use  |When not to use
+
+|Request-Response
+|Service need real-time responses +
+Service contracts need to be flexible +
+To interoperate with many types of consumers +
+Services are exposed to external consumers
+
+|Low-latency and high- throughput +
+Strict contract-first interactions are required
+
+|Remote Procedure call
+|High-performance communication among services is critical. +
+To enforce a strict contract-first approach for building services. +
+Service business logic needs to be completely independent from the underlying wire protocol and its semantics.
+
+|Service interoperability with multiple application types such as web or mobile apps is required. +
+You have to enable loose contracts and flexibility for consumers.
+|===
+
+== Asynchronous Messaging Patterns
+
+=== Single-Receiver Pattern
+
+* point-to-point asynchronous messaging
+
+*  a given microservice delivers messages to *exactly one target microservice*, or to a system using a messaging infrastructure such as a message broker.
+* The messages sent here are usually considered *commands*
+
+Steps:
+
+* Producer publishes messages to a queue in the message broker
+* One consumer service or system then consumes messages from that queue(it ensures the ordered delivery of the messages)
+*  The producer service is interested only in whether the message is delivered successfully to the queue
+
+* The message broker offers the required message-delivery guarantees (such as at-least-once delivery)
+
+Implementations:
+
+* *Advanced Message Queuing Protocol (AMQP)* is the most widely accepted protocol that facilitates queue-based single-consumer messaging
+
+AMQP implementations such as RabbitMQ, Apache ActiveMQ, and Apache ActiveMQ Artemis. +
+Fully cloud-based messaging solutions such as Microsoft Azure Service Bus.
+
+* end-to-end guaranteed message delivery is required
+
+=== Multiple-Receiver Pattern (Publisher-Subscriber)
+
+* messages are delivered to more than one consumer microservice
+
+* One microservice publishes a message to a topic in the event bus, and one or more microservices can subscribe to a given topic.
+* The message is asynchronously delivered to all the subscribers of that topic.
+
+* the event bus simply delivers messages to available subscribers
+* leverage durable subscription techniques
+
+Implementations:
+
+* event-based multiple-consumer scenarios such as Apache Kafka, Neural Autonomic Transport System (NATS), Amazon Simple Notification Service (SNS), and Azure Event Grid
+
+* often implemented with support for persistent delivery, which means the events published by the producers are stored in a persistent store
+
+* when the events are published to subscribers, delivery of messages is not guaranteed by default to all
+*  this pattern is used when delivery semantics such as at-least-once delivery are not required on the consumer side.
+
+* certain brokers introduce such delivery guarantees with concepts such as *durable topics*: the broker logically persists an instance of each message for every durable consumer, since each durable consumer gets its own copy of the message.
+
+=== Asynchronous Request-Reply Pattern
+
+* the producer microservice publishes messages to a queue in a message broker, and then the consumer consumes that message from the queue.
+
+* the message contains metadata specifying that it requires a reply, the location where the reply should be sent, and how to correlate the reply.
+
+* The consumer uses that information to send the reply back to the producer via a completely different channel established through a separate queue in the message broker.
+
+|===
+|Pattern	|When to use	|When not to use
+|Single-Receiver
+|One microservice sends an asynchronous command to another microservice. +
+For ordered message delivery. +
+For guaranteed message delivery. +
+|Efficient data transfer is required without delivery semantics such as at-least-once.
+
+|Multiple-Receiver
+|More than one consumer is interested in the same message/event.
+|Usually not suitable when you need guaranteed message delivery.
+
+|Asynchronous Request-Reply
+|For asynchronous messaging scenarios in which correlation is required between a request and a reply.
+|Shouldn’t be used as a reliable messaging alternative to synchronous request-response patterns.
+|===
+
+== Service Definition Patterns
+
+
+
+
+
+
+
+
+
+
