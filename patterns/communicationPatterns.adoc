@@ -162,9 +162,153 @@ image::asyncReqRes.png[Async request response]
 
 == Service Definition Patterns
 
+=== Service Definitions in Synchronous Communication
 
+* publish the service definitions to a central location known as the *service registry*
+* metadata repository
 
+* The service definitions that the consumers obtain can be used to build the client application or generate the required client libraries to communicate with the server.
 
+* The service definition contains the interfaces that a given service offers, as well as message formats and schema for data types exchanged between the client and microservices.
+
+Implementations:
+Consul, etcd, and Apache ZooKeeper
+
+To define service interfaces:
+
+* RESTful services use OpenAPI
+* gRPC uses Protocol Buffers
+* GraphQL uses GraphQL schemas
+
+image::SDSync.png[SDSync]
+
+=== Service Definition in Asynchronous Communication
+
+* messages exchanged between producers and consumers contain structured data that is being serialized or deserialized using a schema that defines and validates the data exchanged between the parties.
+
+* a central metadata registry to store the schemas
+
+Steps:
+
+* the producer connects to the schema registry to retrieve the service definition with the schema and validate it
+* The consumers follow the same pattern when they deserialize the message so that they read the message based on the schema provided in the registry
+
+* By using schema-based data serialization and deserialization, asynchronous message-based communication can drastically reduce the amount of metadata related to type information and field names that you have to pass along with every message.
+
+Implementations:
+
+* for the schema definition techniques we can use Apache Avro, Protocol Buffers, or JSON schemas.
+
+* Kafka supports Avro
+* Azure uses Azure Schema Registry
+
+For applications that use event-driven architecture, the service definitions can leverage event-describing specifications, such as CloudEvents.
+
+image::SDAsync.png[SD Async]
+
+==== Schema definitions with Kafka Schema Registry
+*Kafka Schema Registry* - can store and retrieve your schema definitions for messages exchanged between producers and consumers in asynchronous messaging
+
+* can store Avro, JSON, and Protocol Buffers schemas
+* stores a versioned history of all schemas and provides serializers that plug into Kafka clients.
+* These clients handle schema storage and retrieval for Kafka messages that are sent in any of the supported formats.
+
+Cloud messaging services such as Amazon Kinesis and Azure Event Hubs also support this pattern
+
+==== Service definitions with AsyncAPI
+AsyncAPI can be used to specify the entire service contract rather than just the schema for the messages.
+
+Schema registries provide only the schema for messages exchanged between producers and consumers. However, these registries don’t specify any contract details related to publishing or consuming messages. AsyncAPI tries to standardize the definition of the service contracts for producers and consumers in asynchronous messaging.
+
+== Technologies
+
+=== Technologies to Implement Synchronous Messaging Patterns
+
+==== RESTful Services
+
+The REST model uses a navigational scheme to represent objects and services over a network. These are known as resources—objects with a type, associated data, relationships to other resources, and a set of methods that operate on them
+
+==== GraphQL
+
+GraphQL is based on the concept of sending a query as a request to the microservice.
+
+GraphQL allows clients to determine which data they want, how they want it, and in what format.
+
+GraphQL primarily uses *queries, mutations, and subscriptions* as the main interaction styles with consumers and services. With a query, the client can request the data it needs from the server, while mutations are mostly used to modify data on the server
+
+GraphQL is commonly used for external-facing microservices or APIs that are directly exposed to consumers (clients such as mobile applications)
+
+GraphQL offers an efficient way to fetch data without over-fetching (retrieving redundant data not required for the consumer) or under-fetching (retrieving only a portion of required data, which results in subsequent requests to fetch the remaining data).
+
+With GraphQL, the consumer can fetch the exact data needed in a single request. GraphQL provides other advantages including validation and type checking, detailed error handling, and *backward-compatible versioning*.
+
+==== WebSocket
+
+* TCP over the web
+* supports full duplex (allows communication in both directions)
+* asynchronous messaging once the connection is established
+* uses a single TCP connection for traffic in both directions and uses HTTP as the initial handshaking protocol
+
+* WebSocket doesn’t mandate a specific data serialization format for messages
+
+image::websocket.png[WebSocket]
+
+==== gRPC
+
+* uses an efficient binary data serialization format, Protocol Buffers, to marshal and unmarshal data exchanged between the client and server applications
+
+* is implemented on top of HTTP2
+
+The underlying gRPC framework handles all the complexities normally associated with enforcing strict service contracts, data serialization, network communication, authentication, access control, and observability.
+
+*Apache Thrift*, another RPC framework similar to gRPC, uses its own interface definition language and offers support for a wide range of programming languages.
+
+|===
+|Synchronous messaging technology	|When to use
+|RESTful services
+|The business use case fits the resource-oriented model +
+The service needs to interoperate with disparate sets of clients (web clients, mobile clients). +
+The service needs to negotiate to support various content types (JSON, CSV, XML) based on client requests. +
+You need human-readable text-based message formats. +
+
+|GraphQL
+|Clients want to determine the data they want, how they want it, and the data format.
+|You want a well-defined yet flexible schema for interservice communication.
+|You want to reduce the number of service calls needed to retrieve business data from a service.
+
+|gRPC
+|Require low-latency and high-throughput interservice communication. +
+Type-safe and robust data exchange between microservices. +
+The client or the server application needs to build a streaming business operation.
+
+|WebSocket
+|You have to implement full-duplex efficient messaging between services using your own data formats.
+|===
+
+=== Technologies to Implement Asynchronous Messaging Patterns
+
+==== AMQP - Advanced Message Queuing Protocol
+
+*  ensures rapid and reliable message delivery, and message acknowledgments
+
+* When a *producer* delivers a message to a queue, *the broker sends acknowledgments*, and when a message is delivered to a consumer,
+* the *consumer notifies the broker*, either automatically or when the application code decides to do so.
+
+* In message acknowledgments mode, the broker will completely *remove a message* from a queue only when it receives a notification for that message (or group of messages).
+
+==== Kafka
+
+*  distributed open source event bus/broker solution built on the concept of maintaining messages/events as a *distributed commit log*
+
+* The messages in Kafka are stored durably, in order, and can be read deterministically by multiple consumers at their own speed.
+
+* As Kafka does not remove the events from the log upon delivery, it enables the replay of events. It uses an event sequence number to enable consumers to track their position in the stream to allow for selective replay
+
+==== NATS
+
+*  a simple, open source messaging infrastructure specifically built for cloud native applications
+* facilitates message-delivery semantics such as at-most-once and at-least-once
+* uses logs for storing events, uses event sequence numbers to track events, and provides the ability to replay.
 
 
 
