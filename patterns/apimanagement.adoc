@@ -1,0 +1,120 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= API Management and Consumption Patterns
+
+== API Management Patterns
+
+=== API Gateway Pattern
+
+An API gateway layer is often built on top of existing microservices. Any microservices or composite services that you develop can be exposed as managed APIs through the API gateway.
+
+*API gateway*
+
+* The APIs that you create in front of the downstream microservices are hosted inside the API gateway runtime.
+
+* The API gateway is responsible for accepting the API calls and applying security validations such as tokens, certificates, and other credential validations.
+* applies various quality-of-service attributes to the API calls, such as throttling (quotas, rate limiting), caching, and versioning.
+* responsible for collecting all the data related to observability and API analytics.
+
+*API management plane*
+
+* the main interface that the API creators and publishers use to control and administer the behavior of the APIs hosted through the API gateway and developer portal.
+* can define and create APIs (and API products), change the life-cycle state of the APIs, and manage API access policies such as throttling, caching, security, and versioning.
+* Management of users, schemas, and API visibility are also done at the control plane.
+
+*API developer portal*
+
+* present your APIs to the application developers so they can discover and learn about your APIs, try them out, subscribe to them (or to API products), rate them, and provide feedback.
+* allows developers to generate required security keys and tokens
+
+image::apiGateway.png[API Gateway]
+
+=== API Microgateway Pattern
+
+Each API should have its own runtime—called a microgateway—and we should be able to manage all these runtimes together by using a central API management plane that is exposed via a central API developer portal
+
+A microgateway is usually implemented using a *lightweight gateway runtime deployed as a container*.
+
+image::apimicroGateway.png[API MicroGateway]
+
+=== Service Mesh Sidecar as an API Gateway Pattern
+
+in an environment where we use service mesh, rather than using a separate API gateway runtime, we can offload the tasks of the API gateway to the sidecar proxies running alongside each microservice.
+
+image::serviceMeshGateway.png[Service Mesh API Gateway]
+
+The on-premises offerings include Kong, MuleSoft, Red Hat 3scale API Management, and WSO2 API Manager.
+
+Cloud:  Google’s Apigee, Azure API Management, Amazon API Gateway, and MuleSoft Anypoint Platform.
+
+=== Summary
+|===
+|Pattern	|When to use	|When not to use
+|API Gateway
+|Essential in all the API management use cases. +
+API management plane and developer portal are optional for small-scale use cases but require those components if you plan to do end-to-end API life cycle management.	|(Not applicable.)
+
+|API Microgateway
+|Only when the API gateway layer requires scaling and isolation per each API.
+|If your cloud native application exposes a handful of managed APIs that don’t do any heavy lifting, using this pattern will incur a redundant complexity.
+
+|Service Mesh Sidecar as API Gateway
+|Only when you are using a service mesh in production and want to include API management without using a separate layer.
+|If you don’t have a service mesh or plan to use it at the production level, using this pattern is overkill. +
+Even if you use a service mesh, you can still use API management as a separate component.
+|===
+
+== API Consumption Patterns
+
+=== Direct Frontend-to-Microservices Communication Pattern
+
+*  expose all the microservices required for your frontend applications as public-facing services.
+
+The frontend applications access these services via a *load balancer*, and extra care needs to be taken to secure these microservices as they are directly exposed to the public.
+
+All the cross-cutting capabilities such as authentication, authorization, and observability need to be implemented at the level of each microservice.
+
+Cons:
+
+* tight coupling between the frontend and backend services
+* security risks of directly exposing microservices to the public
+* no central place to apply cross-cutting capabilities across multiple microservices.
+
+=== Frontends Consuming Services Through API Gateway Pattern
+
+* implement frontend to API management layer communication by exposing all the services or business functionalities that need to be exposed to the external parties via an API management layer
+
+=== Backend for Frontends Pattern
+
+* by introducing APIs that are tailor-made for specific frontend applications type(mobile/web).
+
+Rather than depending on a single general-purpose API, we can build different backend APIs for each frontend application type
+
+=== Summary
+
+|===
+|Pattern	|When to use	|When not to use
+|Direct Frontend-to-Microservices Communication
+|API management is not a critical requirement.
+|Often you need to bring managed APIs into the picture at some point. So this approach is suitable only when getting started.
+
+|Frontends Consuming Services Through API Gateway
+|The consumers are homogeneous and don’t have disparate requirements to fulfill at the frontend level. +
+The API exposed to consumers works for all the disparate sets of consumers.
+|The API needs frequent changes due to frontend requirements. +
+The successful consumption of an API largely depends on the frontend application.
+
+|Backend for Frontends (BFF)
+|a unique experience for each frontend application. +
+|You have a single type of frontend application or its requirements are homogeneous.
+|===
+
+
+
+
+
+
+
+
+
+
+
