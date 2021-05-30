@@ -1,3 +1,4 @@
+ifndef::imagesdir[:imagesdir: ./images]
 = Communication Patterns
 
 == Synchronous Messaging Patterns
@@ -17,6 +18,8 @@ The business logic of a given microservice is dependent on one or more other mic
 * select this pattern whenever you need interactive communication among microservices or with external consumers or systems
 
 * *Each service in the chain can introduce a potential performance bottleneck or downtime, which impacts all other services in the chain*.
+
+image::req-res.png[Request Response]
 
 === Remote Procedure Calls Pattern
 
@@ -56,6 +59,7 @@ Implementations :
 
 RPC-based communication is often suitable for building the *communication among services that are used internally*.
 
+image::rpc.png[RPC]
 
 |===
 |Pattern |When to use  |When not to use
@@ -104,6 +108,8 @@ Fully cloud-based messaging solutions such as Microsoft Azure Service Bus.
 
 * end-to-end guaranteed message delivery is required
 
+image:singleReceiver.png[SingleReceiver]
+
 === Multiple-Receiver Pattern (Publisher-Subscriber)
 
 * messages are delivered to more than one consumer microservice
@@ -124,6 +130,8 @@ Implementations:
 *  this pattern is used when delivery semantics such as at-least-once delivery are not required on the consumer side.
 
 * certain brokers introduce such delivery guarantees with concepts such as *durable topics*: the broker logically persists an instance of each message for every durable consumer, since each durable consumer gets its own copy of the message.
+
+image::multipleReceiver.png[Multiple Receiver]
 
 === Asynchronous Request-Reply Pattern
 
@@ -149,6 +157,8 @@ For guaranteed message delivery. +
 |For asynchronous messaging scenarios in which correlation is required between a request and a reply.
 |Shouldn’t be used as a reliable messaging alternative to synchronous request-response patterns.
 |===
+
+image::asyncReqRes.png[Async request response]
 
 == Service Definition Patterns
 
