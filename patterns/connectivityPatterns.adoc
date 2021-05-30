@@ -244,3 +244,89 @@ The underlying implementation technology supports sidecarless interaction with c
 |===
 
 == Service Composition Patterns
+
+=== Service Orchestration Pattern
+
+Service Orchestration implements the business logic of a microservice by invoking and integrating one or more microservices and systems.
+
+* Use this pattern if it can be directly mapped to a *business capability* that aggregates the capabilities of several other downstream capabilities.
+
+* It is better to limit the number of service calls in a composition. For instance, if you have to orchestrate calls among more than four or five services, that’s a sign of business scope issues with the service, or perhaps the downstream services may be too granular.
+
+=== Service Choreography Pattern
+
+* creating asynchronous event-driven communication links with the use of a message broker (or event hub)
+
+* The interaction logic is dispersed across multiple microservices, and no direct coupling occurs between microservices.
+
+Microservices interact with one another through the events coming in from, and events published to, the broker
+
+* can use multiple message broker solutions to implement different types of asynchronous communication
+
+* Service composition logic is dispersed across multiple microservices.
+* Services are loosely coupled. Adding or removing services is much easier
+
+* can implement it by using a serverless platform (can model all the event-driven microservices as serverless functions)
+
+=== Saga Pattern
+
+When we create service compositions by using multiple microservices, we may have to execute those service interactions in a transactional way -> *distributed transaction*
+
+* using corresponding compensation operations to undo every service interaction that is part of a single distributed transaction
+
+All transactions in a Saga either complete successfully, or, in the event of a failure, compensating transactions are executed to roll back all subtransactions.
+
+The composite business capability can be built into another microservice (orchestrator) that is responsible for the execution of the distributed transaction.
+
+To roll back these local transactions, each microservice offers a compensating operation.
+
+Microservice X executes composition logic -> *the Saga Execution Coordinator (SEC)*:
+
+* a stateful invocation of all the required service calls (transactions T1, T2, and T3).
+* If one of those invocations fails, the SEC logic of Microservice X can execute the corresponding compensating operations (C1, C2, and C3) to roll back everything.
+
+
+In the Saga log, we persist every transaction during execution of the given composition logic. The log contains various state-changing operations such as Begin Saga, End Saga, Abort Saga, Begin T-i, End T-i, Begin C-i, End C-i, and so on.
+
+Using these state-changing events that are persisted in a *distributed log*, we can roll back to any state that we want in the case of a failure.
+
+For Choreography ->  there is no central SEC, but each microservice interacts with the broker transactionally. All the operations, including compensating operations, are carried out as messages/events published to a broker and events received from the broker.
+
+Frameworks and workflow engines such as Camunda and Apache Camel, and cloud services such as Azure, support implementation of the Saga pattern using serverless functions and event brokers.
+
+image::saga.png[Saga]
+
+* Running an observability solution alongside a Saga implementation is essential, as we have to debug and troubleshoot complex business transactions across distributed services.
+
+* A Saga implementation framework should be backed by a scalable distributed log, as a single transaction may emit a multitude of events to the Saga log.
+
+
+=== Summary
+
+|===
+|Pattern	|When to use	|When not to use
+|Service Orchestration
+|The business use case requires one service to handle all the interactions with other services and systems. +
+Usually suitable for interactive services.
+|Not suitable if the coupling between services is a concern. +
+Not suitable when the majority of your use case is based on asynchronous messaging for events.
+
+|Service Choreography
+|You require service composition across event-driven microservices. +
+You want to build fully decoupled microservices in a cloud native application.
+|Not well suited for interactive services such as APIs that are exposed to consumers.
+
+|Saga
+|Distributed transactions across multiple microservices are essential.
+|Not useful when the services cannot offer compensating operations that can execute transactionally. +
+You shouldn’t adopt it unless you have a framework or solution that can build the Saga execution for you.
+|===
+
+
+
+
+
+
+
+
+
