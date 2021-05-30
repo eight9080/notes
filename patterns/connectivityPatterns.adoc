@@ -1,0 +1,246 @@
+ifndef::imagesdir[:imagesdir: ./images]
+
+= Connectivity and Composition Patterns
+
+== Connectivity patterns
+
+=== Service Connectivity Pattern
+
+* provides a generic way to connect different components such as microservices, external systems, and APIs exposed to consumers.
+
+*The _business capabilities_ that we choose to present to consumers are exposed as _managed APIs_ using the _API gateway layer_.*
+
+The API management layer that sits on top of all the business capabilities of a cloud native application makes sure that all these capabilities are offered as managed APIs to consumers.
+
+image::serviceConnectivity.png[Service Connectivity]
+
+=== Service Abstraction Pattern
+
+When a microservice in a cloud native application needs to interact with another microservice or an external system, it is preferable to use an abstraction that hides the details of the underlying implementation, location, and deployment structure.
+
+Benefits:
+
+* to use a stable or fixed location (IP) to represent your microservice or system within the cloud native application.
+* provide a built-in service-discovery capability, so that the consumer applications refer to the service by using a generic naming scheme
+* can seamlessly provide load balancing and failover
+* Dynamic scaling of the microservice or system is possible when using a service abstraction, as the underlying instances can come and go as needed.
+
+==== Kubernetes services
+
+A Kubernetes service groups a set of pod endpoints into a single resource. +
+Access that service in various ways (for example, load balancing or cluster IP).
+
+With the Kubernetes Catalog service of the online retail application, you get a stable *cluster IP address* that clients inside the cluster can use to invoke the service. A client sends a request to the stable IP address in the Kubernetes cluster, and the request is routed to one of the pods in the Catalog service.
+
+
+If you use the *service type LoadBalancer,* Kubernetes automatically creates a *cloud network load balancer* of the underlying cloud platform (AWS, Azure, GCP, and so forth). This load balancer provides an *externally accessible IP address* that sends traffic to the correct port on your cluster nodes, provided your cluster runs in a supported environment and is configured with the correct cloud load-balancer package.
+
+Expose any other monolithic or *proprietary systems* that are consumed by your cloud native application as a service:
+the *service type ExternalName* that provides an internal alias for an external DNS name.
+e.g. kafka as a Service
+
+image::serviceAbstraction.png[Service Abstraction]
+
+=== Service Registry and Discovery Pattern
+
+The repository containing this service information and metadata is the service registry.
+
+A service registry is implemented as another service that offers a *registry repository API and discovery API*.
+
+*Client-side service discovery* - the client is responsible for service discovery
+
+* Server-side discovery - the consumer/client simply sends the request to the load balancer with a reference to the service that it wants to invoke and the corresponding message
+
+Service registry implementation: Consul
+
+* All the microservices need to register with the service registry at the time of deployment.
+* Also configure them to *send heartbeats* to the registry to detect any unavailable services.
+
+image::serviceDiscovery.png[Service Discovery]
+
+==== Service discovery in Kubernetes
+
+Kubernetes by default uses DNS names to discover the pods. Therefore, if you want to call the Bar service from the Foo service, in the Foo service’s code you can just refer to http://bar:<port> as the service endpoint. Kubernetes will resolve and map the name to the actual endpoint.
+
+Kubernetes internally uses etcd as the distributed key-value store that is used as the service registry.
+
+=== Resilient Connectivity Pattern
+
+The network is always considered to be unreliable.
+
+* design a resilient interaction between the microservice and the other services or systems it invokes, so that if a failure occurs, the system will be able to handle it or recover from it
+
+==== Time-out
+
+A time-out is used when one service calls another one and waits for a timely response or acknowledgment.
+
+==== Retry
+
+As part of the retry resilient connectivity logic, we can specify the number of total retries that the service should invoke and the duration between retries.
+
+==== Deadlines
+
+With deadlines, you specify a fixed point in time that a given invocation should complete
+
+==== Circuit breaker
+
+The circuit is in the closed state, and the invocation of the microservice takes place without any issue. However, when failures occur that match the circuit-breaker opening criteria, the circuit goes to an open state, preventing the invocation.
+
+* When an invocation failure occurs, the circuit breaker maintains the closed state and
+updates the threshold count. Based on the threshold count, or frequency of the failure count, it opens the circuit.
+
+* When the circuit is open, the real invocation of the external service is prevented, and the circuit breaker generates and returns an error immediately without invoking the target service.
+
+* When the circuit is in an open state for a certain time period, we can apply a self-resetting behavior by trying the service invocation again after a suitable interval and resetting the breaker should it succeed - *the circuit reset time-out*
+
+* When this time-out is reached, we usually say the circuit is in a *half-open state*, in which the circuit breaker allows one or more invocations of the external service as a trial. The circuit breaker changes the state to closed again if the trial succeeds, or it changes the state to open if the trial fails.
+
+==== Fail-fast
+
+* a fast failure response is considered much better than a slow failure response.
+* to detect any failures or anomalies related to service connectivity as quickly as possible.
+* The resilient communication logic can be implemented in such a way that we validate the request prior to sending it to the target service so that we can detect any failures without even invoking the target service or system
+
+=== Sidecar Pattern
+
+*  run a colocated container (application or microservice) along with your main microservice
+* Sidecar containers extend and enhance capabilities of the main container.
+
+The Sidecar pattern allows you to offload the interservice communication logic to a separate runtime that is colocated with the main microservice.
+
+The runtime that we choose to use as the sidecar should support all the commodity features (such as secured communication, traffic routing, and service discovery) that are required for interservice communication.
+
+* The sidecar and main microservice share the same life cycle
+
+In Kubernetes - *multicontainer pod* — one with the main container and the other with the sidecar.
+
+==== Sidecar proxy
+
+* use the sidecar as a proxy to mediate the inbound and outbound communication to the main microservices that the sidecar is attached to.
+* Since the sidecar is being used as a proxy, the main container calls the sidecar that runs on localhost as it invokes the external service or system.
+* Then the sidecar proxy requests the additional network communication feature, such as security or service discovery logic.
+
+Example:
+Communication between the two services takes place over the Envoy proxy through HTTP. The inventory service also uses Envoy to connect to the MongoDB database. +
+The Inventory service uses the MongoDB wire protocol (over TCP/IP) to connect to Envoy proxies that request to MongoDB.
+
+image::sidecarProxy.png[Sidecar proxy]
+
+==== Sidecar bridge
+
+* use the sidecar to bridge two different protocols.
+
+Example:
+
+* main container wants to communicate with only HTTP and still wants to connect with messaging systems such as Kafka
+
+* Microservice A calls the sidecar APIs through HTTP to produce messages to Kafka.
+* The sidecar is configured to connect with the Kafka service, which is transparent to the microservices.
+
+* On the consumer side, Microservice B registers (using HTTP API) with the Dapr sidecar to receive messages that are published to a given topic.
+* The Dapr sidecar then subscribes to that topic in Kafka by using the Kafka protocol
+* when there’s a new message for that topic in Kafka, the Dapr sidecar receives the message and then forwards it to Microservice B via HTTP.
+
+image::sidecarBridge.png[Sidecar bridge]
+
+- Using a sidecar along with a microservice multiplies the number of instances you need to manage and run.
+- Management of sidecar containers needs to be done via a dedicated control plane component.
+- Never implement any business-logic-related capability inside the sidecar.
+
+=== Service Mesh Pattern
+
+Building this network communication logic as part of your microservices drastically complicates the business logic and increases the development time for all your microservices. You will have to rely on external libraries (for example, Resilience4j) to build these interservice communication features.
+
+The Service Mesh pattern allows you to have an *interservice communication infrastructure between your microservices and other systems*.
+
+* With a service mesh, a given microservice won’t directly communicate with the other microservices. Rather, all service-to-service communications take place through a *sidecar proxy*.
+
+Components:
+
+* Service Mesh sidecar proxy
+** the data plane, in which all the interservice communication logic is applied to the messages exchanged between services and systems.
+* Control plane
+** Sidecar proxies are controlled through the control plane. This centralized component provides a rich and simple API to control sidecar proxies of the data plane.
+* Service Mesh configuration language
+** This is the configuration API that allows you to configure the data plane to control the interservice communication logic.
+* Built-in support
+** This support provides reliability, security, observability, service discovery, policy enforcement, and more.
+
+image::serviceMesh.png[Service Mesh]
+
+The business logic communicates with the sidecar via localhost communication (Primitive Network Functions)
+
+Service mesh implementations: Istio and Linkerd
+
+* Enable Istio *sidecar injection* so that sidecar proxies can intercept all network communication between microservices and other systems.
+* Then, using the Istio control plane, you can configure and manage the communications.
+
+* The control plane consists of Istiod components that provide service discovery, configuration, and certificate management.
+
+* The sidecar proxies are managed by Istiod, and users control the mesh behavior via Istiod.
+
+image::istio.png[Istio]
+
+Cons:
+
+* Managing a service mesh deployment can be overwhelmingly complex
+* Running and managing a fleet of sidecar proxies carries a major performance overhead.
+* Service Mesh doesn’t offer first-class support for asynchronous event-driven communication yet.
+
+=== Sidecarless Service Mesh Pattern
+
+* use a control plane to manage and configure the communication (mesh traffic) between microservices.
+
+Microservice A’s runtime contains the business logic as well as the logic related to the mesh traffic.
+
+* The embedded runtime understands the control plane configuration commands that come through using a control plane communication protocol.
+
+==== Sidecarless gRPC services in Google Traffic Director
+
+Traffic Director is the control plane that manages microservices-based applications running in the system and can control Envoy sidecar proxies via Envoy’s configuration API xDS.
+
+image::sidecarless.png[Sidecarless gRPC]
+
+=== Summary
+|===
+|Pattern	|When to use	|When not to use
+|Service Connectivity
+|This is a generic pattern that you can use to build connectivity in almost all the cloud native applications.
+|(Not applicable.)
+
+|Service Abstraction
+|Usually, you need to explicitly use it if you are using Kubernetes or a cloud service. +
+Useful when you connect cloud native applications with existing monolithic systems.
+|Not required to specifically use this pattern when you are fully dependent on a cloud service or a serverless platform.
+
+|Service Registry and Discovery
+|A fully fledged service registry and discovery solution is required if you have several dozen services consumed by a wide range of clients across the organization and beyond. +
+For most use cases, the foundational service registry and discovery offered from platforms such as Kubernetes should be sufficient. +
+If you use a cloud service such as AWS, Azure, or GCP, most of the capabilities are available out of the box.
+|If the number of services that you need to connect is small, having a full-blown service registry and discovery service doesn’t make sense. +
+You will still need a primitive service discovery mechanism (for example, DNS) to encapsulate service location and deployment details.
+
+|Service Resilience
+|Often required when building a reliable cloud native application that connects with multiple services and systems. +
+Essential for connecting legacy systems with cloud native applications. +
+Explicitly implement resilience if the underlying cloud service or deployment (for example, service mesh) doesn’t support resilient connectivity.
+|Not required to explicitly use if you are building the application on top of a service mesh, cloud service, or using a serverless platform.
+
+|Sidecar
+|Useful when you have to decouple the business logic from the connectivity logic. +
+If the connectivity logic is too complex, offloading it to a separate runtime makes sense. +
+You use polyglot technologies that require the same connectivity features.
+|Not suitable if your DevOps don’t have the capacity to handle the complexity of sidecar architecture. +
+If you don’t use container orchestration, it’s overwhelmingly complex to support sidecar architecture.
+
+|Service Mesh
+|You have to connect numerous microservices to achieve resilience, traffic routing, secured communication, service discovery, and observability.
+|(Same as Sidecar pattern.)
+
+|Sidecarless Service Mesh
+|Useful if the sidecar architecture hinders performance. +
+The underlying implementation technology supports sidecarless interaction with control planes.
+|Still at very early stages. So, it is better to avoid it unless the pattern is offered from the technology stack or cloud provider (for example, GCP Traffic Director).
+|===
+
+== Service Composition Patterns
