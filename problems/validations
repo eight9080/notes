@@ -1,0 +1,36 @@
+= Validations
+
+== UUID
+
+----
+@Documented
+@Constraint(validatedBy = UuidValidator.class)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RUNTIME)
+public @interface ValidUuid {
+
+    String message() default "Invalid format of UUID";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
+}
+
+
+public class UuidValidator implements ConstraintValidator<ValidUuid, String> {
+
+    private static final Pattern PATTERN = Pattern
+        .compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+
+    /**
+     * Checks that {@code value} is fits the regex {@code "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"}
+     *
+     * @return {@code true} if the {@code value} fits the regex
+     * <p> {@code false} otherwise
+     */
+    @Override
+    public boolean isValid(final String value, final ConstraintValidatorContext constraintValidatorContext) {
+        return value == null || PATTERN.matcher(value).matches();
+    }
+}
+----
