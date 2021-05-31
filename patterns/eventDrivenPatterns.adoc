@@ -1,0 +1,69 @@
+ifndef::imagesdir[:imagesdir: ./images]
+
+= Event-Driven Architecture Patterns
+
+Message brokers provide different event delivery guarantees:
+
+* At-most-once delivery +
+The event is delivered to the consumer only once or not at all. If the consumer is not online during a delivery attempt or if network failures occur, the consumer will not get the event. Most important, the message broker will not try to send the same event again.
+
+* At-least-once delivery +
+The event is guaranteed to be delivered to the consumer. However, the consumer may consume the same event multiple times because if the message broker does not get an acknowledgment from the consumer for the event delivery, it will assume that the consumer did not receive the event and will resend it. In this case, the consumer should be intelligent enough *to handle duplicate events*.
+
+*Exactly Once Processing*
+
+* by injecting sequence numbers to the events so consumers can identify and drop duplicate events before processing them.
+
+* when events are *idempotent*: the outcome of receiving the same event multiple times is no different from receiving the event only once.
+
+== Message Broker Categories
+
+* Standard (store-backed) message brokers
+
+** store events in a data store to enable serving to intended consumers.
+** purge events from their store upon delivery to consumers.
+** Apache ActiveMQ and RabbitMQ
+
+* Log-based message brokers
+
+** store events in commit logs.
+** The events persist even beyond their being consumed.
+** allow consumers to replay events from a previous point in time.
+** Apache Kafka and NATS
+
+=== CloudEvents
+
+* provides a common standard for describing events that enable interoperability across cloud native applications
+
+* provides a common structure for the event with required attributes such as event ID, source, spec version, and type, and optional attributes such as data content type, schema, subject, and time.
+
+== Event-Delivery Patterns
+
+=== Producer-Consumer Pattern
+
+* enables producer applications and consumer applications to communicate asynchronously by using event queues
+
+1. *Provide asynchronous event delivery*
+
+    Pass events to another application without blocking
+
+2. *Process each event by a single application*
+
+    Using event queues ensures that events are not delivered to multiple consumers.
+
+3. *Ensure event delivery*
+
+ Decouple the applications through queues so consumers will be guaranteed to fetch the events eventually.
+
+4. *Handle sudden bursts of events*
+
+ Can queue and process events without extensively scaling consumers.
+
+5. *Share workload with fairness*
+
+=== Publisher-Subscriber Pattern
+
+* enables applications to communicate asynchronously by using topics. The topic delivers every event to every subscriber.
+
+* a durable subscription, which guarantees that all messages are delivered to all the consumers at least once, accounting for subscribers who are temporarily unavailable.
+
