@@ -221,3 +221,40 @@ More scalable approach, as updates are sent when the job is completed.
 
 == State Management Patterns
 
+=== Event Sourcing Pattern
+
+* enables us to store all changes to the application state as a sequence of events
+* to re-create application state at various points in time, and with different domain models
+* an audit history
+
+Every time an event updates the application state, the event is also recorded in a persistence store in the order of operation
+
+Events are usually stored on a commit log, such as Apache Kafka, which allows us to read the events back from any point in time in a sequential manner by passing event sequence IDs.
+
+When using an event log as the source of truth, the recovery of system failure can take a long time; we need to re-create the application state by replaying all the events in the event log. To improve recovery time, we can periodically take *application state snapshots*
+
+When defining the events for a commit log, they should be modeled as *change events*.
+
+Not use this pattern for use cases that do not tolerate eventual consistency
+
+*The Event Sourcing pattern is inherently complex to implement and maintain, especially with a changing event schema, and with multiple external services communicating. We recommend using this pattern only if rebuilding an application’s state, or different domain models, is essential.*
+
+=== Summary
+
+|===
+|Pattern	|When to use	|When not to use	|Benefits
+|Event Sourcing
+|Multiple applications use the same data and need different domain models. +
+Application state should be rebuilt. +
+Temporal queries need to be executed in historical data. +
+The system needs to time-travel and change past event occurrences. +
+We need to keep track of audit information.
+|The data model is simple, and the consuming application can query for the intended data. +
+The event schema changes in a continuous manner. +
+We need all consuming applications to have data in a consistent state at all times.
+
+|Allows consumers to build application state optimized for their domain models and access patterns. +
+Replicates the data into multiple applications, thereby increasing availability. +
+Supports system recovery with event replay.
+|===
+
