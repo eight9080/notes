@@ -67,3 +67,157 @@ The event is guaranteed to be delivered to the consumer. However, the consumer m
 
 * a durable subscription, which guarantees that all messages are delivered to all the consumers at least once, accounting for subscribers who are temporarily unavailable.
 
+Usage:
+
+* Broadcast events - to send a notification of all tweets published about sports with #sports (the topic) to all users who have subscribed to that hashtag
+
+* Deliver events with best effort -  events produced by publishers have the at-most-once delivery guarantee. e.g. status updates—like publishing current weather periodically
+
+* Make sure all events are delivered to all subscribers - use durable subscriptions to ensure that subscribers receive missed events when they are online again.
+
+* Selectively deliver events to subscribers - leverage hierarchical topics or use filtering logic
+
+* Share workloads
+
+To retrieve missed events, subscribers must persist the last-processed event sequence ID, and during restart, they request the message broker to replay all the events since the last-processed sequence ID. This allows the system to achieve a higher delivery guarantee.
+
+=== Fire and Forget Pattern
+
+* clients (producers) send events to respective consumers (services) with an *at-most-once delivery* guarantee *without the use of a message broker*
+
+When a client publishes an event to the service, it expects only an acknowledgment of the event by a relevant HTTP status code such as 202 Accepted.
+
+These events become outdated when their processing is delayed. Instead, processing more-recent events is significantly more valuable. The Fire and Forget pattern enables us to quickly discard events and pick up the next one for processing.
+
+=== Store and Forward Pattern
+
+* clients to send events to services with an *at-least-once delivery* guarantee.
+* does not use message brokers but uses APIs to directly send events.
+
+* The client first *persists the events to a durable store*, such as a database or queue in a message broker, before attempting to send them to the service
+* Upon successful event delivery, the client purges the events from the store
+* If delivery is unsuccessful, it retries to send the event.
+
+Usage:
+
+* Deliver events to services that do not support subscription
+* Ensure event delivery during service unavailability
+
+Solutions:
+
+*  use a separate durable store (database or queue) for each client application, when possible,
+
+* using a common event queue for all five clients to store the events. This allows us to distribute the events among the clients when they try to send events to the services
+
+* use databases as the durable store, and still want to use multiple clients for event delivery, you must solve the problem of deciding which client publishes which event. We need to prevent multiple clients loading the same order event from the database and delivering it to the service. This causes *duplicate events* and risks overloading the service. To overcome this, we elect a single client to deliver a particular subset of events (for example, based on the *hash of the event* order number)
+
+image::storeAndFwd.png[Store and Forward]
+
+=== Polling Pattern
+
+* enables clients such as web browsers to initiate a long-running job, periodically checking completion.
+
+Steps:
+
+* The frontend client or browser sends a request to initiate the process
+* the backend service immediately sends an acknowledgment stating that it has accepted the request and initiated the asynchronous job processing( it sends a job ID)
+*  the client periodically queries the backend to check if the claim processing has completed
+*  Upon completion, the backend returns the results as part of the response to the query, or provides a redirection to an endpoint containing the results.
+
+Usage:
+
+* Retrieve results from a long-running process that cannot notify of job completion
+* Deliver events to a client that cannot initiate subscription or callbacks
+
+Not recommend using this pattern when the application supports callbacks such as webhooks or WebSockets for communication
+
+image::pollingPattern.png[Polling pattern]
+
+=== Request Callback Pattern
+
+* enables applications to communicate asynchronously. The application provides the callback information with the request so responses can be delivered to the given callback.
+
+==== WebSockets
+
+* client/server - capability to communicate via the WebSocket protocol
+* The client initiates the connection to the service and establishes a long-running connection. Both the client and service persist the connection and communicate by sending events.
+
+* WebSocket is an HTTP-based technology, but HTTP2 and gRPC also provide similar callback-based communication.
+* GraphQL uses WebSocket with its subscription feature, allowing clients to connect to a service and listen to real-time events according to the GraphQL query submitted when subscribing.
+
+==== Webhooks
+
+* the client application issues a request and has the response delivered to a callback endpoint
+* The client sends the request with a callback URL
+
+image::callback.png[Callback]
+
+Implementations:
+
+* WebSub - This open protocol
+
+WebSub uses Publisher, Hub, and Subscriber microservices and uses HTTP for communication. The publishers publish content to the hub, via HTTP calls and by using HTTP headers to denote the topic information. The subscribers discover the hubs for their interested topic and make an HTTP POST request to the hub with their topic and callback URL. They will then get served with the relevant content through the HTTP POST calls by the hub, as the hub gets new data.
+
+* recommend using webhooks over WebSocket when the client is expecting only a single response, and when the response time cannot be determined or if the response can take more than a few minutes
+
+image::websub.png[WebSub]
+
+Source: https://www.w3.org/TR/websub/[WebSub W3]
+
+=== Summary
+|===
+|Pattern	|When to use	|When not to use	|Benefits
+|Producer-Consumer
+|There is a particular event to be consumed and processed by only one of the available consumers. +
+We cannot confirm the availability of the consumers and producers. +
+We see burst event production over a short period. +
+|There is continuous high traffic, and the incoming event rate is much higher than the consumed event rate. +
+Message brokers cannot be used in the solution, and producers or consumers cannot connect to a message broker.
+|Delivers an event to one consumer without duplicating the events. +
+Can tolerate availability problems in consumers and producers. +
+Handles spikes/bursts in traffic.
+
+|Publisher-Subscriber
+|In a notification delivery system. +
+An at-most-once delivery guarantee is tolerated by subscribers. +
+We need selective delivery of events to the subscribers.
+|You cannot tolerate any missed events by the subscriber. +
+Message brokers cannot be used in the solution, and producers or consumers cannot connect to a message broker.
+|Helps build an independent and decoupled system that can publish and subscribe. +
+Scales well with multiple subscribers interested in the same topic.
+
+|Fire and Forget
+|At-most-once delivery guarantee is tolerated. +
+Dropping events is acceptable, such as when delivering non-business-critical events. +
+The consumer cannot pull any updates from the message broker. +
+Only a set of consumers is available to be notified.
+|Any issues in delivering or processing business-critical events cannot be ignored. +
+Message brokers can be included in the system, and producers and consumers can connect to a message broker.
+|No need to have a message broker to transfer messages from producer to consumer. +
+Simple to implement and no need to have additional deployment and maintenance complexities.
+
+|Store and Forward
+|At-least-once delivery is required when both publisher and consumer are online and reachable at any time. +
+Message brokers cannot be used in the solution. +
+The consumer cannot pull any updates from the message broker.
+|Message brokers can be included in the system, and producers and consumers can connect to a message broker.
+|No need to have a message broker to transfer messages from producer to consumer.
+
+|Polling
+|Clients do not have the capability to subscribe to a message broker or to expose an endpoint to receive updates from the backend system. +
+The service does not have the capability to call other endpoints upon completion of a job. +
+long-running jobs.
+|short jobs where success/failure can be reported immediately. +
+The applications can support callbacks such as webhooks, or WebSocket for communication.
+|Executes a long-running job and gets the response without having an additional infrastructure.
+|Request Callback
+|Handling the request can take more time than the typical connection time-out of a standard request. +
+Clients are expecting updates from the services on one or more jobs. +
+The applications have the capability to communicate by using WebSocket, or clients have the capability to expose a callback URL and services can call that URL to send updates.
+|Applications do not have the capability to communicate via WebSocket, or the clients cannot provide a callback.	Executes a long-running job and gets the response without increasing the traffic to service to continuously check for updates.
+|
+More scalable approach, as updates are sent when the job is completed.
+|===
+
+== State Management Patterns
+
