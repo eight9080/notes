@@ -1,0 +1,150 @@
+ifndef::imagesdir[:imagesdir: ./images]
+
+= Stream-Processing Patterns
+
+A *stream* can be defined as a continuous sequence of events ordered by time. +
+All events in a stream have a common message format and structure.
+
+*Stream processing* is performing operations on events in motion. It can be as simple as a stateless service consuming events and transforming its event format, or as complex as storing and processing stateful data in memory with low latency and reliability.
+
+== Streaming Data Processing Patterns
+
+=== Transformation Pattern
+
+* maps the data of one event to another
+
+* Message transformation
+ ** custom or Apache Camel, KSQL, Amazon Kinesis, and Azure Stream Analytics
+
+* Protocol switching
+
+=== Filters and Thresholds Pattern
+
+* useful for extracting only the relevant events we need.
+
+Usage:
+
+* Filter events by category
+* Apply a threshold for alerting
+
+
+=== Windowed Aggregation Pattern
+
+* enables us to analyze a collection of events based on a condition
+
+* These windows can be based on the time or event count, such as the last five minutes or the last 100 events. These windows may also have behaviors such as sliding or batching, defining when events are added and removed from the window.
+
+Types: length sliding, length batch, time sliding, and time batch
+
+* The Windowed Aggregation pattern is *stateful*, meaning it stores data related to the events in memory.
+
+Usage:
+
+* Aggregate events over time
+* Aggregate events over length
+
+Because windows are collections of events, the most effective way of scaling them is by sharding.
+
+Splitting the incoming events into different windows, aggregating the events in isolation, and then using the Stream Join pattern to build bigger aggregations.
+
+Libraries: Esper or Siddhi
+
+image::windowAgg.png[Window Aggregation]
+
+=== Stream Join Pattern
+
+* enables us to join events from multiple streams with different schemas.
+
+* defining a condition to identify the joining events.
+*  define a buffer that determines how long events should wait for corresponding events to arrive from other event streams (window)
+
+* The Stream Join pattern is *stateful*, as it buffers events for the join
+
+Usage:
+
+* Scatter and gather - process the same event in parallel, performing different operations, and finally combine the results so all event outputs can be emitted as a single event
+
+* Join various types of events -
+
+=== Temporal Event Ordering Pattern
+
+* tries to detect various interesting complex event occurrences by identifying patterns based on event arrival order.
+
+Example: We detect a continuous stock price increase followed by a single drop, and the user will be notified as soon as the first drop is detected.
+
+A new state machine instance should be initiated upon each event arrival that triggers the initial state of the state machine.
+
+Usage:
+
+* Detect sequence of event occurrence - for identifying an incident by having a sequence of events happen in a prescribed order. (transaction identifying fraud)
+
+* Detect nonoccurrence of event
+
+Stream processing systems like Azure Streaming Analytics, Apache Spark, Apache Flink, Esper, and Siddhi are some that can provide this functionality by default.
+
+=== Machine Learner Pattern
+
+* Prebuilt machine learning models
+
+Machine learning frameworks such as Apache Spark, TensorFlow, or even Python
+
+* Online machine learning models
+
+These are models that tune themselves based on the information they receive as they produce predictions.
+
+=== Summary
+|===
+|Pattern	|When to use	|When not to use	Benefits
+|Transformation
+|To transform the event format, structure, or protocol. +
+To add or remove partial data to or from the event. +
+Third-party systems do not support the current event.
+|The consuming system has the ability to understand the event.
+|Allows incompatible systems to communicate with one another. +
+Reduces event size by containing only relevant information.
+
+|Filters and Thresholds
+|Only a subset of events is relevant for processing.
+|All events are needed for decision making.
+|Reduces the load on the system by selecting only events that can produce the most value to the use case.
+
+|Windowed Aggregation
+|To aggregate events over time or length.
+To perform operations such as summation, minimum, maximum, average, standard deviation, and count on the events.
+|For operations that cannot be performed with fixed memory such as detecting the median of the events. +
+High accuracy is needed without the use of reliability patterns.
+|Reduces the load on the system by aggregating events. +
+Provides data summary to better understand the behavior as a whole. +
+
+|Stream Join
+|To join events from two or more event streams. +
+To collect events that were previously split to parallelize processing.
+|Joining events do not arrive in relatively close proximity. +
+High accuracy is needed without the use of reliability patterns.
+|Allows events to be correlated. +
+Enables synchronous processing of events.
+
+|Temporal Event Ordering
+|To detect the sequence of event occurrences. +
+To detect the nonoccurrence of events.
+|Event sequencing cannot be defined as a finite-state machine. +
+High accuracy is needed without the use of reliability patterns. +
+Incoming events arrive out-of-order.
+|Allows detecting complex conditions based on event arrival order.
+
+|Machine Learner
+|To perform predictions in real time. +
+To perform classification, clustering, or regression analysis on the events.
+|We cannot use a model to accurately predict the values. +
+Historical data is not available for building machine learning models.
+|Automates decision making. +
+Provides reasonable estimates.
+|===
+
+== Scaling and Performance Optimization Patterns
+
+=== Sequential Convoy Pattern
+
+
+
+
