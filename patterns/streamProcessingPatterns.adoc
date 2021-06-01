@@ -145,6 +145,133 @@ Provides reasonable estimates.
 
 === Sequential Convoy Pattern
 
+* separating events into various categories and processing them in parallel. It also works to persist event ordering so events can be combined at a later time, while preserving the original order of the events.
+
+Each event also can be labeled with a sequence number before separation. +
+This sequencing can also be used to join the parallel streams together at a later time, based on the original event order. We use a merge sort by selecting the smallest sequence number among all the substreams
+
+Usage:
+
+* Scale stream-processing applications - use a simple round-robin strategy to distribute events to multiple substreams, which will process events much faster.
+
+** separate events into different substreams based on hash values of customer IDs. This will process all events belonging to the same customer ID on the same node, improving the chance of cache hits. By reducing the number of customer IDs processed by a single microservice, we further increase cache hits, thereby meeting our performance goals.
+
+image::seqConvoy.png[Sequential convoy]
+
+* Partition the stream processing
+
+    ** The Sequential Convoy pattern enables us to execute different use cases against the same event stream by partitioning different event types into parallel streams.
+
+A better approach to regrouping events is an *end-of-sequence message*. This can be emitted by the processing applications with the last process message ID in a periodic time interval. This tells us that all IDs before the given end-of-sequence ID have been processed by the upstream applications and that the missing IDs smaller than the last ID are dropped messages. This unblocks the processing of later events.
+
+When grouping based on sequence numbers is not possible, we can simply collect events and publish them to a single topic, and then use the Buffered Event Ordering pattern, to buffer and sort events based on sequence numbers or event timestamps.
+
+=== Buffered Event Ordering Pattern
+
+* allows us to reorder events before processing them downstream. We can order events based on time or on the order they are generated.
+
+* Sequence numbers will continuously increase, and we can guarantee that each event in a stream will have a unique number. But with a timestamp, we cannot guarantee that all events will have unique values, because multiple events can be generated in the same millisecond.
+
+If next event is not next in order:
+
+* wait with a timeout for the event
+* the previous processor can send an empty event with sequence number
+
+Usage:
+
+* Order events generated on distributed event sources
+
+The out-of-order events can be sent to a single topic in a message broker, and by using a microservice, those events can be fetched, reordered through the Buffered Event Ordering pattern, and sent downstream for further processing.
+
+* Reorder events generated from the same event sources
+
+* needs to store some events in the buffer while it is waiting for older events to arrive; this means that the microservice has state
+
+=== Course Correction Pattern
+
+* Update results with new
+
+This pattern is commonly used when users are eager to obtain aggregated results quickly. This can especially be useful when we are displaying results in real time on a screen.
+
+* Correct previous decisions
+
+Sometimes we need to make an early decision, and when the situation changes, we send compensation events so that corrective actions can be taken.
+(multiple offers accepted - select only one send reject events to the others)
+
+=== Watermark pattern
+
+* useful for periodically aligning stream processing across multiple microservices
+
+* determine whether all microservices have processed all arrived events before a given event, which is commonly referred to as the *watermark event*.
+
+Steps:
+
+*  a watermark generator should generate a watermark event periodically and send it through all the external inputs
+
+*  microservices should pass it through to their dependent systems
+
+* each intermediate microservice that consumes this event can resend it in the same position among the sequence of events
+
+Systems independently generate the watermark events at given intervals, such as once every minute or every five minutes
+
+* When the microservice receives a watermark event in a stream:
+ ** it should not continue processing any more events from that stream
+ ** process only events from other streams that have not yet received the corresponding watermark event
+ ** When we receive all corresponding watermark events on all streams, we can pass that watermark event to all its dependents and continue processing other events from all the input streams until we receive the next watermark event in a stream.
+
+This process is repeated, and this approach ensures that event processing is synchronized at each watermark event.
+
+Usage:
+
+* Synchronize events generated from event sources that are time synchronized
+
+Watermarks can be used to generate synchronized event groups that can produce accurate aggregation results.
+
+image::watermark.png[Watermark]
+
+* Synchronize events generated from nonsynchronized sources
+
+To enforce synchronization, each sensor client can periodically fetch a sequence number from the global counter deployed on a central server and inject it along with the sensor reading.
+
+image::watermark2.png[Watermark]
+
+=== Summary
+
+|===
+|Pattern	|When to use	|When not to use	Benefits
+|Sequential Convoy
+|To scale stream-processing applications.+
+To partition streams so each stream can be used for various use cases. +
+To allow processing events in parallel and regroup them based on the original order. +	Streaming applications have enough capacity to process the events.
+|Supports scalability of stream processing +
+Preserves event ordering when events are processed in parallel.
+
+|Buffered Event Ordering
+To order events based on timestamp or sequence number. +
+To order events that are already out of order and published via a single event stream.
+|To group events from multiple ordered event streams. +
+True ordering of events that are generated from distributed sources. +
+Reliability patterns cannot be applied to the application.
+|Can be applied in front of any application that needs events in order.
+
+|Course Correction
+|To correct previously produced results. +
+To produce early aggregation estimates. +
+To guess the event-sequence order and correct the decision later.
+|The dependent downstream applications cannot handle continuous event updates.
+|Allows us to produce early estimates and correct them as we have more data.
+
+|Watermark
+|To perform aggregation operations on event streams that are out of sync. +
+Try to order events that are generated by distributed systems.
+|We cannot inject watermark events closer to the event sources. +
+Intermediate systems cannot bypass watermark events. +
+Network bandwidth is a concern. +
+|Periodically synchronizes events across multiple streams. +
+Helps overcome network and processing latency added by intermediate systems.
+|===
+
+== Reliability Patterns
 
 
 
