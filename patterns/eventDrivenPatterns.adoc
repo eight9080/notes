@@ -258,3 +258,189 @@ Replicates the data into multiple applications, thereby increasing availability.
 Supports system recovery with event replay.
 |===
 
+== Orchestration Patterns
+
+=== Mediator Pattern
+
+* centralized management of event orchestration
+* understand and route events but also orchestrate events in sequential and parallel order across applications, while also handling failures
+*  keep the coordination logic in a central location
+
+* operates by interacting with all the microservices that integrate, via event queues, topics, and APIs
+* connects on various protocols and transforms events for applications accordingly
+
+Example:
+
+The mediator first passes events to the verification microservice in parallel, collects their responses, combines them, and then initiates the discount and approval tasks sequentially. +
+It publishes the result to the decision queue so downstream systems can become aware of the decision.
+
+Mediators sometimes need to combine events from multiple systems, and so need to be *stateful*.
+
+Usage:
+
+* Sort and distribute events
+* Split events into multiple subevents
+* Ensure task execution order
+
+Recommended for:
+
+* when the system is undergoing rapid changes
+
+image::mediator.png[Mediator]
+
+=== Pipe and Filter Pattern
+
+* orchestrates events in a decentralized manner
+
+Various microservices are integrated with one another via topics to asynchronously process and monitor the credit card application, and they publish the results to event queues for other microservices to consume.
+
+Usage:
+
+* Build large-scale decoupled systems
+* Seamlessly add and remove functionality
+* Provide segregation of duties
+
+image::pipe_filter.png[Pipe&Filter]
+
+=== Priority Queue Pattern
+
+* handles events based on their priority so that high-priority events are handled first, while low-priority events are processed as capacity allows.
+
+* by building a polling client that uses multiple event queues to process events based on priority.
+
+Usage:
+
+* Process some events quicker than others
+* Optimize resource utilization
+
+At times the client application will not have the capability to perform a polling operation. This may be because it is an external system outside our control. In this case, implement the *polling client* as an intermediary application that performs the prioritization and pushes events to other systems.
+
+* implement a cleaning task to discard old events based on queue depth
+
+OR
+
+* design the application to promote events to a higher-priority queue when it has capacity and the events have stayed for a considerable time in the lower-priority queue
+
+* using a single topic and subscription filters
+
+image::priorityQueue.png[Priority Queue]
+
+=== Summary
+
+|===
+|Pattern	|When to use	|When not to use	Benefits
+|Mediator
+|To simply sort the events among multiple subprocesses. +
+To split an event into multiple events based on the use case. +
+Tasks need to be performed in a sequential or parallel order. +
+The system undergoes rapid changes, and using the Pipe and Filter pattern requires more overhead during each change.
+|Central control for orchestration is not necessary.
+|Provides the central system for orchestration, so change management is relatively easy.
+
+|Pipe and Filter
+|To provide segregation of duties among multiple teams. +
+To add/remove business logic into multiple stages of processing without impacting other teams.
+|The overall flow of events is changed frequently. +
+Central control for orchestration is necessary.
+|Allows seamless addition and removal of applications to the pipeline. +
+Increases decoupling and reduces impact among multiple teams.
+
+|Priority Queue
+|To treat one type of an event with urgency compared to another. +
+Resources are constrained, and we can process only a subset of events.
+|There is no strong need for priority-based processing.
+|Better utilization of resources based on priority of jobs.
+|===
+
+
+== Technologies for Event-Driven Architecture
+
+|===
+|Message broker type	|When to use	|When not to use
+|Apache ActiveMQ
+|Need queues or topics. +
+Exactly once processing guarantee. +
+Small- to moderate-scale deployment. +
+Need support for standard messaging protocols.
+|Highly scalable deployments.
+High number of durable subscriptions. +
+Replay acknowledged messages.
+
+|RabbitMQ
+|Need queues, topics, or to perform event routing. +
+Exactly once processing guarantee. +
+Small- to moderate-scale deployment. +
+Need support for standard messaging protocols.
+|Highly scalable deployments. +
+High number of durable subscriptions. +
+Replay acknowledged messages.
+
+|Apache Kafka
+|Need topics. +
+Highly scalable deployments. +
+High number of durable subscriptions. +
+Need replay of events. +
+Exactly once processing guarantee. +
+Need to acknowledge all messages up to a certain offset.
+|Need support for standard messaging protocols. +
+Need to selectively acknowledge messages.
+
+|NATS
+|Need for topics and queues. +
+Highly scalable deployments. +
+High number of durable subscriptions. +
+Need replay of events. +
+At-least-once delivery guarantee.
+|Need support for standard messaging protocols.
+
+|Amazon SQS
+|Need queues. +
+At-least-once delivery guarantee. +
+Highly scalable deployment. +
+Managed infrastructure by Amazon. +
+Need ordered delivery with FIFO. +
+|Need support for standard messaging protocols. +
+Replay acknowledged messages. +
+Need to fan out the events to multiple consumers. +
+Need a push model.
+
+|Amazon SNS
+|Need topics or webhooks. +
+Highly scalable deployment. +
+Managed infrastructure by Amazon. +
+Need to send events to applications and people. +
+No delivery guarantee is required. +
+Call serverless functions.
+|Need support for standard messaging protocols. +
+Guaranteed delivery. +
+Replay acknowledged messages.
+
+|Azure Event Grid
+|Need topics, webhooks. +
+At-least-once delivery guarantee. +
+Managed infrastructure by Azure. +
+Call serverless functions.
+|Need support for standard messaging protocols. +
+Replay acknowledged messages.
+
+|Azure Service Bus queues
+|Need queues or topic +
+At-least-once delivery guarantee. +
+Managed infrastructure by Azure. +
+Need ordered delivery with FIFO. +
+Need to use AMQP 1.0 messaging protocol. +
+Should store less than 80 GB of events.
+|Need support for MQTT or STOMP. +
+Replay acknowledged messages.
+
+|Google Cloud Pub/Sub
+|Need topics, queries, or webhooks +
+At-least-once delivery guarantee. +
+Managed infrastructure by Google.
+Need consistent performance to delivery events around the world.
+|Need support for standard messaging protocols. +
+Replay acknowledged messages.
+|===
+
+
+
