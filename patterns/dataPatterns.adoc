@@ -1,0 +1,20 @@
+ifndef::imagesdir[:imagesdir: ./images]
+
+= Data Management Patterns
+
+== Data Composition Patterns
+
+=== Data Service Pattern
+
+* exposes data in the database as a service, referred to as a data service.
+* The data service becomes the owner, responsible for adding and removing data from the data store. The service may perform simple lookups or even encapsulate complex operations when constructing responses for data requests.
+
+* can also utilize caching to enhance their read performance.
+
+Usage:
+
+* Allow multiple microservices to access the same data
+
+* Expose abstract legacy/proprietary data stores
+
+image::dataService.png[Data service]
