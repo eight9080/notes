@@ -18,3 +18,56 @@ Usage:
 * Expose abstract legacy/proprietary data stores
 
 image::dataService.png[Data service]
+
+=== Composite Data Services Pattern
+
+* performs data composition by combining data from more than one data service and, when needed, performs fairly complex aggregation to provide a richer and more concise response (Server-Side Mashup pattern)
+
+* combines data from various services and its own data store into one composite data service
+
+*  eliminates the need for multiple microservices to perform data composition operations, but also allows the combined data to be cached for improving performance \
+
+*  not recommend introducing unnecessary layers of services if they do not provide meaningful data compositions that can be reused
+
+image::compositeDataService.png[Composite Data Service]
+
+=== Client-Side Mashup Pattern
+
+* data is retrieved from various services and consolidated at the client side. The client is usually a browser loading data via asynchronous Ajax calls.
+
+* uses multiple asynchronous calls to fetch different parts of the website and renders each fragment when it arrives -> *rich internet applications (RIAs)*.
+
+Usage:
+
+* Present critical data with low latency
+* Give a perception that the web page is loading faster
+
+image::clientSideMashup.png[Client Side Mashup]
+
+=== Summary
+
+|===
+|Pattern	|When to use	|When not to use	Benefits
+
+|Data Service
+|Data is not owned by a single microservice, yet multiple microservices are depending on the data for their operation.
+|Data can clearly be associated with an existing microservice, as introducing unnecessary microservices can also cause management complexity.
+|Reduces the coupling between services. +
+Provides more control/security on the operations that can be performed on the shared data.
+
+|Composite Data Services
+|Many clients query multiple services to consolidate their desired data, and this consolidation is generic enough to be reused among the clients.
+|Only one client needs the consolidation. +
+Operations performed by clients cannot be generalized to be reused by many clients.
+|Reduces duplicate work done by the clients and consolidates it into a common service. +
+Provides more data resiliency by using caches or static data.
+
+|Client-Side Mashup
+|Some meaningful operations can be performed with partial data; for example, rendering nondependent data in web browsers.
+|Processing, such as a join, is required on the independently retrieved data before sending the response.
+|Results in more-responsive applications. +
+Reduces the wait time.
+|===
+
+
+
