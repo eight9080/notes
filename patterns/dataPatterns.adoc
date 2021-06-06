@@ -69,5 +69,93 @@ Provides more data resiliency by using caches or static data.
 Reduces the wait time.
 |===
 
+== Data Scaling Patterns
 
+=== Data Sharding Pattern
 
+*  the data store is divided into shards, which allows it to be easily stored and retrieved at scale. The data is partitioned by one or more of its attributes so we can easily identify the shard in which it resides.
+
+==== Horizontal data sharding
+
+Each shard has the same schema, but contains distinct data records based on its sharding key.
+
+* shared by hashing the order ID into three shards
+
+image::hShard.png[H shard]
+
+==== Vertical data sharding
+
+* Each shard does not need to have an identical schema and can contain various data fields.
+* partition the data based on the frequency of data access
+
+image::vShard.png[V shard]
+
+==== Functional data sharding
+
+Data is partitioned by functional use cases. Rather than keeping all the data together, the data can be segregated in different shards based on different functionalities.
+
+image::fShard.png[F Shard]
+
+Horizontal sharding strategies:
+
+* Lookup-based data sharding
+
+A lookup service or distributed cache is used to store the mapping of the shard key and the actual location of the physical data. When retrieving the data, the client application will first check the lookup service to resolve the actual physical location for the intended shard key, and then access the data from that location. If the data gets rebalanced or resharded later, the client has to again look up the updated data location.
+
+* Range-based data sharding
+
+This special type of sharding approach can be applied when the sharding key has sequential characters. The data is shared in ranges, and as in lookup-based sharding, a lookup service can be used to determine where the given data range is available. This approach yields the best results for sharding keys based on date and time. A data range of a month, for example, may reside in the same shard, allowing the service to retrieve all the data in one go, rather than querying multiple shards.
+
+* Hash-based data sharding
+
+Constructing a shard key based on the data fields or dividing the data by date range may not always result in balanced shards. At times we need to distribute the data randomly to generate better-balanced shards. This can be done by using hash-based data sharding, which creates hashes based on the shard key and uses them to determine the shard data location. This approach is not the best when data is queried in ranges, but is ideal when individual records are queried. Here, we can also use a lookup service to store the hash key and the shard location mapping, to facilitate data loading.
+
+=== Command and Query Responsibility Segregation Pattern
+
+* separates updates and query operations of a data set, and allows them to run on different data stores. This results in faster data update and retrieval. It also facilitates modeling data to handle multiple use cases, achieves high scalability and security, and allows update and query models to evolve independently with minimal interactions.
+
+image::CQRS.png[CQRS]
+
+Usage:
+
+* Use different domain models for command and query
+
+For a retail website, we may be storing the product detail and inventory information in a normalized _relational database_. This might be our best choice to efficiently update inventory information upon each purchase. But this may not be the best option for querying this data via a browser, as joining and converting the data to JSON can be time-consuming. If that is the case, we can use this pattern to asynchronously build a query data set, such as a document store storing data in JSON format, and use that for querying. Then we will have separate optimized data models for both command and query operations.
+
+* Distribute operations and reduce data contention
+
+This pattern can be used when cloud native applications have performance-intensive update operations such as data and security validations, or message transformations, or have performance-intensive query operations containing complex joins or data mapping. When the same instance of the data store is used for both command and query, it can produce poor overall performance due to higher load on the data store. Therefore, by splitting the command and query operations, CQRS not only eliminates the impact of one on the other by improving the performance and scalability of the system, but also helps isolate operations that need higher security enforcement.
+
+*CQRS is not recommended when high consistency is required between command and query operations*. When data is updated, the updates are sent asynchronously to the query stores via events by using patterns such as Event Sourcing. Hence, use CQRS only when eventual consistency is tolerable. Achieving high consistency with synchronous data replication is not recommended in cloud native application environments as it can cause lock contention and introduce high latencies.
+
+=== Summary
+|===
+|Pattern	|When to use	|When not to use	Benefits
+|Data Sharding
+|Data contains one or a collection of fields that uniquely identify the data or meaningfully group the data into subsets.
+|Shard key cannot produce evenly balanced shards. +
+|The operations performed in the data require the whole set of data to be processed; for example, obtaining a median from the data set.
+|Groups shards based on the preferred set of fields that produce the shard key. +
+Creates geographically optimized shards that can be moved closer to the clients. +
+Builds hierarchical shards or time-range-based shards to optimize the search time. +
+Uses secondary indexes to query data by using nonshard keys.
+
+|Command and Query Responsibility Segregation (CQRS)
+|Applications have performance-intensive update operations with:
+
+* Data validations
+* Security validations
+* Message transformations
+
+For performance-intensive query operations such as complex joins or data mapping.
+
+|High consistency is required between command (update) and query (read). +
+Command and query models are closer to each other.
+|Reduces the impact between command and query operations. +
+Stores command and query data in two different data stores that suit their use cases. +
+Enforces separated command/query security policies. +
+Enables different teams to own applications that are responsible for command and query operations. +
+Provides high availability.
+|===
+
+== Performance Optimization Patterns
