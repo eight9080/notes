@@ -284,6 +284,182 @@ Clients cannot retrieve and combine static and dynamic content together.
 Reduces resource utilization on rendering services.
 |===
 
+== Reliability Patterns
+
+=== Transaction Pattern
+
+* uses transactions to perform a set of operations as a single unit of work, so all operations are completed or undone as a unit
+
+ACID properties:
+
+* Atomic - All operations must occur at once, or none should occur.
+* Consistent - Before and after the transaction, the system will be in a valid state.
+* Isolation - The results produced by concurrent transactions will be identical to such transactions being executed in sequential order.
+* Durable - When the transaction is finished, the committed changes will remain committed even during system failures.
+
+Transaction isolation:
+
+* *Serializable isolation* provides the highest level. This blocks data access on selected data for parallel read and write queries during the transaction, and blocks addition and removal of data that might fall into the transaction data range
+
+* *Repeatable reads* isolation provides the second-best level of isolation. This blocks data access on selected data for read and write queries during the transaction, but allows addition and removal of new data in the transaction data range
+
+* *Read committed isolation* blocks only data writes
+
+* *Read uncommitted isolation* allows reading noncommitted updates made by other transactions.
+
+Usage:
+
+* the use of consensus algorithms such as XA transactions will synchronize operations and introduce latency. We recommend using this pattern only when the transaction is relatively short lived, and only if it involves few systems
+
+* Whenever possible, make the operation idempotent; this will help eliminate the need for using any transactions and simplifies the system. This is because with idempotent updates, even when the same operation is performed multiple times, the results will be the same.
+
+* When we need to synchronize execution and have more than three systems, we recommend using the Saga pattern
+
+=== Summary
+|===
+|Pattern	|When to use	|When not to use	Benefits
+
+|Transaction
+|An operation contains multiple steps, and all the steps should be processed automatically to consider the operation valid.
+|The application has only a single step in the operation. +
+The application has multiple steps, and failure of some steps is considered acceptable.
+|Adheres to ACID properties. +
+Processes multiple independent transactions.
+|===
+
+== Security
+
+=== Vault Key Pattern
+
+* is based on a trusted token being presented by the client and being validated by the data store.
+
+Steps:
+
+* The client or caller service calls the application to retrieve a token to access the relevant data store.
+
+* The application can be an identity provider or may contact an identity provider to validate the caller and issue a trusted vault key token for access to the relevant data store.
+
+* The application can also provide a scope of operations that the caller can perform on the data store. It will also add an expiry time to the key, giving access to the service for only a defined period.
+
+* The caller can then call the resource by using the given key and can perform authorized operations until the key expires.
+
+image::keyVault.png[KeyVault]
+
+=== Summary
+
+|===
+|Pattern	|When to use	|When not to use	Benefits
+|Vault Key
+To securely access remote data with minimal latency. +
+The store has a limited computing capability to perform service calls for authentication and authorization.
+|Need fine-grained data protection. +
+Need to restrict what queries should be executed on the data store with high precision. +
+The exposed data store cannot validate access based on keys.
+|Accesses data stores directly by using a trusted token, a vault key +
+Has minimal operational costs compared to calling the central identity service for validation
+|===
+
+== Technologies
+|===
+|Data store type	|When to use	|When not to use
+|Relational database management system (RDBMS)
+|Need transactions and ACID properties. +
+Interrelationship with data is required to be maintained. +
+Working with small to medium amounts of data.
+|Data needs to be highly scalable, such as IoT data. +
+Working with XML, JSON, and binary data format. +
+Solution cannot tolerate some level of unavailability.
+
+|Apache Cassandra
+|Need high availability. +
+Need scalability. +
+Need a decentralized solution. +
+Need faster writes than reads. +
+Read access can be mostly performed by partition key.
+|Existing data is updated frequently. +
+Need to access data by columns that are not part of the partition key. +
+Require relational features, such as transactions, complex joins, and ACID properties.
+
+|Apache HBase
+|Need consistency. +
+Need scalability. +
+Need a decentralized solution. +
+Need high read performance. +
+Need both random and real-time access to data. +
+Need to store petabytes of data.
+|Solution cannot tolerate some level of unavailability. +
+Existing data is updated very frequently. +
+Require relational features, such as transactions, complex joins, and ACID properties.
+
+|MongoDB
+|Need consistency. +
+Need a decentralized solution. +
+Need a document store. +
+Need data lookup based on multiple keys. +
+Need high write performance.
+|Solution cannot tolerate some level of unavailability. +
+Require relational features, such as transactions, complex joins, and ACID properties.
+
+|Redis
+|Need scalability. +
+Need an in-memory database. +
+Need a persistent option to restore the data. +
+As a cache, queue, and real-time storage.
+|As a typical database to store and query with complex operations.
+
+|Amazon DynamoDB
+Need a highly scalable solution. +
+Need a document store. +
+Need a key-value store. +
+Need high write performance. +
+Fine-grained access control.
+|Use in platforms other than AWS. +
+Require relational features, such as complex joins, and foreign keys.
+
+|Apache HDFS
+|Need a filesystem. +
+Store large files. +
+Store data once and reads multiple times. +
+Perform MapReduce operation on files. +
+Need scalability. +
+Need data resiliency.
+|Store small files. +
+Need to update files. +
+Need to perform random data reads.
+
+|Amazon S3
+|Need an object store. +
+Perform MapReduce operations on objects. +
+Need a highly scalable solution. +
+Read part of the object data. +
+Fine-grained access control.
+|Use in platforms other than AWS. +
+Need to run complex queries.
+
+|Azure Cosmos DB
+|Need a highly scalable solution.
+Need a document store. +
+Need a key-value store. +
+Need a graph store. +
+Need a column store. +
+Fine-grained access control. +
+Connectivity via MongoDB and Cassandra clients
+|Use in platforms other than Azure. +
+Perform transaction across data partitions.
+
+|Google Cloud Spanner
+Need a highly scalable solution. +
+Need a relational store. +
+Need support for SQL query processing +
+Need transaction support across all nodes in the cluster.
+|Use in platforms other than Google Cloud. +
+Support for full ANSI SQL spec.
+|===
+
+
+
+
+
 
 
 
