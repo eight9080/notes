@@ -159,3 +159,134 @@ Provides high availability.
 |===
 
 == Performance Optimization Patterns
+
+=== Materialized View Pattern
+
+* stores all relevant data of a service in its local data store and formats the data optimally to serve the queries
+
+* replicates and moves data from dependent services to its local data store and builds materialized views
+
+image::materializedView.png[Materialized view]
+
+Usage:
+
+* Improve data-retrieval efficiency
+* Provide access to nonsensitive data hosted in secure systems
+
+* provides resiliency. As the data is replicated to the local store, the service will be able to perform its operations without any interruption, even when the source service that provided the data is unavailable.
+
+* do not recommend using this pattern when data can be retrieved from dependent services with low latency, when data in the dependent services is changing quickly, or when the consistency of the data is considered important for the response.
+
+=== Data Locality Pattern
+
+* move execution closer to the data
+
+* adding a service dedicated to the query at the data node can improve performance by processing most of the data locally rather than transferring it over the network
+
+* When the service cannot be moved to the same node, moving the service to the same region or data center can help better utilize the bandwidth.
+
+image::dataLocality.png[Data Locality]
+
+* move execution closer to the data by moving it to the data store as stored procedures
+
+Usage:
+
+* Reduce latency when retrieving data +
+-  need to retrieve data from one or more data sources and perform some sort of join.
+
+* Reduce bandwidth usage when retrieving data
+- useful when we need to retrieve data from multiple sources to perform data aggregation or filtering operations.
+
+=== Caching Pattern
+
+A cache is usually an in-memory data store used to store previously processed or retrieved data so we can reuse that data.
+
+* cache hit
+* cache miss
+
+*Read-through cache operation* - When a cache miss occurs, the system usually needs to process or fetch data from the data store, as well as update the cache with the retrieved data for future reference
+
+*Write-through cache operation* - when a request is made to update the data, we should update it in the data store and remove or invalidate any relevant previously fetched entries stored in the cache
+
+Eviction policy:
+
+* least recently used (LRU) - removes data that is not used for a long period to accommodate new entries
+*  first in, first out (FIFO) - removes the oldest loaded entry
+* most recently used (MRU) - removes the last-used entry
+* trigger-based options - remove entries based on values in the trigger event
+
+Usage:
+
+* Improve time to retrieve data
+* Improve static content loading - Caching is best for static data or for data that is rarely updated.
+* Reduce data store contention - Because it reduces the number of calls to the data store, we can use this pattern to reduce data store contention or when the store is overloaded with many concurrent requests
+* Prefetch data to improve data-retrieval time
+* Achieve high availability by relaxing the data store dependency - Caching can also be used to achieve high availability, especially when the service availability is more important than the consistency of the data. We can handle service calls with cached data even when the backend data store is not available. Making the local cache fall back on a shared or distributed cache, which in turn can fall back to the data store when the data is not present
+
+image::caching.png[Caching]
+
+* Cache more data than a single node can hold - Distributed caching systems can be used as another alternative option when the local cache or shared cache cannot contain all the needed data. They also provide scalability and resiliency by partitioning and replicating data.
+
+The biggest disadvantage of caching data locally is that when services scale, each service will have its own local cache and will sync data with the data stores at different times. +
+By invalidating all the caches during data updates by either informing the cache nodes about the update via a messaging system, as in the Publisher-Subscriber pattern, or by using the Event Sourcing pattern.
+
+* implementing *forceful expiry or reload of the cache*. For instance, if the client is aware of a potential update through other means, we can let the client forcefully reload the cache before retrieving data. We can achieve this by introducing a random variable as part of the cache key when storing the data. The client can use the same key over and over again, and change it only when needing to force a reload.
+
+=== Static Content Hosting Pattern
+
+* eploys static content in data stores that are closer to clients so content can be delivered directly to the client with low latency and without consuming excess computational resources.
+
+* allows us to directly serve static content from storage services such as content delivery networks (CDNs).
+
+image::cdn.png[CDN]
+
+=== Summary
+|===
+|Pattern	|When to use	|When not to use	Benefits
+|Materialized View
+|Part of the data is available locally, and the rest of the data needs to be fetched from external sources that incur high latency. +
+The data that needs to be moved is small and rarely updated. +
+Provides access to nonsensitive data that is hosted in secure systems.
+|Data can be retrieved from dependent services with low latency. +
+Data in the dependent services is changing quickly.+
+Consistency of the data is considered important for the response.
+|Can store the data in any database that is suitable for the application. +
+Increases resiliency of the service by replicating the data to local stores.
+
+|Data Locality
+|To read data from multiple data sources and perform a join or data aggregation in memory. +
+The data stores are huge, and the clients are geographically distributed.
+|Queries output most of their input. +
+Additional execution cost incurred at the data nodes is higher than the cost of data transfer over the network.
+|Reduces network bandwidth utilization and data-retrieval latency. +
+Better utilizes CPU resources and optimizes overall performance. +
+Caches results and serves requests more efficiently.
+
+|Caching
+|Best for static data or data that is read more frequently than it is updated. +
+Application has the same query that can be repeatedly called multiple times by one or more clients, especially when we do not have enough knowledge about what data will be queried next. +
+The data store is subject to a high level of contention or cannot handle the number of concurrent requests it is receiving from multiple clients.
+|The data is updated frequently. +
+As the means of storing state, as it should not be considered as the single source of truth. +
+The data is critical, and the system cannot tolerate data inconsistencies.
+|Can choose which part of the data to cache to improve performance. +
+Using a cache aside improves performance by reducing redundant computations. +
+Can preload static data into the cache. +
+Combined with eviction policy, the cache can hold the recent/required data.
+
+|Static Content Hosting
+|All or some of the data requested by the client is static. +
+The static data needs to be available in multiple environments or geographic locations.
+|The static content needs to be updated before delivering to the clients, such as adding the access time and location. +
+The amount of data that needs to be served is small. +
+Clients cannot retrieve and combine static and dynamic content together.
+|Geographically partitioning and storing closer to clients provides shorter response times and faster access/download speed. +
+Reduces resource utilization on rendering services.
+|===
+
+
+
+
+
+
+
