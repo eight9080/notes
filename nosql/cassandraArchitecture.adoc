@@ -1,0 +1,18 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= Casandra Architecture
+
+== Data Centers and Racks
+
+* used in systems spanning physically separate locations
+
+A *rack* is a logical set of nodes in close proximity to each other, perhaps on physical machines in a single rack of equipment.  +
+A *data center* is a logical set of racks, perhaps located in the same building and connected by reliable network.
+
+Default configuration: a single data center ("datacenter1") containing a single rack ("rack1")
+
+== Gossip and Failure Detection
+
+Cassandra uses a gossip protocol that allows each node to keep track of state information about the other nodes in the cluster. The gossiper runs every second on a timer.
+
+Gossip protocols generally assume a faulty network, are commonly employed in very large, decentralized network systems, and are often used as an automatic mechanism for replication in distributed databases.
+
