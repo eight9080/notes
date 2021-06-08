@@ -16,3 +16,119 @@ Cassandra uses a gossip protocol that allows each node to keep track of state in
 
 Gossip protocols generally assume a faulty network, are commonly employed in very large, decentralized network systems, and are often used as an automatic mechanism for replication in distributed databases.
 
+* The gossip protocol in Cassandra is primarily implemented by the org.apache.cassandra.gms.Gossiper class, which is responsible for managing gossip for the local node.
+* When a server node is started, it registers itself with the gossiper to receive endpoint state information.
+
+* the Gossiper class maintains a list of nodes that are alive and dead
+
+Steps for checking by the gossiper:
+
+* Once per second, the gossiper will choose a random node in the cluster and initialize a gossip session with it. Each round of gossip requires three messages.
+
+* The gossip initiator sends its chosen friend a *GossipDigestSyn* message.
+
+* When the friend receives this message, it returns a *GossipDigestAck* message.
+
+* When the initiator receives the ack message from the friend, it sends the friend a *GossipDigestAck2* message to complete the round of gossip.
+
+*Phi Accrual Failure Detector*:
+
+* decoupling it from the application being monitored
+* a suspicion level
+
+Failure detection is implemented in Cassandra by the org.apache.cassandra.gms.FailureDetector:
+
+* `isAlive(InetAddressAndPort)`
+What the detector will report about a given node’s alive-ness.
+
+* `interpret(InetAddressAndPort)`
+Used by the gossiper to help it decide whether a node is alive or not based on the suspicion level reached by calculating Phi (as described in the Hayashibara et al. paper).
+
+* `report(InetAddressAndPort)`
+When a node receives a heartbeat, it invokes this method.
+
+== Snitches
+
+* provide information about your network topology -> efficiently route requests
+
+* determine relative host proximity for each node in a cluster
+
+Read operation:
+
+* it must contact a number of replicas determined by the consistency level
+* selects a single replica to query for the full object, and asks additional replicas for hash values in order to ensure the latest version of the requested data is returned.
+* The snitch helps to help identify the replica that will return the fastest, and this is the replica that is queried for the full data.
+
+Default snitch (the SimpleSnitch) is topology unaware.
+
+*Dynamic snitching*:
+
+* helps optimize the routing of reads and writes over time.
+* the selected snitch is wrapped with another snitch called the DynamicEndpointSnitch
+* monitors the performance of requests to the other nodes
+
+*Badness threshold*
+
+* a configurable parameter that determines how much worse a preferred node must perform than the best-performing node in order to lose its preferential status.
+
+== Rings and Tokens
+
+* represents the data managed by a cluster as a ring
+* Each node in the ring is assigned one or more ranges of data described by a token
+
+* default configuration -> a token is a 64-bit integer ID used to identify each partition
+
+* A node claims ownership of the range of values less than or equal to each token and greater than the last token of the previous node, known as a token range.
+
+image::rings.png[Rings]
+
+* Data is assigned to nodes by using a *hash function to calculate a token for the partition key*. This partition key token is compared to the token values for the various nodes to identify the range, and therefore the node, that owns the data.
+
+CQL language provides a `token()` function - request the value of the token corresponding to a partition key
+
+----
+SELECT last_name, first_name, token(last_name) FROM user;
+
+----
+
+== Virtual Nodes
+
+Instead of assigning a single token to a node, the token range is broken up into multiple smaller ranges.
+
+* Each physical node is then assigned multiple tokens.
+* each node has been assigned 256 of these tokens, meaning that it represents 256 virtual nodes
+* number of vnodes by setting the`num_tokens` property in the cassandra.yaml
+
+== Partitioners
+
+A partitioner determines how data is distributed across the nodes in the cluster.
+
+* organizes rows in partitions.
+* Each row has a partition key
+* A partitioner is a hash function for computing the token of a partition key.
+* compute the token based on the partition key columns
+
+* Any clustering columns that may be present in the primary key are used to determine the ordering of rows within a given node
+
+The Murmur3Partitioner was added in 1.2 and has been the default partitioner since then
+
+image::partitioner.png[partitioner]
+
+== Replication Strategies
+
+A node serves as a replica for different ranges of data.
+
+* replication factor is the number of nodes in your cluster that will receive copies (replicas) of the same data
+
+The first replica will always be the node that claims the range in which the token falls, but the remainder of the replicas are placed according to the replication strategy
+
+*SimpleStrategy* places replicas at consecutive nodes around the ring, starting with the node indicated by the partitioner
+
+*NetworkTopologyStrategy* allows you to specify a different replication factor for each data center. Within a data center, it allocates replicas to different racks in order to maximize availability.
+
+== Consistency Levels
+
+
+
+
+
