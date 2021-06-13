@@ -252,3 +252,246 @@ NOTE: A successful transaction requires four round-trips between the coordinator
 Cassandra stores data both in memory and on disk to provide both high performance and durability.
 
 image::storageEngine.png[Storage engine]
+
+When a node receives a write operation -> *immediately* writes the data to a *commit log*
+
+If the node crashes the *commit log gets replayed* (only time when the commit is read)
+
+====
+cqlsh> DESCRIBE KEYSPACE my_keyspace ;
+
+CREATE KEYSPACE my_keyspace WITH replication =
+{'class': 'SimpleStrategy',
+'replication_factor': '1'}  AND durable_writes = true;
+====
+
+NOTE: Setting the durable_writes value to false increases the speed of writes, but also risks losing data if the node goes down before the data is flushed from memtables into SSTables.
+
+After it’s written to the commit log -> the value is written to a memory-resident data structure called the *memtable*.
+
+NOTE: Each memtable contains data for a specific table.
+
+Starting with the 2.1 release have moved some memtable data to native memory. (memtables were stored on the JVM heap)
+
+When the number of objects stored in the memtable reaches a threshol:
+
+* *the contents of the memtable are flushed to disk in a file called an SSTable*(Sorted String Table).
+* A new memtable is then created.
+* This flushing is a nonblocking operation
+
+NOTE: multiple memtables may exist for a single table, one current and the rest waiting to be flushed.
+
+Each commit log maintains an *internal bit flag to indicate whether it needs flushing*.
+
+* When a write operation is first received, it is written to the commit log and its bit flag is set to 1.
+
+* There is only one bit flag per table, because only one commit log is ever being written to across the entire server.
+
+* All writes to all tables will go into the same commit log, so the bit flag indicates whether a particular commit log contains anything that hasn’t been flushed for a particular table.
+
+* Once the memtable has been properly flushed to disk, the corresponding commit log’s bit flag is set to 0, indicating that the commit log no longer has to maintain that data for durability purposes.
+
+NOTE: commit logs have a configurable rollover threshold, and once this file size threshold is reached, the log will roll over, carrying with it any surviving dirty bit flags.
+
+IMPORTANT: Once a memtable is flushed to disk as an SSTable, it is immutable and cannot be changed by the application
+
+SSTables compaction changes only their on-disk representation. (merge step of mergesort)
+
+SSTables Compression:
+
+* since the 1.0 release
+* configurable per table
+
+NOTE: All writes are sequential. The write operation is just an immediate append, and then compaction helps to organize for better future read performance.
+
+== Bloom Filters
+
+* used to boost the performance of reads
+
+* are nondeterministic because it is possible to get a false-positive read from a Bloom filter, but not a false-negative
+
+* mapping the values in a data set into a bit array and condensing a larger data set into a digest string using a hash function
+
+* The filters are stored in memory and are used to improve performance by reducing the need for disk access on key lookups
+
+IMPORTANT: Cassandra maintains a Bloom filter for each SSTable. When a query is performed, the Bloom filter is checked first before accessing disk. Because false-negatives are not possible, if the filter indicates that the element does not exist in the set, it certainly doesn’t; but if the filter thinks that the element is in the set, the disk is accessed to make sure.
+
+
+Steps:
+
+_The bloom filter essentially consists of a bit vector of length m_
+
+* To add an item to the bloom filter, we feed it to k different hash functions and set the bits at the resulting positions.
+
+** Note that sometimes the hash functions produce overlapping positions, so less than k positions may be set.
+
+* To test if an item is in the filter, again we feed it to the k hash functions. This time, we check to see if any of the bits at these positions are not set. If any are not set, it means the item is definitely not in the set. Otherwise, it is probably in the set.
+
+Source: https://www.jasondavies.com/bloomfilter/[Bloom filter]
+
+== Caching
+
+* The *key cache* stores a map of partition keys to row index entries, facilitating faster read access into SSTables stored on disk. The key cache is stored on the JVM heap.
+
+* The *counter cache* was added in the 2.1 release to improve counter performance by reducing lock contention for the most frequently accessed counters.
+
+
+* The *row cache*  caches entire rows and can greatly speed up read access for frequently accessed rows, at the cost of more memory usage. The row cache is stored in off-heap memory.
+
+* The *chunk cache* was added in the 3.6 release to store uncompressed chunks of data read from SSTable files that are accessed frequently. The chunk cache is stored in off-heap memory.
+
+By default, key and counter caching are enabled, while row caching is disabled, as it requires more memory.
+
+Cassandra saves its caches to disk periodically in order to warm them up more quickly on a node restart.
+
+== Compaction
+
+During compaction, the data in SSTables is merged: the keys are merged, columns are combined, obsolete values are discarded, and a new index is created.
+
+IMPORTANT: each SSTable consists of multiple files, including *Data, Index, and Filter*
+
+The merged data is sorted, a new index is created over the sorted data, and the freshly merged, sorted, and indexed data is written to a single new SSTable
+
+NOTE: The compaction strategy is an option that is set for each table
+
+Compaction strategies:
+
+* SizeTieredCompactionStrategy (STCS) is the default compaction strategy and is recommended for write-intensive tables.
+
+* LeveledCompactionStrategy (LCS) is recommended for read-intensive tables.
+
+* TimeWindowCompactionStrategy (TWCS) is intended for time series or otherwise date-based data.
+
+== Deletion and Tombstones
+
+To prevent deleted data from being reintroduced, Cassandra uses a concept called a tombstone.
+
+*A tombstone* is a marker that is kept to indicate data that has been deleted.
+
+When you execute a delete operation:
+
+* the data is not immediately deleted.
+* Instead, it’s treated as an update operation that places a tombstone on the value.
+
+Tombstones are not kept forever.
+
+* instead, they are removed as part of compaction.
+* a setting per table called *gc_grace_seconds (Garbage Collection Grace Seconds)* -   the amount of time that nodes will wait to garbage collect (or compact) tombstones.
+* By default, it’s set to 864,000 seconds, the equivalent of 10 days.
+
+== Managers and Services
+
+Basic internal control mechanisms:
+
+=== Cassandra Daemon
+
+`org.apache.cassandra.service.CassandraDaemon`
+
+* the life cycle of the Cassandra service running on a single node
+* typical life cycle operations that you might expect: start, stop, activate, deactivate, and destroy.
+
+* to create an in-memory Cassandra instance programmatically by using the class `org.apache.cassandra.service.EmbeddedCassandraService`
+
+=== Storage Engine
+
+* classes in the `org.apache.cassandra.db` package
+
+* `ColumnFamilyStore` class, which manages all aspects of table storage, including commit logs, memtables, SSTables, and indexes
+
+=== Storage Service
+
+Cassandra wraps the storage engine with a service that is represented by the `org.apache.cassandra.service.StorageService` class.
+
+* contains the node’s token, which is a marker indicating the range of data that the node is responsible for.
+
+* The server starts up with a call to the initServer method of this class, upon which the server *registers the thread pools* used to manage various tasks, makes some determinations about its state
+
+=== Storage Proxy
+
+The `org.apache.cassandra.service.StorageProxy` sits in front of the StorageService to handle the work of responding to client requests.
+
+* It coordinates with other nodes to store and retrieve data, including storage of hints when needed.
+* helps manage lightweight transaction processing.
+
+=== Messaging Service
+
+The purpose of `org.apache.cassandra.net.MessagingService` is to manage all inbound and outbound messages from this node to and from other nodes, except for SSTable streaming.
+
+* Incoming messages are routed to the other services for handling.
+* Outgoing messages may optionally have callbacks, which are invoked when a response is received from the other node.
+
+=== Stream Manager
+
+Streaming is Cassandra’s optimized way of sending SSTable files from one node to another via a *persistent TCP connection*
+
+* all other communication between nodes occurs via serialized messages.
+
+Streaming may occur:
+
+* when tokens need to be reallocated across the cluster, such as when a node is added or removed.
+* during repair processing or when a node is being replaced or rebuilt.
+
+=== CQL Native Transport Server
+
+The CQL Native Protocol is the *binary protocol used by clients to communicate with Cassandra*.
+
+* The `org.apache.cassandra.transport` package contains the classes that implement this protocol, including the Server.
+
+* This native transport server manages client connections and routes incoming requests, delegating the work of performing queries to the StorageProxy.
+
+== System Keyspaces
+
+* Cassandra makes use of its own storage to keep track of metadata about the cluster and local node
+
+[source]
+====
+cqlsh> DESCRIBE TABLES;
+
+Keyspace system_traces +
+`----------------------` +
+events  sessions
+
+Keyspace system_schema +
+`----------------------` +
+tables     triggers    views    keyspaces  dropped_columns +
+functions  aggregates  indexes  types      columns
+
+Keyspace system_auth +
+`--------------------` +
+resource_role_permissons_index  network_permissions  role_permissions +
+role_members                    roles
+
+Keyspace system +
+`---------------` +
+repairs              view_builds_in_progress  paxos +
+available_ranges     prepared_statements      size_estimates +
+batches              peers                    built_views +
+peer_events_v2       compaction_history       local +
+available_ranges_v2  sstable_activity         transferred_ranges +
+peers_v2             peer_events +
+"IndexInfo"          transferred_ranges_v2
+
+Keyspace system_distributed +
+`---------------------------` +
+repair_history  view_build_status  parent_repair_history
+====
+
+* Information about the structure of the cluster communicated via gossip is stored in `system.local` and `system.peers`. These tables hold information about the local node and other nodes in the cluster, including IP addresses, locations by data center and rack, token ranges, CQL, and protocol versions.
+
+* The `system.transferred_ranges` and `system.available_ranges` track token ranges previously managed by each node and any ranges needing allocation.
+
+* The construction of materialized views is tracked in the `system.view_builds_in_progress` and system.built_views tables, resulting in the views available in system_schema.views.
+
+* User-provided extensions include system_schema.types for user-defined types, `system_schema.triggers` for triggers configured per table, `system_schema.functions` for user-defined functions, and `system_schema.aggregates` for user-defined aggregates.
+
+* The `system.paxos` table stores the status of transactions in progress, while the `system.batches` table stores the status of batches.
+
+* The `system.size_estimates` stores the estimated number of partitions per table and mean partition size.
+
+* The cluster’s definitions of the keyspaces, tables, and indexes are stored by the `system_schema.keyspaces`, `system_schema.tables`, and `system_schema.columns`.
+
+* The `system_traces` keyspace contains tables that store information about query traces
+
+* The `system_auth` keyspace contains tables that store information about the users, roles, and permissions Cassandra uses to provide authentication and authorization features
+
+
