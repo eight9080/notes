@@ -36,6 +36,266 @@ Conceptual domain includes hotels, guests that stay in the hotels, a collection 
 
 == Defining Application Queries
 
+1. Find hotels near a given point of interest.
+2. Find information about a given hotel, such as its name and location.
+3. Find points of interest near a given hotel.
+4. Find an available room in a given date range.
+5. Find the rate and amenities for a room.
+
+6. Look up a reservation by confirmation number.
+7. Look up a reservation by hotel, date, and guest name.
+8. Look up all reservations by guest name.
+9. View guest details.
+
+== Logical Data Modeling
+
+* a table for each query, capturing entities and relationships from the conceptual model
+
+* To name each table, identify the primary entity type for which you are querying, and use that to start the entity name. e.g. hotels_by_poi
+
+* identify the primary key for the table, adding partition key columns based on the required query attributes, and clustering columns in order to guarantee uniqueness and support desired sort ordering.
+
+Notation:
+
+* K for partition key columns
+* C↑ or C↓ to represent clustering columns
+
+=== Hotel Logical Data Model
+
+image::logicalDataModel1.png[Logical Data Model 1]
+
+IMPORTANT: Use clustering columns to store attributes that you need to access in a range query.
+
+NOTE: *THE WIDE PARTITION PATTERN* - to group multiple related rows in a partition in order to support fast access to multiple rows within the partition in a single query.
+
+=== Reservation Logical Data Model
+
+Denormalized design -> the same data appears in multiple tables, with differing keys.
+
+image::logicalDataModel2.png[Logical Data Model 2]
+
+NOTE: *Time series pattern* - a series of measurements at specific time intervals are stored in a wide partition, where the measurement time is used as part of the partition key
+
+WARNING: The queue anti-pattern serves as a reminder that any design that relies on the deletion of data is potentially a poorly performing design.
+
+== Physical Data Modeling
+
+* each of your logical model tables, assigning types to each item
+
+Types: including the basic types, collections, and user-defined types
+
+Notation:
+
+S- Static column, IDX - Secondary index column, ++ - Counter column +
+[column_name] - list collection column +
+{column} - set collection column +
+<column> - map collection column +
+*column* - UDT column
+(column) - Tuple column
+column - regular column
+
+=== Hotel Physical Data Model
+
+Hotel keyspace to contain tables for hotel and availability data +
+Reservation keyspace to contain tables for reservation and guest data
+
+Type - uuid type - use unique IDs to uniquely reference elements
+
+image::physicalDataModel1.png[Physical Data Model 1]
+
+=== Reservation Physical Data Model
+
+image::physicalDataModel2.png[Physical Data Model 2]
+
+== Evaluating and Refining
+
+=== Calculating Partition Size
+
+Partition size is measured by the number of cells (values) that are stored in the partition. +
+The recommended size of a partition is not more than 100,000 cells.
+
+Nv=Nr(Nc−Npk−Ns)+Ns
+
+number of values (or cells) in the partition(Nv) = number of rows(Nr) * (number of of values per row) + number of static columns(Ns)
+
+number of values per row = number of columns (Nc) - number of primary key columns (Npk) - static columns (Ns)
+
+E.g.
+available_rooms_by_hotel_date - table +
+four columns total (Nc = 4) +
+three primary key columns (Npk = 3)  +
+no static columns (Ns = 0)
+
+Nv=Nr(4−3−0)+0=1Nr
+
+The table is storing a record for each room, in each of your hotels, for every night. +
+To store 2 years of inventory at a time, and there are 5,000 hotels in the system, with an average of 100 rooms in each hotel
+
+Nr=100rooms/hotel×730days=73,000rows
+
+=== Calculating Size on Disk
+
+Size St of a partition:
+
+image::diskSize.png[Disk Size]
+
+* Ck refers to partition key columns
+* Cs to static columns
+* Cr to regular columns
+* Cc to clustering columns.
+
+* TERMavg refers to the average number of bytes of metadata stored per cell, such as timestamps. (estimate of 8 bytes for this value)
+
+* the number of rows Nr and number of values Nv
+
+* sizeOf() function refers to the size, in bytes, of the CQL data type of each referenced column.
+
+Partition key column: hotel_id - text - 5-character codes - 5-byte value
+
+The clustering columns: -> 6 bytes
+
+* the date - 4 bytes
+* the room_number - 2-byte short integer
+
+A single regular column: boolean is_available - 1 byte in size
+
+6 bytes + 1 byte = 7 bytes
+
+7 bytes * number of rows (73,000) = 511,000 bytes (0.51 MB)
+
+Metadata: 73,000 * 8 bytes = 0.58 MB
+
+Partition size = 16 bytes + 0 bytes + 0.51 MB + 0.58 MB = 1.1 MB
+
+
+=== Breaking Up Large Partitions
+
+* The technique for splitting a large partition is straightforward: add an additional column to the partition key.
+* Another option is to introduce an additional column to the table to act as a sharding key, but this requires additional application logic.
+
+* *bucketing* is often used to break the data into moderate-size partitions. For example, you could bucketize the available_rooms_by_hotel_date table by adding a month column to the partition key, perhaps represented as an integer.
+
+== Defining Database Schema
+
+-----
+CREATE KEYSPACE hotel
+    WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+
+CREATE TYPE hotel.address (
+    street text,
+    city text,
+    state_or_province text,
+    postal_code text,
+    country text
+);
+
+CREATE TABLE hotel.hotels_by_poi (
+    poi_name text,
+    poi_description text STATIC,
+    hotel_id text,
+    name text,
+    phone text,
+    address frozen<address>,
+    PRIMARY KEY ((poi_name), hotel_id)
+) WITH comment = 'Q1. Find hotels near given poi'
+AND CLUSTERING ORDER BY (hotel_id ASC) ;
+
+CREATE TABLE hotel.hotels (
+    id text PRIMARY KEY,
+    name text,
+    phone text,
+    address frozen<address>,
+    pois set<text>
+) WITH comment = 'Q2. Find information about a hotel';
+
+CREATE TABLE hotel.pois_by_hotel (
+    poi_name text,
+    hotel_id text,
+    description text,
+    PRIMARY KEY ((hotel_id), poi_name)
+) WITH comment = 'Q3. Find pois near a hotel';
+
+CREATE TABLE hotel.available_rooms_by_hotel_date (
+    hotel_id text,
+    date date,
+    room_number smallint,
+    is_available boolean,
+    PRIMARY KEY ((hotel_id), date, room_number)
+) WITH comment = 'Q4. Find available rooms by hotel / date';
+
+CREATE TABLE hotel.amenities_by_room (
+    hotel_id text,
+    room_number smallint,
+    amenity_name text,
+    description text,
+    PRIMARY KEY ((hotel_id, room_number), amenity_name)
+) WITH comment = 'Q5. Find amenities for a room';
+
+-----
+
+-----
+CREATE KEYSPACE reservation
+    WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+
+CREATE TYPE reservation.address (
+    street text, city text,
+    state_or_province text,
+    postal_code text,
+    country text
+);
+
+CREATE TABLE reservation.reservations_by_confirmation (
+    confirm_number text,
+    hotel_id text,
+    start_date date,
+    end_date date,
+    room_number smallint,
+    guest_id uuid,
+    PRIMARY KEY (confirm_number)
+) WITH comment = 'Q6. Find reservations by confirmation number';
+
+CREATE TABLE reservation.reservations_by_hotel_date (
+    hotel_id text,
+    start_date date,
+    room_number smallint,
+    end_date date,
+    confirm_number text,
+    guest_id uuid,
+    PRIMARY KEY ((hotel_id, start_date), room_number)
+) WITH comment = 'Q7. Find reservations by hotel and date';
+
+CREATE TABLE reservation.reservations_by_guest (
+    guest_last_name text,
+    guest_id uuid,
+    confirm_number text,
+    hotel_id text,
+    start_date date,
+    end_date date,
+    room_number smallint,
+    PRIMARY KEY ((guest_last_name), guest_id, confirm_number)
+) WITH comment = 'Q8. Find reservations by guest name';
+
+CREATE TABLE reservation.guests (
+    guest_id uuid PRIMARY KEY,
+    first_name text,
+    last_name text,
+    title text,
+    emails set<text>,
+    phone_numbers list<text>,
+    addresses map<text, frozen<address>>
+) WITH comment = 'Q9. Find guest by ID';
+-----
+
+
+
+
+
+
+
+
+
+
+
 
 
 

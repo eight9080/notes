@@ -444,37 +444,37 @@ The CQL Native Protocol is the *binary protocol used by clients to communicate w
 * Cassandra makes use of its own storage to keep track of metadata about the cluster and local node
 
 [source]
-====
+----
 cqlsh> DESCRIBE TABLES;
 
-Keyspace system_traces +
-`----------------------` +
+Keyspace system_traces
+----------------------
 events  sessions
 
-Keyspace system_schema +
-`----------------------` +
-tables     triggers    views    keyspaces  dropped_columns +
+Keyspace system_schema
+----------------------
+tables     triggers    views    keyspaces  dropped_columns
 functions  aggregates  indexes  types      columns
 
-Keyspace system_auth +
-`--------------------` +
-resource_role_permissons_index  network_permissions  role_permissions +
+Keyspace system_auth
+--------------------
+resource_role_permissons_index  network_permissions  role_permissions
 role_members                    roles
 
-Keyspace system +
-`---------------` +
-repairs              view_builds_in_progress  paxos +
-available_ranges     prepared_statements      size_estimates +
-batches              peers                    built_views +
-peer_events_v2       compaction_history       local +
-available_ranges_v2  sstable_activity         transferred_ranges +
-peers_v2             peer_events +
+Keyspace system
+---------------
+repairs              view_builds_in_progress  paxos
+available_ranges     prepared_statements      size_estimates
+batches              peers                    built_views
+peer_events_v2       compaction_history       local
+available_ranges_v2  sstable_activity         transferred_ranges
+peers_v2             peer_events
 "IndexInfo"          transferred_ranges_v2
 
-Keyspace system_distributed +
-`---------------------------` +
+Keyspace system_distributed
+---------------------------
 repair_history  view_build_status  parent_repair_history
-====
+----
 
 * Information about the structure of the cluster communicated via gossip is stored in `system.local` and `system.peers`. These tables hold information about the local node and other nodes in the cluster, including IP addresses, locations by data center and rack, token ranges, CQL, and protocol versions.
 
