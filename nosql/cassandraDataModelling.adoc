@@ -1,0 +1,41 @@
+ifndef::imagesdir[:imagesdir: ./images]
+:toc:
+= Data Modeling
+
+== Conceptual Data Modeling
+
+Conceptual domain includes hotels, guests that stay in the hotels, a collection of rooms for each hotel, the rates and availability of those rooms, and a record of reservations booked for guests. Hotels typically also maintain a collection of “points of interest,” which are parks, museums
+
+== Design Differences Between RDBMS and Cassandra
+
+* NO JOINS
+
+    ** cannot perform joins in Cassandra
+    ** Performing joins on the client should be a very rare case
+    ** create a denormalized second table that represents the join results (duplicate)
+
+* NO REFERENTIAL INTEGRITY
+
+    ** still a common design requirement to store IDs related to other entities in your tables, but operations such as cascading deletes are not available.
+
+* DENORMALIZATION
+
+    ** business document structure that requires retention.
+
+* QUERY-FIRST DESIGN
+    ** start with the query model
+
+* DESIGNING FOR OPTIMAL STORAGE
+    ** Cassandra tables are each stored in separate files on disk, it’s important to keep related columns defined together in the same table.
+    ** to minimize the number of partitions that must be searched in order to satisfy a given query
+    ** the partition is a unit of storage that does not get divided across nodes
+
+* SORTING IS A DESIGN DECISION
+    ** The sort order available on queries is fixed, and is determined entirely by the selection of clustering columns you supply in the CREATE TABLE command.
+    ** The CQL SELECT statement does support ORDER BY semantics, but only in the order specified by the clustering columns (ascending or descending).
+
+== Defining Application Queries
+
+
+
+
