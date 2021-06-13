@@ -1,4 +1,5 @@
 ifndef::imagesdir[:imagesdir: ./images]
+:toc:
 = Casandra Architecture
 
 == Data Centers and Racks
@@ -128,7 +129,126 @@ The first replica will always be the node that claims the range in which the tok
 
 == Consistency Levels
 
+* For *read queries* -> the consistency level specifies how many replica nodes must respond to a read request before returning the data.
+* For *write operations* -> the consistency level specifies how many replica nodes must respond for the write to be reported as successful to the client.
+
+Consistency levels:
+
+* *ONE, TWO, and THREE* - an absolute number of replica nodes that must respond to a request
+
+* *QUORUM* - requires a response from a majority of the replica nodes
+
+Q=floor(replication factor/2+1)
+
+RF=3 -> Q=2, RF=4 -> Q=3, RF=5 -> Q=3
+
+* *ALL* - requires a response from all of the replicas
+
+The replication factor is set per keyspace. The consistency level is specified per query, by the client.
+
+R(read replica count) + W(write replica count) > RF = strong consistency
+
+_Recommended way to achieve strong consistency in Cassandra is to write and read using the QUORUM or LOCAL_QUORUM consistency levels_
+
+== Queries and Coordinator Nodes
+
+image::coordinatorNodes.png[Coordinator Nodes]
+
+A client may connect to any node in the cluster to initiate a read or write query -> This becomes *the coordinator node*.
+
+* The coordinator identifies which nodes are replicas for the data that is being written or read and forwards the queries to them.
+
+* The coordinator node contacts all replicas, as determined by the consistency level and replication factor
+
+== Hinted Handoff
+
+A write request is sent to Cassandra, but a replica node where the write properly belongs is not available due to network partition, hardware failure, or some other reason.
+
+* If the replica node where the write belongs has failed, the coordinator will create a hint, which is a small reminder
+* once it detects via gossip that node B is back online, node A will “hand off” to node B the “hint” regarding the write.
+
+Cassandra holds a separate hint for each partition that is to be written.
+
+* In general, hints do not count as writes for the purposes of consistency level.
+* The exception is the consistency level ANY - a hinted handoff alone will count as sufficient toward the success of a write operation.
+ ** The write is considered durable, but the data may not be readable until the hint is delivered to the target replica.
 
 
+When the other nodes notice that the failed node has come back online, they tend to flood that node with requests -> Cassandra limits the storage of hints to a configurable time window. It is also possible to disable hinted handoff entirely.
 
+== Anti-Entropy, Repair, and Merkle Trees
 
+Anti-entropy protocols are a type of gossip protocol for repairing replicated data.
+
+Modes replica synchronization: *read repair and anti-entropy repair*.
+
+Read repair:
+
+* refers to the synchronization of replicas as data is read.
+* Cassandra reads data from multiple replicas in order to achieve the requested consistency level, and detects if any replicas have out-of-date values.
+* If an insufficient number of nodes have the latest value, a read repair is performed immediately to update the out-of-date replicas.
+* Otherwise, the repairs can be performed in the background after the read returns.
+
+Anti-entropy repair (manual repair):
+
+* is a manually initiated operation performed on nodes as part of a regular maintenance process.
+* is executed by using a tool called nodetool
+* Running nodetool repair causes Cassandra to execute a *validation compaction*
+* During a validation compaction, the server initiates a TreeRequest/TreeReponse conversation to exchange *Merkle trees* with neighboring replicas
+
+_The Merkle tree is a hash representing the data in that table._
+
+* If the trees from the different nodes don’t match, they have to be reconciled (or “repaired”) to determine the latest data values they should all be set to.
+
+[NOTE]
+====
+Each table has its own Merkle tree. +
+The tree is created as a snapshot during a validation compaction. +
+It is kept only as long as is required to send it to the neighboring nodes on the ring
+====
+
+== Lightweight Transactions and Paxos
+
+*Linearizable consistency* - to guarantee that no other client can come in between our read and write queries with their own modification
+
+Cassandra supports a *lightweight transaction (LWT)* mechanism that provides linearizable consistency.
+
+Cassandra’s LWT implementation is based on Paxos.
+
+=== Paxos
+
+*Paxos is a consensus algorithm* that allows distributed peer nodes to agree on a proposal, without requiring a leader to coordinate a transaction
+
+Basic Paxos algorithm consists of two stages:
+
+* prepare/promise
+* propose/accept
+
+To modify data:
+
+* a coordinator node can propose a new value to the replica nodes, taking on the role of leader.
+
+IMPORTANT:  Other nodes may act as leaders simultaneously for other modifications
+
+* Each replica node checks the proposal, and if the proposal is the latest it has seen, it promises to not accept proposals associated with any prior proposals
+
+* Each replica node also returns the last proposal it received that is still in progress.
+
+* If the proposal is approved by a majority of replicas, the leader commits the proposal, but with the caveat that it must first commit any in-progress proposals that preceded its own proposal
+
+The Cassandra implementation extends the basic Paxos algorithm to support the desired read-before-write semantics (also known as check-and-set), and to allow the state to be reset between transactions
+
+* Prepare/Promise
+* Read/Results
+* Propose/Accept
+* Commit/Ack
+
+NOTE: A successful transaction requires four round-trips between the coordinator node and replicas
+
+* Cassandra’s lightweight transactions are limited to a single partition
+
+== Memtables, SSTables, and Commit Logs
+
+Cassandra stores data both in memory and on disk to provide both high performance and durability.
+
+image::storageEngine.png[Storage engine]
