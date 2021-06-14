@@ -1,0 +1,358 @@
+ifndef::imagesdir[:imagesdir: ./images]
+:toc:
+
+= Cassandra Query Language
+
+== Cassandra’s Data Model
+
+Cassandra defines a table to be a logical division that associates similar data.
+
+*Wide column* - flexible data structure
+
+Cassandra uses a special type of *primary key* called a composite key (or compound key) to represent groups of related rows, also called *partitions*.
+
+*Composite key* = partition key + an optional set of clustering columns
+
+*Partition key* is used to determine the nodes on which rows are stored and can itself consist of multiple columns.
+
+*Clustering columns* are used to control how data is sorted for storage within a partition
+
+*Static column* - for storing data that is not part of the primary key but is shared by every row in a partition.
+
+
+
+Concepts:
+
+* column - a name/value pair
+
+* row - container for columns referenced by a primary key
+
+* partition - a group of related rows that are stored together on the same nodes
+
+* table - a container for rows organized by partitions
+
+* keyspace - a container for tables
+
+* cluster - a container for keyspaces that spans one or more nodes
+
+image::cassandraTable.png[Cassandra table]
+
+A table is a container for an ordered collection of rows, each of which is itself an ordered collection of columns.
+
+Rows are organized in partitions and assigned to nodes in a Cassandra cluster according to the column(s) designated as the partition key.
+
+The ordering of data within a partition is determined by the clustering columns.
+
+IMPORTANT: Because Cassandra uses an append model, there is no fundamental difference between the insert and update operations. If you insert a row that has the same primary key as an existing row, the row is replaced. If you update a row and the primary key does not exist, Cassandra creates it.
+
+=== Columns
+
+Attributes: timestamps and time to live
+
+==== TIMESTAMPS
+
+Each time you write data into Cassandra, a timestamp, in microseconds, is generated for each column value that is inserted or updated.
+
+----
+SELECT first_name, last_name, title, writetime(title)
+  FROM user;
+----
+
+==== TIME TO LIVE (TTL)
+
+* expire data that is no longer needed
+
+* works at the level of individual column values
+
+* The time to live (or TTL) is a value that Cassandra stores for each column value to indicate how long to keep the value.
+
+* defaults to null, meaning that data that is written will not expire
+
+----
+SELECT first_name, last_name, TTL(title)
+  FROM user WHERE first_name = 'Mary' AND last_name = 'Rodriguez';
+
+UPDATE user USING TTL 3600 SET middle_initial =
+  'Z' WHERE first_name = 'Mary' AND last_name = 'Rodriguez';
+----
+
+3600 seconds = 1 hour
+
+----
+INSERT INTO user (first_name, last_name)
+  VALUES ('Jeff', 'Carpenter') USING TTL 60;
+----
+
+60 seconds
+
+== CQL Types
+
+=== Numeric Data Types
+
+|===
+|Type | Size | Java type
+|int
+|A 32-bit signed integer (4 bytes)
+|int
+
+|bigint
+|A 64-bit signed long integer (8 bytes)
+|long
+
+|smallint
+|A 16-bit signed integer (2 bytes)
+|short
+
+|tinyint
+|An 8-bit signed integer (1 byte)
+|(as in Java)
+
+|varint
+|A variable precision signed integer
+|java.math.BigInteger
+
+|float
+|A 32-bit IEEE-754 floating point (4 bytes)
+|float
+
+|double
+|A 64-bit IEEE-754 floating point (8 byte)
+|double
+
+|decimal
+|A variable precision decimal
+|java.math.BigDecimal
+|===
+
+=== Textual Data Types
+
+|===
+|type |description
+|text, varchar
+|Synonyms for a UTF-8 character string
+
+|ascii
+|An ASCII character string
+|===
+
+=== Time and Identity Data Types
+
+|===
+|type |description
+|timestamp
+|The time can be encoded as a 64-bit signed integer, but it is typically much more useful to input a timestamp using one of several supported ISO 8601 date formats
+
+
+   2015-06-15 20:05-0700
+   2015-06-15 20:05:07-0700
+   2015-06-15 20:05:07.013-0700
+   2015-06-15T20:05-0700
+   2015-06-15T20:05:07-0700
+   2015-06-15T20:05:07.013+-0700
+
+|date, time
+|date without a time, and a time of day without reference to a specific date
+
+|uuid
+|universally unique identifier (UUID) is a 128-bit value. +
+CQL uuid type is a Type 4 UUID +
+Because UUIDs are of a finite length, they are not absolutely guaranteed to be unique. +
+Type 4 UUID value via the CQL uuid() function
+
+|timeuuid
+|Type 1 UUID, which is based on the MAC address of the computer, the system time, and a sequence number used to prevent duplicates +
+This type is frequently used as a conflict-free timestamp. CQL provides several convenience functions for interacting with the timeuuid type: now(), dateOf(), and unixTimestampOf().
+|===
+
+IMPORTANT: *PRIMARY KEYS ARE FOREVER*
+After you create a table, there is no way to modify the primary key, because this controls how data is distributed within the cluster, and even more importantly, how it is stored on disk.
+
+=== Other Simple Data Types
+
+|===
+|type |description
+|boolean |simple true/false value.
+|blob
+|A binary large object (blob) is a colloquial computing term for an arbitrary array of bytes. The CQL blob type is useful for storing media or other binary file types. Cassandra does not validate or examine the bytes in a blob. CQL represents the data as hexadecimal digits—for example, 0x00000ab83cf0. If you want to encode arbitrary textual data into the blob, you can use the textAsBlob() function in order to specify values for entry.
+
+|inet |This type represents IPv4 or IPv6 internet addresses
+
+|counter
+|The counter data type provides a 64-bit signed integer, whose value cannot be set directly, but only incremented or decremented. +
+Counters are frequently used for tracking statistics such as numbers of page views, tweets, log messages, and so on. The counter type has some special restrictions. +
+It cannot be used as part of a primary key. If a counter is used, all of the columns other than primary key columns must be counters.
+|===
+
+=== Collections
+
+*set*
+
+* The set data type stores a collection of elements.
+* The elements are unordered when stored, but are returned in sorted order.
+* text values are returned in alphabetical order.
+* Sets can contain the simple types you’ve learned previously, as well as user-defined types and even other collections.
+* One advantage of using set is the ability to insert additional items without having to read the contents first.
+
+----
+ALTER TABLE user ADD emails set<text>;
+
+UPDATE user SET emails = { 'mary@example.com' }
+  WHERE first_name = 'Mary' AND last_name = 'Rodriguez';
+
+UPDATE user
+  SET emails = emails + {'mary.rodriguez.AZ@gmail.com' }
+----
+
+*list*
+
+* The list data type contains an ordered list of elements.
+* By default, the values are stored in order of insertion.
+
+----
+ALTER TABLE user ADD phone_numbers list<text>;
+
+UPDATE user SET phone_numbers = ['1-800-999-9999' ]
+  WHERE first_name = 'Mary' AND last_name = 'Rodriguez';
+
+UPDATE user SET phone_numbers =
+  phone_numbers + [ '480-111-1111' ]
+
+UPDATE user SET phone_numbers[1] = '480-111-1111'
+
+UPDATE user SET phone_numbers =
+  phone_numbers - [ '480-111-1111' ]
+
+DELETE phone_numbers[0] from user WHERE
+  first_name = 'Mary' AND last_name = 'Rodriguez';
+----
+
+*map*
+
+* The map data type contains a collection of key-value pairs.
+* The keys and the values can be of any type except counter.
+
+----
+ALTER TABLE user ADD
+  login_sessions map<timeuuid, int>;
+
+UPDATE user SET login_sessions =
+  { now(): 13, now(): 18}
+  WHERE first_name = 'Mary' AND last_name = 'Rodriguez';
+----
+
+=== Tuples
+
+* provide a way to have a fixed-length set of values of various types
+
+----
+ALTER TABLE user ADD
+  address tuple<text, text, text, int>;
+UPDATE user SET address =
+  ('7712 E. Broadway', 'Tucson', 'AZ', 85715 )
+  WHERE first_name = 'Mary' AND last_name = 'Rodriguez';
+----
+
+* no way to update individual fields of a tuple; the entire tuple must be updated.
+
+=== User-Defined Types
+
+----
+CREATE TYPE address (
+  street text,
+  city text,
+  state text,
+  zip_code int);
+----
+
+----
+ALTER TABLE user ADD addresses map<text,
+  frozen<address>>;
+
+UPDATE user SET addresses = addresses +
+  {'home': { street: '7712 E. Broadway', city: 'Tucson',
+  state: 'AZ', zip_code: 85715 } }
+  WHERE first_name = 'Mary' AND last_name = 'Rodriguez';
+----
+
+Example:
+
+----
+DESCRIBE KEYSPACE my_keyspace ;
+
+CREATE KEYSPACE my_keyspace WITH replication = {'class':
+  'SimpleStrategy', 'replication_factor': '1') AND
+  durable_writes = true;
+
+CREATE TYPE my_keyspace.address (
+    street text,
+    city text,
+    state text,
+    zip_code int
+);
+
+CREATE TABLE my_keyspace.user (
+    last_name text,
+    first_name text,
+    addresses map<text, frozen<address>>,
+    emails set<text>,
+    id uuid,
+    login_sessions map<timeuuid, int>,
+    middle_initial text,
+    phone_numbers list<text>,
+    title text,
+    PRIMARY KEY (last_name, first_name)
+) WITH CLUSTERING ORDER BY (first_name ASC)
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction
+      .SizeTieredCompactionStrategy', 'max_threshold': '32',
+      'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class':
+      'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND dclocal_read_repair_chance = 0.1
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair_chance = 0.0
+    AND speculative_retry = '99PERCENTILE';
+
+CREATE TABLE my_keyspace.user_visits (
+    user_id uuid PRIMARY KEY,
+    visits counter
+) WITH bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction
+      .SizeTieredCompactionStrategy', 'max_threshold': '32',
+      'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class':
+      'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND dclocal_read_repair_chance = 0.1
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair_chance = 0.0
+    AND speculative_retry = '99PERCENTILE';
+----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

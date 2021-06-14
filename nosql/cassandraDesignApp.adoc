@@ -1,0 +1,38 @@
+ifndef::imagesdir[:imagesdir: ./images]
+:toc:
+= Application Design
+
+== Hotel Application Design
+
+=== Cassandra and Microservice Architecture
+
+* Encapsulation
+
+Encapsulation could also be phrased as “services that are focused on doing one thing well” or the “single responsibility principle.”
+
+* Autonomy
+
+Refers to the ability to independently deploy each microservice without dependence on any other microservices.
+
+* Scalability
+
+Microservice architecture provides a lot of flexibility by giving you the ability to run more or fewer instances of a service dynamically according to demand.
+
+=== Microservice Architecture for a Hotel Application
+
+Steps:
+
+* Identifying Bounded Contexts
+
+Hotel domain and Reservation domain
+
+* Identifying Services
+
+ ** Hotel service
+ ** Point of interest service
+ ** Inventory service
+ ** Reservation service
+ ** Guest service
+
+Note:  assign tables that have a high degree of correspondence to the same service
+
