@@ -36,3 +36,161 @@ Hotel domain and Reservation domain
 
 Note:  assign tables that have a high degree of correspondence to the same service
 
+* Designing Microservice Persistence
+
+** POLYGLOT PERSISTENCE
+
+|===
+|Service	|Data characteristics	|Database options
+|Hotel Service
+
+|Descriptive text about hotels and their amenities, changes infrequently
+|Document database (i.e., MongoDB), Cassandra, or Elasticsearch/Solr for full text search
+
+|Point of Interest Service
+|Geographic locations and descriptions of points of interest
+|Cassandra or other tabular databases supporting geospatial indexes such as DataStax Enterprise
+
+|Inventory Service
+|Counts of available rooms by date, large volume of reads and writes
+|Cassandra or other tabular databases
+
+|Reservation Service
+|Rooms reserved on behalf of guests, lower volume of reads and writes than inventory
+|Cassandra or other tabular databases
+
+|Guest Service
+|Guest identity and contact information, possible extension point for customer and fraud analytics systems
+|Cassandra, graph databases
+|===
+
+* REPRESENTING OTHER DATABASE MODELS IN CQL
+
+ ** Key-value models +
+Key-value models can be represented in Cassandra by treating the key as the partition key. The remaining data can be stored in a value column as a text or blob type. It’s recommended not to exceed 5 MB for a single value, so consider breaking up large documents into multiple rows.
+
+ ** Document models
+
+  *** one based on having a well-defined schema
+  *** a flexible schema approach +
+  flexible schema approach involves storing nonprimary key columns in a blob
+----
+CREATE TABLE hotel.hotels_document (
+    id text PRIMARY KEY,
+    document text);
+----
+Reading and writing data in JSON format, introduced in Cassandra 2.2
+----
+cqlsh:hotel> INSERT INTO hotels JSON '{ "id": "AZ123",
+  "name": "Super Hotel Suites at WestWorld",
+  "phone": "1-888-999-9999",
+  "address": {
+    "street": "10332 E. Bucking Bronco",
+    "city": "Scottsdale",
+    "state_or_province": "AZ",
+    "postal_code": "85255"
+  }
+}';
+----
+
+  ** Graph models
+Graph data models are a powerful way of representing domains where the relationships between entities are as important or more important than the properties of the entities themselves.
+
+A *property graph* consists of vertexes that represent the entities in a domain, while edges represent the relationships between vertices and can be navigated in either direction.
+
+=== Extending Designs
+
+* searching for hotels by name, location, or amenities
+
+Alternatives to managing multiple denormalized tables: secondary indexes and materialized views.
+
+==== Secondary Indexes
+
+*NOT Allowed* -> query on a column in a Cassandra table that is not part of the primary key,
+
+* Force it to query based on this column using the ALLOW FILTERING keyword =>
+ask all of the nodes in the cluster to scan all stored SSTable files for hotels matching the provided name, because Cassandra has no indexing built on that particular column
+
+* Create a *secondary index* for the name column
+
+----
+cqlsh:hotel> CREATE INDEX ON hotels ( name );
+----
+
+Default name: `<table name>_<column name>_idx`
+
+* create indexes that are based on user-defined types or values stored in collections
+
+----
+cqlsh:hotel> CREATE INDEX ON hotels ( address );
+cqlsh:hotel> CREATE INDEX ON hotels ( pois );
+----
+
+* Map: indexing either the keys (via the syntax KEYS(addresses)), the values (which is the default)
+
+* remove indexes
+
+----
+cqlsh:hotels> DROP INDEX hotels_name_idx;
+cqlsh:hotels> DROP INDEX hotels_address_idx;
+cqlsh:hotels> DROP INDEX hotels_pois_idx;
+----
+
+NOTE: Because Cassandra partitions data across multiple nodes, each node must maintain its own copy of a secondary index based on the data stored in partitions it owns.
+
+==== Materialized Views
+
+WARNING: Creating indexes on columns with high cardinality tends to result in poor performance, because most or all of the nodes in the ring are queried.
+
+Each materialized view supports queries based on a single column that is not part of the original primary key.
+
+Materialized views incur a performance impact on writes to the base table because some reads are required to maintain this consistency.
+
+----
+cqlsh> CREATE MATERIALIZED VIEW reservation.reservations_by_confirmation
+  AS SELECT *
+  FROM reservation.reservations_by_hotel_date
+  WHERE confirm_number IS NOT NULL and hotel_id IS NOT NULL and
+    start_date IS NOT NULL and room_number IS NOT NULL
+  PRIMARY KEY (confirm_number, hotel_id, start_date, room_number);
+----
+
+IMPORTANT: The PRIMARY KEY clause identifies the primary key for the materialized view, which must include all of the columns in the primary key of the base table.
+
+The WHERE clause provides support for filtering. Note that a filter must be specified for every primary key column of the materialized view, even if it is as simple as designating that the value IS NOT NULL.
+
+image::extendDesign.png[Extend design]
+
+=== Reservation Service: A Sample Microservice
+
+The Reservation Service will be responsible for reading and writing data using the tables in the reservation keyspace.
+
+This implementation uses Apache Cassandra for its data storage via the DataStax Java Driver and the Spring Boot project for managing the service life cycle. It exposes a RESTful API documented via Swagger.
+
+=== Deployment and Integration Considerations
+
+==== Services, Keyspaces, and Clusters
+
+*  use a keyspace per service to promote encapsulation
+
+* create a database user per keyspace, such that each service can be easily configured to have exclusive read and write access to all of the tables in its associated keyspace.
+
+* a shared deployment in which Reservation and Inventory Services are using a shared cluster for data storage.
+
+//TODO add picture
+
+==== Data Centers and Load Balancing
+
+The corresponding cluster for a service should also have nodes in each data center where the service will be deployed, to enable the fastest possible access.
+
+The keyspace used by a service will need to be configured with a number of replicas to be stored per data center, assuming the NetworkTopologyStrategy is the replication strategy in use.
+
+//TODO add picture Multiple data center deployment
+
+==== Interactions Between Microservices
+
+
+
+
+
+
