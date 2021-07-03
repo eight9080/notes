@@ -1,0 +1,144 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= Kafka Internals
+
+== Cluster Membership
+
+* uses Apache Zookeeper to maintain the list of brokers
+* Every broker has a unique identifier
+* Every time a broker process starts, it registers itself with its ID in Zookeeper by creating an ephemeral node.
+* Different Kafka components subscribe to the /brokers/ids path in Zookeeper where brokers are registered so that they get notified when brokers are added or removed.
+
+== The Controller
+
+* one of the Kafka brokers
+* is responsible for electing partition leaders
+* The first broker that starts in the cluster becomes the controller by creating an ephemeral node in ZooKeeper called `/controller`
+* The brokers create a `Zookeeper watch` on the controller node so they get notified of changes to this node.
+
+*If something happens to the Controller*:
+
+ * stops
+ * losses connectivity
+ * Zookeeper client used by the controller stops sending heartbeats to Zookeeper for longer than `zookeeper.session.timeout.ms`
+
+After:
+
+* other brokers in the cluster will be notified through the Zookeeper watch that the controller is gone
+* The first node to create the new controller in Zookeeper is the new controller, while the other nodes will receive a “node already exists” exception and re-create the watch on the new controller node
+
+* Each time a controller is elected, it receives a new, higher controller `epoch number` through a Zookeeper conditional increment operation.
+*  When the previous leader resumes operations after the pause, it can continue sending messages to brokers without knowing that there is a new controller - in this case the old controller is considered a *zombie*.
+
+*When the controller notices that a broker left the cluster* => all the partitions that had a leader on that broker will need a new leader
+
+* new leader should be - simply the next replica in the replica list of that partition
+
+Controller actions:
+
+* persists the new state to Zookeeper
+* sends a `LeaderAndISR` request ( information on the new leader and followers for the partitions) to all the brokers that contain replicas for those partitions.
+
+Every broker in the cluster has a *MetadataCache* - a map of all brokers and all replicas in the cluster. +
+The controller sends all brokers information about the leadership change in an UpdateMetadata request so they can update their caches.
+
+=== KRaft - Kafka’s new Raft based controller
+
+* part of Apache Kafka 2.8 release
+* Apache Kafka 3.0 release - include the first production version of KRaft and Kafka clusters
+
+*Zookeeper* has two important functions:
+
+* elect a controller
+* store the cluster metadata - registered brokers, configuration, topics, partitions and replicas
+
+The controller nodes are a Raft quorum which manages the log of metadata events. This log contains information about each change to the cluster metadata.
+
+== Replication
+
+Types of replicas:
+
+* Leader replica
+
+Each partition has a single replica designated as the leader. All produce requests go through the leader, in order to guarantee consistency. Clients can consume from either the lead replica or its followers.
+
+* Follower replica
+
+Followers don’t serve client requests; their only job is to replicate messages from the leader and stay up-to-date with the most recent messages the leader has. In the event that a leader replica for a partition crashes, one of the follower replicas will be promoted to become the new leader for the partition.
+
+the leader is responsible for is knowing which of the follower replicas is *up-to-date with the leader*.
+
+* the replicas send the leader Fetch requests
+* The *Fetch requests* contain the offset of the message that the replica wants to receive next
+
+*Replica - out of sync*:
+
+* By looking at the last offset requested by each replica, the leader can tell how far behind each replica is.
+* If a replica hasn’t requested a message in more than 10 seconds or
+* if it has requested messages but hasn’t caught up to the most recent message in more than 10 seconds
+
+*  amount of time a follower can be inactive or behind before it is considered out of sync is controlled by the `replica.lag.time.max.ms`
+
+Each partition has a *preferred leader*—the replica that was the leader when the topic was originally created. It is preferred because when partitions are first created, the *leaders are balanced between brokers*.
+
+== Request Processing
+
+Kafka has a *binary protocol (over TCP)* that specifies the format of the requests and how brokers respond to them
+
+All requests have a standard header that includes:
+
+* Request type (also called API key)
+* Request version
+* Correlation ID: a number that uniquely identifies the request and also appears in the response and in the error logs (the ID is used for troubleshooting)
+* Client ID: used to identify the application that sent the request
+
+Steps:
+
+* For each port the broker listens on -> the broker runs an *acceptor thread*
+* the acceptor thread creates a connection and hands it over to a *processor thread* for handling.
+* The number of processor threads (network threads) is configurable.
+
+* The network threads are responsible for:
+ ** taking requests from client connections
+ ** placing them in a request queue
+ ** picking up responses from a response queue
+ ** sending them back to clients.
+
+* Once requests are placed on the request queue, *IO threads* (request handler threads) are responsible for picking them up and processing them
+
+Types of client requests:
+
+* Produce requests  - Sent by producers and contain messages the clients write to Kafka brokers.
+
+* Fetch requests  - Sent by consumers and follower replicas when they read messages from Kafka brokers.
+
+* Admin requests  - Sent by Admin clients when performing metadata operations such as creating and deleting topics.
+
+image::kafkaRequets.png[kafka requests]
+
+Both produce requests and fetch requests have to be sent to the leader replica of a partition.
+
+Kafka clients use another request type called a metadata request, which includes a list of topics the client is interested in. The server response specifies which partitions exist in the topics, the replicas for each partition, and which replica is the leader.
+
+Clients:
+
+* typically cache this information and use it to direct produce and fetch requests to the correct broker for each partition.
+* also need to occasionally refresh this information (refresh intervals are controlled by the `metadata.max.age.ms`)
+
+image::kafkaMetadataRequest.png[Metadata requests]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
