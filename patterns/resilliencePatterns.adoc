@@ -33,5 +33,20 @@ There is often no proper fault tolerance or graceful degradation so that even a 
 
 === Solution
 
+*Fault tolerance* is the property that enables a system to continue operating properly in the event of the failure of (or one or more faults within) some of its components. If its operating quality decreases at all, the decrease is proportional to the severity of the failure.
+
+Means to implement fault tolerenant distributed systems:
+
+* *Isolation* - to prevent that a system fails as a whole. 
+  ** *bulkheads* to isolate compoonents
+  ** *stovepipes* for chains
+  
+* *Health checking* - to discover failures and implement *fail-over to healthy redundant* isolated instances of the same component to prevent outage
+* *Timeouts* - to prevent blocking actions caused by the failing system 
+* *Retries* - to be resilient to transient failures - the provider needs to be idempotent to the retry
+* *Circuit breaker* - to prevent cascading propagation of the failure and to allow a *fail-fast strategy*
+* *Graceful degradation* - to offer the customer a limited set of functionality to prevent outage. 
+* *Multiple different implementation* - in case of a failure of another implementation of a component - provide a fall-back mechanism (Cache, different channel)
+
 
 
