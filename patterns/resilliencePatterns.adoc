@@ -1,4 +1,5 @@
 = Resillience patterns
+:toc:
 
 == Bulkhead
 
@@ -62,5 +63,23 @@ Deploy multiple datacenters without any interdependecies in a stovepipe pattern.
 
 Pattern implemnted with the recipe of datacenter twins.
 
+== Timeout 
 
+=== Context and problem
 
+Ability to preserve responsiveness independent of downstream system's latency.
+
+=== Solution 
+
+Sockets API defines two types of timeouts:
+
+* The *connection timeout* denotes the maximum time elapsed before the connection is established or an error occurs.
+* The *socket timeout* defines the maximum period of inactivity between two consecutive data packets arriving on the client side after a connection has been established.
+
+=== Retry
+
+=== Context and problem
+
+An application that communicates with elements running in the cloud must be sensitive to the transient faults that can occur in this environment. Such faults include the momentary loss of network connectivity to components and services, the temporary unavailability of a service, or timeouts that arise when a service is busy.
+
+These faults are typically self-correcting, and if the action that triggered a fault is repeated after a suitable delay it is likely to be successful. 
