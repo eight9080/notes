@@ -76,10 +76,16 @@ Sockets API defines two types of timeouts:
 * The *connection timeout* denotes the maximum time elapsed before the connection is established or an error occurs.
 * The *socket timeout* defines the maximum period of inactivity between two consecutive data packets arriving on the client side after a connection has been established.
 
-=== Retry
+== Retry
+
+Source: https://docs.microsoft.com/en-us/previous-versions/msp-n-p/dn589788(v=pandp.10)[Retry]
 
 === Context and problem
 
 An application that communicates with elements running in the cloud must be sensitive to the transient faults that can occur in this environment. Such faults include the momentary loss of network connectivity to components and services, the temporary unavailability of a service, or timeouts that arise when a service is busy.
 
 These faults are typically self-correcting, and if the action that triggered a fault is repeated after a suitable delay it is likely to be successful. 
+
+=== Solution 
+
+If an application detects a failure when it attempts to send a request to a remote service, it can handle the failure by using the following strategies:
