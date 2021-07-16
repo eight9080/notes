@@ -14,7 +14,24 @@ Moreover, a consumer may send requests to multiple services simultaneously, usin
 When the consumer sends a request to a service that is misconfigured or not responding, the resources used by the client's request may not be freed in a timely manner. 
 As requests to the service continue, those resources may be exhausted. 
 
-Solution
+=== Solution
 Partition service instances into different groups, based on consumer load and availability requirements. 
 This design helps to isolate failures, and allows you to sustain service functionality for some consumers, even during a failure.
+
+== Fault Tolerance
+
+=== Context and Problem
+
+The failure of an IT system can disrupt the customer journey in a way that the customer cannot continue with his desired activity. +
+There is often no proper fault tolerance or graceful degradation so that even a small failure can cause total breakdown.
+
+==== Causes:
+
+* incorrect failed strategy - the consumer does not know how to act if a provider is unavailable
+* no automatic recovery from failures - the system does not know how to recover from temporarily failing systems
+* proovider is a Single point of Failure - provider does not have a redundant isolated instance
+
+=== Solution
+
+
 
