@@ -48,5 +48,19 @@ Means to implement fault tolerenant distributed systems:
 * *Graceful degradation* - to offer the customer a limited set of functionality to prevent outage. 
 * *Multiple different implementation* - in case of a failure of another implementation of a component - provide a fall-back mechanism (Cache, different channel)
 
+== Stovepipe
+
+=== Context and problem
+
+Ability to recover from a disaster or major incident 
+
+=== Solution 
+
+Deploy multiple datacenters without any interdependecies in a stovepipe pattern. In a dual datacenter strategy this is necessary because one datacenter must be able to handle all capabilities (accept Disaster Recovery)
+
+=== Recipe
+
+Pattern implemnted with the recipe of datacenter twins.
+
 
 
