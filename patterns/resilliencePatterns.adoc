@@ -154,7 +154,43 @@ val serviceWithRetry = retryFilter andThen service
 ----
 
 
+== Service Commands Patterns
 
+(Connectivity Patterns)
+
+=== Context and Problem
+
+Implementing services that provide Command interfaces (Transactions, Create, Update, Deletes) can be performed with diffferent patterns.
+
+=== Solution
+
+Implement service queries only by using one of these patterns:
+
+* Oneway
+* Oneway + Notification
+* Request-Reply
+* Notification
+* Notification + Oneway
+
+|===
+|Service integration | One way | Request-reply | Notification
+
+|Communication | async |sync | async
+
+|Started by | requestor | requestor | provider
+
+|Requestor/Consumer messages 
+|out: one-way(req) / in: notification (res)
+|out: req / in: res
+|in: notification(req) / out: one way (res)
+
+|Provider messages 
+|in: one way (req) / out: notification (res)
+|in: req / out: res
+|out: notification(req) / in: one way (res)
+
+
+|===
 
 
 
