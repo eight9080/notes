@@ -90,5 +90,17 @@ These faults are typically self-correcting, and if the action that triggered a f
 
 If an application detects a failure when it attempts to send a request to a remote service, it can handle the failure by using the following strategies:
 
-* If the fault indicates that the failure is not transient or is unlikely to be successful if repeated (for example, an authentication failure caused by providing invalid credentials is unlikely to succeed no matter how many times it is attempted), the application should abort the operation and report a suitable exception.
+* If the fault indicates that the *failure is not transient or is unlikely to be successful if repeated* (for example, an authentication failure caused by providing invalid credentials is unlikely to succeed no matter how many times it is attempted), the application should *abort* the operation and report a suitable exception.
+* If the specific fault reported is *unusual or rare*, it may have been caused by freak circumstances such as a network packet becoming corrupted while it was being transmitted. In this case, the application *could retry* the failing request again immediately because the same failure is unlikely to be repeated and the request will probably be successful.
+* If the fault is caused by one of the more *commonplace connectivity or “busy” failures*, the network or service may require a short period while the connectivity issues are rectified or the backlog of work is cleared. The application *should wait for a suitable time before retrying the request*.
+
+For the more common transient failures, the period between retries should be chosen so as to spread requests from multiple instances of the application as evenly as possible.
+
+If the request still fails, the application can wait for a further period and make another attempt. If necessary, this process can be repeated with increasing delays between retry attempts until some maximum number of requests have been attempted and failed. 
+
+*The delay time can be increased incrementally*, or a timing strategy such as *exponential back-off* can be used, depending on the nature of the failure and the likelihood that it will be corrected during this time.
+
+
+
+
 
