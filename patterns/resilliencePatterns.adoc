@@ -100,6 +100,61 @@ If the request still fails, the application can wait for a further period and ma
 
 *The delay time can be increased incrementally*, or a timing strategy such as *exponential back-off* can be used, depending on the nature of the failure and the likelihood that it will be corrected during this time.
 
+==== Netflix
+
+The Netflix client allows you to create your own retry handler or use one of the predefined handlers such as
+*DefaultLoadBalancerRetryHandler* or *RequestSpecificRetryHandler*. The latter allows for creating a retry handler for a
+specific request. +
+The retry handlers enable you, apart from enabling and disabling the mechanism, to set two important
+values:
+
+* MaxRetriesOnSameServer, the number of retries that should be attempted before switching to the next server in the
+load-balanced pool (if available).
+* MaxRetriesOnNextServer, the number of other servers that should be attempted before failing definitively.
+
+The RetryHandler will determine (depending on the error) whether it makes sense to retry on the same server or move on
+to the next. This behavior is determined by implementing the isRetriableException and isCircuitTrippingException methods.
+
+----
+LoadBalancerCommand.<String>builder()  
+            .withRetryHandler(new DefaultLoadBalancerRetryHandler(q, 1, true))  
+            // retry once, then try on 1 new server  
+            .build();  
+----
+
+==== Ribbon
+
+Using Ribbon's HttpResourceGroup (through ClientOptions):
+----
+HttpResourceGroup httpResourceGroup = Ribbon.createHttpResourceGroup("myClient",  
+    ClientOptions.create()  
+       .withMaxAutoRetries(0)  
+       .withMaxAutoRetriesNextServer(1)  
+       .withLoadBalancerEnabled(true)  
+----
+
+Hystrix (incorporated in Ribbon) has something called a FallbackHandler. It enables you to define behavior for when
+all retry attempts (if any) have failed. You could introduce an alternative means of achieving the same goal, supply
+a friendly message, degrade gracefully
+
+----
+httpResourceGroup.newTemplateBuilder("myTemplate", ByteBuf.class)  
+    .withFallbackProvider(new MyFallbackHandler())  
+----
+
+==== Finagle
+
+Using Finagle we can enable retry on any service by stacking a Retry filter on the existing service. This can be done in
+the same way as adding a timeout filter.
+
+----
+val policy           = new ConservativeHttpRetryPolicy()  
+val retryFilter      = new RetryFilter(policy)  
+val serviceWithRetry = retryFilter andThen service  
+----
+
+
+
 
 
 
