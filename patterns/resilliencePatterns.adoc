@@ -89,3 +89,6 @@ These faults are typically self-correcting, and if the action that triggered a f
 === Solution 
 
 If an application detects a failure when it attempts to send a request to a remote service, it can handle the failure by using the following strategies:
+
+* If the fault indicates that the failure is not transient or is unlikely to be successful if repeated (for example, an authentication failure caused by providing invalid credentials is unlikely to succeed no matter how many times it is attempted), the application should abort the operation and report a suitable exception.
+
