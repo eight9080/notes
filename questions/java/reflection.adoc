@@ -1,0 +1,9 @@
+= Reflection
+
+== Get annotations by type
+
+----
+Class<Melon> clazz = Melon.class;
+Fruit[] clazzFruitAnnotations
+  = clazz.getAnnotationsByType(Fruit.class);
+----
