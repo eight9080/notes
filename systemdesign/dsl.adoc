@@ -1,0 +1,147 @@
+= Domain Specific Language
+
+== Cheat Sheet
+
+Separate parsing logic from semantic logic:
+
+internal DSL -> Expression Builder + Semantic Model
+
+=== Parsing
+
+Hold symbols to cross-reference between different parts of the parse -> Symbol Table
+
+Keep hierarchic context during the parse ->
+
+* if possible -> keep it on the stack and use parameters and return values.
+
+* If not possible => Context Variable
+
+Build up an immutable object => Construction Builder
+
+=== External DSLs
+
+Break up text into a parsing structure => Syntax-Directed Translation + BNF
+
+Structure is very simple => Delimiter-Directed Translation
+
+Build a lexer => Regex Table Lexer
+
+Build a parser => Parser Generator
+
+Grammar is simple => Parser Combinator
+
+There is no Parser Generator for the platform => Parser Combinator
+
+Control flow to composing objects => Recursive Descent Parser
+
+Generate output ->
+
+Output maps cleanly onto the Semantic Model => Embedded Translation
+
+Transformation is more complicated => Tree Construction
+
+To execute simple DSL statements immediately => Embedded Interpretation
+
+Srithmetic expressions, Boolean expressions, or similar structures => Nested Operator Expression
+
+Internal DSLs
+
+How do I represent a sequence of high-level statements?
+
+=> Function Sequence
+
+How do I handle a fixed sequence of clauses?
+
+The clauses are mandatory => Nested Function
+
+There are optional clauses => Literal Map
+
+I need optional clauses and don’t have literal map syntax => Method Chaining
+
+How do I handle a variable sequence of clauses?
+
+Each clause is the same => Literal List
+
+The clauses are different => Method Chaining
+
+Each clause should appear only once => Literal Map
+
+How do I build simple expressions in method names?
+
+How do I represent method parameters as method names?
+
+=> Dynamic Reception
+
+How do I start an expression with a number (or other literal)?
+
+=> Literal Extension
+
+How do I use bare function calls without using global data or functions?
+
+=> Object Scoping
+
+How do I control when I evaluate a clause?
+
+The clause is inside a method => Nested Closure The clause is in a class definition => Annotation
+
+How do I get static type checking or type-safe autocompletion?
+
+=> Class Symbol Table
+
+How do I make my DSL look less like the host language?
+
+My changes are simple textual substitutions => Textual Polishing
+
+If it’s more complicated, use an external DSL instead.
+
+How do I populate my Semantic Model with expressions written in my host language without evaluating those expressions?
+
+=> Parse Tree Manipulation
+
+Code Generation
+
+How do I drive producing the output code?
+
+Most of the output is generated => Transformer Generation
+
+There’s a lot of non-generated output => Templated Generation
+
+How do I keep my templates readable using Templated Generation?
+
+=> Embedment Helper
+
+How do I structure my semantics in my target code?
+
+=> Model-Aware Generation
+
+The target language isn’t expressive enough => Model Ignorant Generation
+
+How do I interweave generated and handwritten code?
+
+Use calls between generated and handwritten objects.
+
+I need to mix generated and handwritten code in the same object => Generation Gap
+
+Alternative Computational Models
+
+How do I arrange computation using a model different from my host language?
+
+=> Adaptive Model
+
+How do I represent conditional logic?
+
+I have a composite conditional expression => Decision Table
+
+I have a list of conditions to be evaluated => Production Rule System
+
+How do I represent tasks that are computationally expensive and have prerequisite tasks that must be checked first and executed if necessary?
+
+=> Dependency Network
+
+How do I represent a machine that reacts differently to events depending on the state it’s in?
+
+=> State Machine
+
+== Concepts
+
+Context variables - keep current state

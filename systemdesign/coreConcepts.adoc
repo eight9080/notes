@@ -1,0 +1,65 @@
+= Core concepts
+
+== Types
+The *Business Architecture* defines the business strategy, governance, organization, and key business processes.
+
+The *Data Architecture* describes the structure of an organization’s logical and physical data assets and data management resources
+
+The *Application Architecture* provides a blueprint for the individual applications to be deployed, their interactions, and their relationships to the core business processes of the organization
+
+The *Technology Architecture* describes the logical software and hardware capabilities that are required to support the deployment of business, data, and application services; this includes IT infrastructure, middleware, networks, communications, processing, standards, etc.
+
+== Architecture Development Method
+
+Phases:
+
+* Preliminary Phase - the preparation and initiation activities required to create an Architecture Capability and definition of Architecture Principles
+
+* Phase A: Architecture Vision describes the initial phase of an architecture development cycle
+ ** defining the scope of the architecture development initiative
+ ** identifying the stakeholders
+ ** creating the Architecture Vision
+ ** obtaining approval to proceed with the architecture development
+
+* Phase B: Business Architecture describes the development of a Business Architecture to support the agreed Architecture Vision
+* Phase C: Information Systems Architectures describes the development of Information Systems Architectures to support the agreed Architecture Vision
+* Phase D: Technology Architecture
+* Phase E: Opportunities & Solutions conducts initial implementation planning and the identification of delivery vehicles for the architecture
+* Phase F: Migration Planning addresses how to move from the Baseline to the Target Architectures by finalizing a detailed Implementation and Migration Plan
+* Phase G: Implementation Governance provides an architectural oversight of the implementation
+* Phase H: Architecture Change Management establishes procedures for managing change to the new architecture
+* Requirements Management examines the process of managing architecture requirements throughout the ADM
+
+== Deliverables
+
+Artifacts are generally classified as catalogs (lists of things), matrices (showing relationships between things), and diagrams (pictures of things). +
+A building block represents a (potentially re-usable) component of enterprise capability that can be combined with other building blocks to deliver architectures and solutions.
+
+* *Architecture Building Blocks* (ABBs) typically describe required capability and shape the specification of Solution Building Blocks (SBBs);
+
+* *Solution Building Blocks* (SBBs) represent components that will be used to implement the required capability
+
+
+== Enterprise Continuum
+
+The Enterprise Continuum is a view of the Architecture Repository that provides methods for classifying architecture and solution artifacts as they evolve from generic Foundation Architectures to Organization-Specific Architectures.
+
+The Enterprise Continuum comprises two complementary concepts:
+
+* the Architecture Continuum
+* the Solutions Continuum.
+
+== Architecture Repository
+
+The major components within an Architecture Repository are as follows:
+
+* The Architecture Metamodel describes the organizationally tailored application of an architecture framework, including a metamodel for architecture content
+* The Architecture Capability defines the parameters, structures, and processes that support governance of the Architecture Repository
+* The Architecture Landscape is the architectural representation of assets deployed within the operating enterprise at a particular point in time — the landscape is likely to exist at multiple levels of abstraction to suit different architecture objectives
+* The Standards Information Base (SIB) captures the standards with which new architectures must comply, which may include industry standards, selected products and services from suppliers, or shared services already deployed within the organization
+* The Reference Library provides guidelines, templates, patterns, and other forms of reference material that can be leveraged in order to accelerate the creation of new architectures for the enterprise
+* The Governance Log provides a record of governance activity across the enterprise
+* The Architecture Requirements Repository provides a view of all authorized architecture
+requirements which have been agreed with the Architecture Board
+* The Solutions Landscape presents an architectural representation of the SBBs supporting the Architecture Landscape which have been planned or deployed by the enterprise
+
