@@ -1,0 +1,6 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= AWS - bootcamp
+
+== Designing
+
+image::iampolicy.png[IAM Policy]
