@@ -1,0 +1,89 @@
+ifndef::imagesdir[:imagesdir: ./images]
+= Decoupling Mechanisms - AWS
+
+== Foundation Topics
+
+=== Stateful Design
+
+An application stack is referred to as stateful ->
+all of the application components are located in one physical location, typically on an application server racked in the local data center for the organization
+
+image::localVsAWS.png[Local vs AWX]
+
+The server was virtualized and hosted in an AWS data center. AWS knows that the application servers and database servers should be on separate subnets, hosted in different data centers in different availability zones.
+
+With AWS, it is common—and a best practice—for an application to be hosted in separate data centers, with separate application and database servers, and for the application to be accessed by first communicating to a load balancer.
+
+Because of the addition of the load balancer, the application can be defined as stateless. At AWS, the load balancer software is running on an EC2 instance that is part of a massive server farm of thousands of load balancers.
+
+==== Adding a Load Balancer and Changing the Design to Stateless
+image::serverlessApp.png[Adding a Load Balancer and Changing the Design to Stateless]
+
+The load balancer enables a feature called *sticky sessions*, which ensures that whenever a user begins a session with the application, the user is sent to Server A and continues communicating with Server A. Server B doesn’t know anything about the current user session because there has been no communication with Server B.
+
+* *Stateful data* includes changing user account information, purchases, history, refunds, games played, high scores, music listened to, or music downloaded.
+
+* *Stateless data* includes user session information, such as information on browsing for products, browsing for games, review account information, or searching for music.
+
+==== Data choices at AWS
+
+image::dataChoicesAWS.png[Data choices at AWS]
+
+==== User Session Management
+
+* *Sticky sessions*: When you deploy an application load balancer (ALB), you can enable sticky sessions by opening the attributes of the target group of registered servers that will be served content by the load balancer.
+
+* *Distributed session management*: Another way to address shared data storage for user sessions is to use an in-memory key/value store hosted by ElastiCache and deploy either Redis or Memcached to cache HTTP session state.
+
+** no redundancy -> ElastiCache for Memcached, but this provides no replication support
+
+** For a redundant distributed session solution -> ElastiCache for Redis, which supports replication of the stored information between multiple nodes across multiple availability zones
+
+image::redisDristributedAWS.png[Redis AWS]
+
+== Application Integration Services
+
+=== Amazon SNS
+
+Amazon Simple Notification Service (SNS) enables you to send messages using push notifications from a publisher to a subscriber. An example of a publisher could be any AWS service.
+A subscriber could be an end user, AWS service, EC2 instance, or Lambda, the serverless service hosted at AWS. SNS can send both individual or bulk messages to a large number of recipients, or subscribers.
+
+image::SNSPublishers.png[SNS Publisher]
+
+SNS is commonly used for sending event notifications when AWS service failures occur.
+
+To use SNS, you start by creating a topic that is linked to a specific event type or subject. Subscribers can subscribe to selected topics and receive notifications. When you create an SNS topic, you define policies such as who can publish messages to the topic and what notification protocols are allowed for delivery of the message.
+
+image::creatingTopicSNS.png[Creating Topic SNS]
+
+==== Simple Notification Service and Simple Queue Service
+
+AWS best practice dictates that no data should be stored on the EC2 instances, including any application state. Instead, you should store the important information that is being worked on by the application servers in centralized SQS queues
+
+image::SQSandSNS.png[SQS and SNS]
+
+==== Summary
+* SNS provides push-based delivery from AWS.
+
+* SNS supports notifications over HTTP/HTTPS, via email, to SQS queue endpoints, as well as SMS messages.
+
+* SNS is easily integrated with AWS hosted applications.
+
+* SNS message delivery involves multiple transport protocols.
+
+* JSON is the supported data type.
+
+* SNS supports event notifications and application monitoring.
+
+* Every AWS service supports SNS.
+
+* SNS messages are stored redundantly across multiple availability zones.
+
+=== Amazon SQS
+
+
+
+
+
+
+
