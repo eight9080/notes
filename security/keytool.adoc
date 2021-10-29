@@ -170,6 +170,21 @@ keytool -list -v -keystore $JAVA_HOME/jre/lib/security/cacerts
 keytool -import -trustcacerts -file /path/to/ca/ca.pem -alias CA_ALIAS -keystore $JAVA_HOME/jre/lib/securi
 ```
 
+== Generate CA authority
+
+=== Generate a CA certificate
+```
+mkdir cert
+$ cd cert
+$ mkdir CA
+$ cd CA
+$ openssl genrsa -out CA.key -des3 2048
+```
+generate a root CA certificate using the key generated
+```
+$ openssl req -x509 -sha256 -new -nodes -days 3650 -key CA.key -out CA.pem
+```
+https://www.section.io/engineering-education/how-to-get-ssl-https-for-localhost/
 
 === KeyStore
 * A Keystore contains private keys and associated certificates having the public key
