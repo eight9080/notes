@@ -1,0 +1,78 @@
+= AWS
+
+== Availability zone - AZ
+
+An AZ consists of one to six data centers, with redundant power supplies and networking connectivity.
+A single data center can be part of only one AZ. Each AZ is located in a different floodplain; power grids are designed in such a way that a natural calamity or disaster does not impact multiple AZs
+
+The networking among the AZs in a particular region is designed in such a way that it offers inexpensive, low-latency, private, fiber-optic network connectivity to another AZ in the same region. The latency between the AZs within a region is less than a single digit.
+
+image::images/awsAZ.png[AZ]
+
+AWS offers edge locations, or points of presence (POPs), to provide a better user experience to customers
+
+AWS has recently added regional edge cache locations between the main servers and the edge locations. When an object is not accessed for a long time, it goes out of the cache, but because the regional edge cache maintains a larger cache, the object can be stored there for a longer amount of time. If an application accesses the object again, it does not have to go to the main server for the access. When the application is not able to find the object in the edge location, it looks for the file in the regional edge cache.
+
+== AWS Security and Compliance
+
+*shared security*:
+
+* AWS is responsible for the security of the cloud
+* customers are responsible for the security in the cloud.
+
+AWS is responsible for the physical security of the data centers.
+
+Customers are responsible for securing the application, the data being hosted.
+
+A managed service (for example, Amazon RDS, Amazon Redshift, Amazon DynamoDB, and so on), AWS is also responsible for the security configuration of it.
+
+image::images/securityAWS.png[Security AWS]
+
+== AWS Products and Services
+
+=== Amazon Elastic Compute Cloud
+
+EC2 - includes the virtual servers, called instances
+
+=== Amazon EC2 Auto Scaling
+
+Amazon EC2 Auto Scaling helps in automatically scaling the Amazon EC2 instances up and down as per the policies you define.
+
+If for some reason an instance goes down, Amazon EC2 Auto Scaling quickly spins up a new instance.
+
+=== AWS Lambda
+
+AWS Lambda enables you to run code without provisioning or managing any servers or infrastructure. You can run any code for any kind of application or back-end service. You simply develop code for your application or back-end service and define the event triggers with the AWS Lambda service.
+
+=== Amazon EC2 Container Service
+
+ECS -  allows you to run Docker containers on Amazon EC2 instances.
+
+=== Amazon Elastic Kubernetes Service
+
+Amazon EKS - is a fully managed Kubernetes service that makes it easy for you to run your code on AWS without needing to install and operate your own Kubernetes control plane or worker nodes
+
+=== AWS Fargate
+
+AWS Fargate is a serverless compute engine for containers that works with both Amazon ECS and Amazon EKS
+
+=== AWS Elastic Beanstalk
+
+AWS Elastic Beanstalk lets you run and manage web applications without worrying about the underlying infrastructure.
+
+=== Amazon Lightsail
+
+Amazon Lightsail is the simplest way to get started with AWS for small businesses, developers, students
+
+=== AWS Batch
+
+AWS Batch enables users to efficiently run hundreds of thousands of batch computing jobs on AWS
+
+=== AWS Outposts
+
+AWS Outposts help in extending AWS services to any data center.
+
+== Networking
+
+=== Amazon Virtual Private Cloud
+
