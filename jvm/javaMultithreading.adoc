@@ -1,0 +1,43 @@
+= Java Multithreading
+
+== Concepts
+
+*Concurrency* - achieved by multi-tasking between threads
+
+*Parallelism* - with multiple cores tasks can be run in parallel
+
+A process - is isolated from other process
+A process ( context ):
+
+image::img/processContext.png[Process context]
+
+image::img/multithreadApp.png[Multi thread app]
+
+*Stack* - region in memory where local variables are stored and passed into functions
+
+*Instruction pointer* - address of the next instruction to execute
+
+*Context switch*
+
+* is not cheap to switch between threads execution
+* each thread consumes resources in the CPU and memory
+
+*Thread scheduling*
+
+OS divides the times into Epochs
+
+*Dynamic priority* = Static priority + Bonus
+
+Static priority = set by dev programmatically
+Bonus - adjusted by OS in every epoch by each thread
+
+* Thread vs process
+Threads share a lot of data, faster to switch between threads
+
+== Thread termination
+
+
+
+
+
+
