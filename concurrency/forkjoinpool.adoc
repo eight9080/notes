@@ -24,6 +24,12 @@ Join - waits for a sub-tasks to finish & merge the results
 
 image::forkJoin.png[Fork Join Pool]
 
+=== Framework
+
+* a larger task -> can be divided into smaller ones + the sub-solutions can be combined
+* subtasks have to be independent in order to be executed in parallel
+* fork-join framework breaks the task into the smallest sub-tasks until these subtasks are simple enough to solve without further breakups
+
 == Structure
 
 === ForkJoinPool Class
