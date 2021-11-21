@@ -1,0 +1,90 @@
+[#_distributed_systems]
+= Distributed Systems
+
+== Scaling
+
+* vertical - add more hardware in a single machine
+** limited vertical scalability
+** single point of failure
+** highly latency
+** security and privacy
+
+* horizontal
+
+== Concepts
+
+*Node* - a process running on a dedicated machine
+
+*Cluster* - a collection of nodes
+
+*Apache Zookeeper* - a high performance coordination service designed specifically for distributed systems.
+
+Each element in a tree - ZNode - store data and have children
+
+Types of Znodes:
+
+* persistent - persists between sessions
+* ephemeral - is deleted when the session ends
+
+Leader Election Algorithm
+
+* each node candidates
+* each node has an order
+* the smallest order -> leader
+
+=== Zookeeper
+
+Start `./zkServer.sh start`
+
+Cli `ZkCli.sh`
+
+List `ls /`
+
+Create a node `create /parent "some parent data"`
+
+Create a child node `create /parent/child "some child data"`
+
+List children `ls /parent`
+
+Info of node `get /parent`
+
+Remove node `rmr /parent`
+
+Create Election
+
+```
+create /election ""
+ls /
+get /election
+```
+
+==== Zookeeper Threading Model
+
+* App start code in the main method is executed on the *main thread*
+* When Zookeeper object is created, two additional threads are created
+ ** Event Thread
+   *** manages events
+     **** Connection (KeeperState.SyncConnected)
+     **** DisConnection (KeeperState.Disconnected)
+   *** custom znode Watchers and triggers we subscribe to
+   *** events are executed on the Event Thread - in the order they arrived
+** IO Thread
+   *** handles network communication with Zookeeper servers
+   *** handles Zookeeper requests and responses
+   *** response to pings
+   *** session management and session timeouts
+
+==== Watcher and triggers
+* we can register a watcher when we call the methods
+ ** `getChildren`, `getData`, `exists`
+* the watcher allows to get a notification when a change happens
+
+
+
+
+
+
+
+
+
+
