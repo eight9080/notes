@@ -1,0 +1,31 @@
+= Designing Multi-Tier Architecture Solutions
+
+* Design Resilient Architectures
+
+High availability refers to making hosted applications always available
+
+== Foundation Topics
+
+=== Availability and Reliability
+
+A *managed service* is an AWS service that is built and maintained by AWS.
+
+==== Availability in the Cloud
+
+Availability is the percentage of time that an application remains operational—that is, the percentage of time that it can be accessed in the cloud from any location on any device.
+
+AWS publishes a compute service-level agreement that covers Amazon Elastic Compute Cloud (EC2), Elastic Block Store (EBS), and Elastic Container Service (ECS) with a stated availability of 99.99%, which means that the total downtime expected per year utilizing any of these services is a total of 4.38 hours.
+
+==== Reliability
+
+Reliability is the amount of time during which an application operates at a certain level of performance. Under Amazon’s compute SLA offering, you may still expect that there will just be 4.38 hours of downtime per year.
+
+==== AWS Regions and Availability Zones
+
+An AWS region comprises several data centers and a plethora of managed services located in a specific geographic area of the world
+
+==== Availability Zones
+
+An availability zone (AZ) is typically defined as one or more data centers geographically located in an AWS region. Each AZ is linked to the other AZs in the region through private dedicated, redundant, low-latency fiber network connections that Amazon owns
+
+
