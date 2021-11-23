@@ -76,3 +76,43 @@ AWS Outposts help in extending AWS services to any data center.
 
 === Amazon Virtual Private Cloud
 
+* your own data center in the cloud.
+* have complete control over the networking in an Amazon VPC.
+* can bring your own IP addresses, can define the subnets as you want, and have full control over the route table and network gateways.
+
+=== Amazon Route 53
+
+* Domain Name System (DNS) web service
+* highly available and scalable, and its SLA is 100 percent uptime
+* IPv4 and IPv6 compliant
+* manage failover from primary to secondary hosted applications
+
+=== Elastic Load Balancing
+
+* automatically distribute the load across multiple Amazon EC2 instances.
+* supports load balancing of HTTP, HTTPS, and TCP traffic to Amazon EC2 instances.
+* can be integrated with Auto Scaling
+* can automatically scale up and down your Amazon EC2 instance and dynamically grow and shrink your operation depending on the traffic
+* ELB helps you to achieve fault tolerance for your applications
+
+=== AWS Direct Connect
+
+* establish private, dedicated network connectivity from your data center to AWS.
+* AWS Direct Connect can be used from either your data center or your office or colocation.
+* can reduce bandwidth costs for high-volume data transfers and get consistent network performance.
+
+=== AWS App Mesh
+
+* helps monitor, control, debug, and trace communications between services
+* can be used with services running on EC2 as well as with microservice containers
+
+=== AWS Global Accelerator
+
+* improves the availability and performance of your applications for global users.
+* provides a set of static IP addresses that are anycast from the AWS edge network, which provides a fixed entry point to your applications and eliminates the complexity of managing specific IP addresses for different AWS regions and AZs.
+
+== Security and Compliance
+
+=== AWS Identity and Access Management
+
+
