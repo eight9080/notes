@@ -114,5 +114,59 @@ AWS Outposts help in extending AWS services to any data center.
 == Security and Compliance
 
 === AWS Identity and Access Management
+* create users, groups, and roles
+* manage and control access to AWS services and resources.
 
+=== Amazon Inspector
+
+* an automated security assessment service that helps you to identify the security vulnerabilities in your application when it is being deployed as well as when it is running in a production system
+
+=== AWS Certificate Manager
+
+* manage Secure Sockets Layer (SSL) certificates for use with AWS services.
+* provision, manage, and deploy SSL/Transport Layer Security (TLS) certificates.
+
+=== AWS Directory Service
+
+* an AWS managed directory service built on Microsoft Active Directory.
+* to manage directories in the cloud.
+
+=== AWS Web Application Firewall
+
+* a web application firewall that detects malicious traffic targeted at the web applications.
+* Using WAF, you can create various rules with which you can protect against common attacks such as SQL injection and scripting.
+* Using these rules, you can block the web traffic from certain IP addresses, filter certain traffic from certain geographical locations, and so on, thus safeguarding your application.
+
+=== AWS Shield
+* a managed service that protects against distributed denial-of-service (DDoS) attacks targeted at the web applications.
+* *AWS Shield Standard* is free and protects against most commonly occurring DDoS attacks against web applications.
+* *AWS Shield Advanced* - higher levels of protection targeting not only against web applications but also Elastic Load Balancer, Amazon CloudFront, and Amazon Route 53.
+
+=== Amazon GuardDuty
+* a threat-detection service that continuously monitors your AWS accounts and workloads to protect them.
+* monitors and analyzes the data generated from your account and all the network activities from AWS CloudTrail Events, Amazon VPC Flow Logs, and DNS logs
+
+=== Amazon Macie
+* protect your data in Amazon S3 by helping you classify what data you have, the business value of that data, and the behavior associated with access to that data.
+
+* uses machine learning to recognize sensitive data such as personally identifiable information (PII) or intellectual property, assigns a business value, and provides visibility into where this data is stored and how it is being used in your organization
+
+=== AWS Secrets Manager
+
+* manage secrets such as database credentials, on-premise resource credentials, SaaS application credentials, third-party API keys, and Secure Shell (SSH) keys.
+
+=== AWS SSO
+* an AWS service that enables you to use your existing credentials from Microsoft Active Directory to access your cloud-based applications, such as AWS accounts and business applications
+
+=== AWS CloudHSM
+
+* a dedicated hardware security module (HSM) in the AWS cloud.
+* encrypting the database, document signing, digital rights management
+
+=== AWS KMS
+* a managed service that helps you create and control the keys used for cryptographic operations
+
+== Storage and Content Delivery
+
+=== Amazon Simple Shared Storage - S3
 
