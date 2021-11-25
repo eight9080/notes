@@ -170,3 +170,39 @@ AWS Outposts help in extending AWS services to any data center.
 
 === Amazon Simple Shared Storage - S3
 
+* lets you store and retrieve any amount of data, at any time, from anywhere on the Web.
+* highly scalable, reliable, and secure.
+* designed to deliver 99.999999999 percent durability.
+* supports encryption, so you can store your objects in an encrypted manner.
+* store an unlimited amount of data, but each file size can’t exceed 5TB
+
+=== Amazon Glacier
+* a low-cost cloud storage that is mainly used for data archiving and long-term backup purposes.
+
+=== Amazon Elastic Block Storage
+* provides persistent block storage for EC2 instances.
+* can choose from either magnetic or solid-state drive (SSD) disks for Amazon EBS volumes.
+* Amazon EBS volumes are automatically replicated within their AZ to provide *fault tolerance and high availability*.
+* supports encryption for data in rest as well as data in transit between Amazon EC2 instances and Amazon EBS volumes.
+
+=== Amazon Elastic File System
+
+* a fully managed service that provides easy, scalable, shared file storage with Amazon EC2 instances in the AWS cloud
+
+=== AWS Storage Gateway
+
+* a service that helps to seamlessly integrate on-premise storage with AWS cloud storage
+
+=== Import/Export Options
+* a service that helps to transfer a large amount of data into AWS using a physical storage appliance.
+
+=== Amazon CloudFront
+* the global content delivery network (CDN) service of AWS.
+* helps to accelerate the delivery of the static content of your web sites
+* provides advanced CDN features such as SSL support, geographic restriction, and private content
+
+== Database
+
+=== Amazon Relational Database Service (RDS)
+
+
