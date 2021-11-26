@@ -205,4 +205,75 @@ AWS Outposts help in extending AWS services to any data center.
 
 === Amazon Relational Database Service (RDS)
 
+* a fully managed relational database service.
+*  can host a variety of relational database management system (RDBMS) engines in the cloud.
+* supports MySQL, Oracle, SQL Server, PostgreSQL, and Maria DB.
+* supports Amazon’s own database, Aurora.
+* AWS provides resizable capacity
+* takes care of database management and administration tasks, including patching, upgrading, and backups.
+* AWS also offers a high-availability option for Amazon RDS for fault tolerance and durability.
+
+=== Amazon DynamoDB
+
+* a fully managed NoSQL database service of AWS.
+* highly scalable, durable, and highly available and is capable of handling any data volume. It delivers consistent, single-digit-millisecond latency at any scale.
+* consists of SSD storage.
+* The data is replicated automatically in three ways, providing the high availability of data.
+* It supports both document and key-value models.
+* It is a great fit for mobile, web, gaming, Internet of Things (IoT), and many other applications.
+
+=== Amazon Redshift
+* a fully managed petabyte-scale data warehouse service.
+* stores the data in columnar format, thereby providing better I/O efficiency.
+* The data is continuously backed up in Amazon S3.
+* can choose either a magnetic or SSD-based drive to store the data.
+* can scale up or down an Amazon Redshift cluster
+* can access the Amazon Redshift cluster via ODBC or JDBC.
+
+=== Amazon ElastiCache
+* a service that helps in deploying an in-memory cache or data store in the cloud
+* supports two open source in-memory engines: Redis and Memcached.
+* AWS takes care of patching, monitoring, failure recovery, and backups.
+
+=== Amazon Aurora
+* Amazon’s relational database built for the cloud.
+* supports two open source RDBMS engines: MySQL and PostgreSQL.
+* supports databases up to 64TB in size. It is highly available, durable, and scalable.
+* By default, the data is mirrored across three AZs, and six copies of the data are kept.
+* can create up to 15 read replicas in an Amazon Aurora database.
+* a fully managed database service
+* The database is constantly backed up to Amazon S3, enabling granular point-in-time recovery.
+
+=== Amazon Neptune
+* a fully managed graph database service with which you can build and run applications that work with highly connected data sets.
+* can use open source and popular graph query languages to execute powerful queries that are easy to write and perform well on connected data.
+* supports both the open source Apache TinkerPop Gremlin graph traversal language and the W3C standard Resource Description Framework (RDF) SPARQL query language.
+* can be used for graph use cases such as recommendation engines, knowledge graphs, fraud detection, and network security.
+
+=== Amazon QLDB
+* a purpose-built ledger database that provides a complete and cryptographically verifiable history of all changes made to your application data.
+* provides a transparent, immutable, and cryptographically verifiable transaction log owned by a central trusted authority.
+* tracks each and every application data change and maintains a complete and verifiable history of changes over time.
+* Data in Amazon QLDB is written to an append-only journal, providing the developer with full data lineage.
+
+=== Amazon DocumentDB
+* a fully managed document database service for MongoDB.
+* fast, scalable, and highly available.
+* can store, query, and index JSON data.
+* can use the same MongoDB application code, drivers, and tools.
+* the storage and compute are decoupled, thereby allowing each one to scale independently.
+* The data in DocumentDB is replicated six times across three AZs, and it provides 99.99 percent availability.
+
+=== Amazon Keyspaces
+
+* a managed Apache Cassandra–compatible database service.
+* scalable and highly available.
+* can run your Cassandra workloads on AWS by using the same Cassandra Query Language (CQL) code, Apache 2.0–licensed drivers, and any other tools that you use today.
+* Because Amazon Keyspaces is serverless, you don’t have to manage the overhead of provisioning, patching, or managing the server, nor do you have to install, maintain, or operate software.
+* The tables automatically scale up and down depending on usage.
+
+== Analytics
+
+
+
 
