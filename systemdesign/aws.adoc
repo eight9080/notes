@@ -274,6 +274,52 @@ AWS Outposts help in extending AWS services to any data center.
 
 == Analytics
 
+=== Amazon Athena
 
+Amazon Athena is a serverless, interactive query service that enables users to easily analyze data in Amazon S3 using standard SQL.
 
+=== Amazon EMR
+
+Amazon EMR is a web service that enables users, businesses, enterprises, data analysts, researchers, and developers to easily and cost-effectively process enormous amounts of data. It utilizes a hosted Hadoop framework running on the web-scale infrastructure of Amazon S3 and Amazon EC2.
+
+=== Amazon Elasticsearch Service
+
+Amazon Elasticsearch Service is a fully managed web service that makes it easy to create, operate, deploy, and scale Elasticsearch clusters in the AWS cloud.
+
+=== Amazon CloudSearch
+
+Amazon CloudSearch is a fully managed web service in the AWS cloud that offers a simple, cost-effective, easy-to-use way to manage and scale a search solution for your application or web site.
+
+=== AWS Data Pipeline
+
+AWS Data Pipeline enables users to process, transform, and move data between different AWS compute and storage services, as well as on-premise data sources, at specified intervals reliably and efficiently.
+
+=== Amazon Kinesis
+
+Amazon Kinesis is a fully managed service that makes it easy to collect, analyze, and process real-time, streaming data.
+
+=== AWS Glue
+
+AWS Glue is a fully managed, extract, transform, and load (ETL) service. It can discover your data automatically and profiles the data via its built-in Glue Data Catalog. It not only recommends but also generates ETL code for transforming source data into target schema.
+
+=== Amazon MSK
+
+Amazon MSK is a managed service for managing Apache Kafka infrastructure and operations. Amazon MSK operates and maintains Apache Kafka clusters on your behalf, and you can quickly build one from scratch within minutes.
+
+=== AWS Lake Formation
+
+AWS Lake Formation makes it easy to set up a secure data lake in days.
+*data lake*
+
+* a central data repository with a large variety of data.
+* contains both structured and unstructured data.
+* manage the full life cycle of your data.
+* ingesting and cataloging data from a variety of sources. The ingesting of data can be in real time (stream) or in a batch.
+* the data can be enriched, combined, and cleaned before analysis, which makes it easy to discover and analyze the data with direct queries, visualization, and machine learning.
+
+=== Amazon QuickSight
+
+Amazon QuickSight is an easy, fast, cloud-powered, fully managed business analytics service that makes it easy to build visualizations, perform ad hoc analysis, and quickly get meaningful insights from your data.
+
+== Application Services
 
