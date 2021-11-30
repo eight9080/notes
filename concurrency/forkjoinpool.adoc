@@ -115,6 +115,22 @@ To maximize core utilization, idle worker threads steal work from the tail of bu
 
 Tasks are stolen in FIFO order. (queue)
 
+== Threading model
+
+Available processors:
+`Runtime.getRuntime().availableProcessors()` - no of cores
+
+The targeted parallelism level of the common pool:
+`ForkJoinPool.getCommonPoolParallelism()` - no of cores - 1
+
+Change parallelism level
+`-Djava.util.concurrent.ForkJoinPool.common.parallelism=100` or
+`System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism, "100")`
+
+
+
+
+
 
 
 
