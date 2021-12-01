@@ -2,6 +2,15 @@ ifndef::imagesdir[:imagesdir: ./imagesC]
 
 = CompletableFuture
 
+* *Asynchronous Reactive Functional Programming API*
+
+Reactive:
+
+* responsive -> asynchronous (call returns immediately and the response will be sent when its available)
+* resilient -> exceptions or error won't crash the app
+* elastic -> async computations normally run in a pool of threads, no of threads can go up and down based on the need
+* message drive -> async computations interact with each other through messages in an event-driven style
+
 The Future interface was added in Java 5 to serve as a result of an asynchronous computation, but it did not have any methods to combine these computations or handle possible errors.
 
 Java 8 introduced the CompletableFuture class.
@@ -164,6 +173,8 @@ The return type of the CompletableFuture.allOf() is a CompletableFuture<Void>.
 The limitation of this method is that it does not return the combined results of all Futures.
 Instead, we have to manually get results from Futures.
 `CompletableFuture.join()` method and Java 8 Streams API makes it simple:
+
+`join()` - blocks the client thread
 
 ----
 String combined = Stream.of(future1, future2, future3)
@@ -532,7 +543,9 @@ CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> remoteSer
                  .thenCompose(list -> fetchFromDB(list));
 ----
 
-Combining two results
+Combining two results:
+`thenCombine`
+
 
 ----
 CompletableFuture<Long> cf1 = ..
@@ -563,7 +576,7 @@ CompletableFuture<?> cf4 = CompletableFuture.anyOf(cf1, cf2, cf3); //first resul
 
 A task triggered by another task is executed in the same thread as the triggering task.
 
-or you can change it in a diffenre thread pool.
+or you can change it in a different thread pool.
 
 ----
 CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L)) // Common FJ Pool
@@ -596,9 +609,10 @@ CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1
                  .exceptionally(exception -> List.of());
 ----
 ** if no exception -> returns the value provided by the function from thenApply
-** if an exception is thrown -> the function is executed and the result it gives is sent to the subsequent tasks
+** if an exception is thrown -> the function is executed, and the result it gives is sent to the subsequent tasks
 
 * whenComplete()
+ ** no recover from the exception
 ----
 CompletableFuture<List<User>> cf2 = CompletableFuture.supplyAsync(()-> List.of(1L,2L,3L))
                  .thenApply(list -> readUsers(list));
