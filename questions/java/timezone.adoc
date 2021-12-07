@@ -1,0 +1,30 @@
+= Timezone jackson
+
+
+----
+ @Test
+    void test() throws JsonProcessingException {
+
+        final ZonedDateTime zonedDateTime = ZonedDateTime.of(2021, 9, 28, 23, 50, 0, 0, ZoneOffset.UTC);
+        final ZonedDateTime zonedDateTimeCet = ZonedDateTime.of(2021, 9, 28, 23, 50, 0, 0, ZoneId.of("Europe/Berlin"));
+
+        final ObjectMapper defaultMapper = JacksonConfiguration.createDefaultMapper();
+        final String sUTC = defaultMapper.writeValueAsString(zonedDateTime);
+        final String sCET = defaultMapper.writeValueAsString(zonedDateTimeCet);
+
+        final ZonedDateTime zonedDateTimeUTC = defaultMapper.readValue(sUTC, ZonedDateTime.class);
+        System.out.println(zonedDateTimeUTC);
+        final ZonedDateTime zonedDateTimeCET = defaultMapper.readValue(sCET, ZonedDateTime.class);
+        System.out.println(zonedDateTimeCET);
+
+    }
+    
+new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+                .registerModule(new Jdk8Module())
+                // Used for deserialize the JSON string to Enum using Enum's name in a case-insensitive manner
+                .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+----    
+https://www.baeldung.com/jackson-serialize-dates
