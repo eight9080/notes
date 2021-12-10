@@ -14,8 +14,6 @@ End-to-end time taken to perform a single computation. If Compute1 represents a 
 
 *Elasticity*  - The ability of the infrastructure to react to a sudden increase in processing requirements by provisioning more resources
 
-
-
 When to use:
 
 * when tasks are independent
