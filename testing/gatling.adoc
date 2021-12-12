@@ -1,0 +1,13 @@
+= Gatling
+
+* performance and load testing
+* stress testing tool
+
+== Overview
+
+* simulate virtual users
+* support for HTTp Protocol
+* scala based with a very expressive DSL
+* GUI recorder
+
+
