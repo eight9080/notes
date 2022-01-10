@@ -1,0 +1,108 @@
+= Finagle
+
+Twitter's RPC library
+
+== Building blocks
+
+=== Services
+
+Services: - functions represented by classes
+
+* IN: take requests
+* OUT: return a Future containing the eventual result of the operation or information about the failure.
+
+=== Filters
+
+*Filters are also functions.*
+
+* IN: take a request and a service
+* do some operations on the request, pass it to the service
+* do some operations on the resulting Future
+* finally return the final Future.
+
+*Aspects* as they can implement logic that happens around the execution of a function and alter its input and output.
+
+=== Futures
+
+Futures - the eventual results of the asynchronous operations.
+
+States:
+
+* pending
+* succeeded
+* failed
+
+== Example simple implementation
+
+=== Service
+
+Create a class that will extend the abstract Service class from the Finagle library, implementing its *apply method*.
+
+[source, java]
+----
+public class GreetingService extends Service<Request, Response> {
+    @Override
+    public Future<Response> apply(Request request) {
+        String greeting = "Hello " + request.getParam("name");
+        Reader<Buf> reader = Reader.fromBuf(new Buf.ByteArray(greeting.getBytes(), 0, greeting.length()));
+        return Future.value(Response.apply(request.version(), Status.Ok(), reader));
+    }
+}
+----
+
+=== Filter
+
+* a filter that will log some data about the request to the console
+
+* implement Filter‘s apply method that'll take request and return a Future response
+
+The basic *Filter* class has four type-parameters.
+The *SimpleFilter* that merges the four type-parameters into two
+[source, java]
+----
+public class LogFilter extends SimpleFilter<Request, Response> {
+    @Override
+    public Future apply(Request request, Service<Request, Response> service) {
+        logger.info("Request host:" + request.host().getOrElse(() -> ""));
+        logger.info("Request params:");
+        request.getParams().forEach(entry -> logger.info("\t" + entry.getKey() + " : " + entry.getValue()));
+        return service.apply(request);
+    }
+}
+----
+
+=== Server
+
+* use the service and the filter to build a server that will actually listen for requests and process them.
+
+----
+Service serverService = new LogFilter().andThen(new GreetingService());
+Http.serve(":8080", serverService);
+----
+
+=== Client
+
+* create an HTTP service using the convenient newService method from Finagle's Http class. It'll be directly responsible for sending the request.
+
+That last operation is *asynchronous* and its eventual results are stored in the Future instance. We could wait for this Future to succeed or fail but that would be a blocking operation and we may want to avoid it. Instead, we can implement a callback to be triggered when the Future succeeds:
+
+----
+Service<Request, Response> clientService = new LogFilter().andThen(Http.newService(":8080"));
+Request request = Request.apply(Method.Get(), "/?name=John");
+request.host("localhost");
+Future<Response> response = clientService.apply(request);
+
+Await.result(response
+        .onSuccess(r -> {
+            assertEquals("Hello John", r.getContentString());
+            return BoxedUnit.UNIT;
+        })
+        .onFailure(r -> {
+            throw new RuntimeException(r);
+        })
+);
+----
+
+
+
+
