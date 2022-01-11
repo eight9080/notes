@@ -103,6 +103,48 @@ Await.result(response
 );
 ----
 
+== Internals
+
+=== Service
+
+image::images/finagleService.png[Finagle service]
+
+Stack - collection of generic functions/modules
+
+=== Client
+
+LB distribute traffic
+
+image::images/finagleclient.png[Finagle client]
+
+=== Configuration
+
+* Configuration is code
+* Conventional API - builder pattern
+
+=== Servers
+
+* concurrency limit
+* request timeout
+* metrics and tracing
+
+=== What does the client do?
+
+* Retries
+* Naming/Service discovery
+* Timeouts and Expirations
+* Load balancing
+* Rate limiting
+* Connection pooling - enable by default
+* Circuit breaking
+* Failure detection
+* Metrics and Tracing
+* Interrupts
+* Context Propagation
+
+
+
+
 
 
 
