@@ -1,0 +1,15 @@
+= Monolith
+
+*Weaknesses* associated with monolithic applications:
+
+* Scalability +
+Monolithic applications are designed to run on a single and powerful system within a process.
+
+ ** Increasing the application's speed or capacity requires fork lifting onto newer and faster hardware, which takes significant planning and consideration.
+
+* Reliability and availability +
+Any kind of faults or bugs within a monolithic application can take the entire application offline. Additionally, updating the application typically requires *downtime* in order to restart services.
+
+* Agility +
+Monolithic code bases become increasingly complex as features are being continuously added, and release cycles are usually measured in periods of 6-12 months or more.
+

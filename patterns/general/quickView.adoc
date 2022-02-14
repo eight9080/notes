@@ -1,0 +1,18 @@
+= List of patterns/concepts
+
+== Object-oriented architecture (OOA)
+
+The structure and behavior of any software application can be represented through the use of multiple and interoperable objects.
+
+Objects elegantly encapsulate the various properties and the tasks in an optimized and organized manner.
+
+Objects connect, communicate, and collaborate through well-defined interfaces.
+
+The properties of *inheritance, polymorphism, encapsulation, and composition* being provided by OOA come in handy in producing highly modular (highly cohesive and loosely coupled), usable and reusable software applications.
+
+== Domain-driven design (DDD) architecture
+
+* designing software based on the business domain, its elements and behaviors, and the relationships between them
+
+As the core of the software is the domain model, which is a direct projection of this shared language, it allows the team to quickly find gaps in the software by analyzing the language around it.
+
