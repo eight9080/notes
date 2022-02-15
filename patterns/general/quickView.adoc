@@ -16,3 +16,50 @@ The properties of *inheritance, polymorphism, encapsulation, and composition* be
 
 As the core of the software is the domain model, which is a direct projection of this shared language, it allows the team to quickly find gaps in the software by analyzing the language around it.
 
+== Event-driven architecture (EDA)
+
+=== The major issues with EDA
+
+* lacks the atomicity of transactions since there is no execution sequence of the events.
+* event processors are being implemented to be highly distributed, decoupled, and asynchronous.
+* The results are also expected to be provided at a future time mostly through callbacks.
+* Testing of the systems with event-driven architecture is not easy due to the asynchronous nature of the processing.
+* since the tasks are asynchronous and non-blocking, the executions happen in parallel, guaranteeing higher performance.
+
+=== Principles
+
+* *Autonomous messages*: Events are communicated in the form of autonomous/self-defined messages. That is, each message contains just enough details to represent a unit of work
+
+** they should not require any kind of dependencies on the in-memory session state of the connected applications. The event message is simply intended to communicate the business state transitions of each application, domain, or workgroup within an enterprise.
+
+* *Decoupled and distributed systems*: As mentioned, the EDA pattern logically decouples connected systems.
+
+** participating applications need not be available online all the time to accomplish the business tasks.
+
+** Decoupled systems can be deployed independently and are horizontally scalable, as there are no dependencies among the participating modules.
+
+* *Receiver-driven flow control*: The EDA pattern shifts much of the responsibility of control-flow away from the event source (or sender system) and distributes/delegates it to event receivers.
+
+** The EDA-centric connected systems have more autonomy in deciding whether to propagate the events further or not. The knowledge used to support these decisions is distributed into discrete steps or stages throughout the architecture and is encapsulated where the ownerships reside
+
+== Microservices architecture
+
+* fine-grained, loosely coupled, horizontally scalable, independently deployable, interoperable, publicly discoverable, network-accessible, easily manageable, and composable services, which is not only the optimized unit of software construction, but also allows enabling quicker software deployment and delivery
+
+* Microservices are built upon a concept known as a bounded context, which leads to a self-contained association between a single service and its data. There is no technology or vendor lock-in as far as the MSA-inspired applications are concerned. Every microservice is being empowered with its own data source, which can be a filesystem, SQL, NoSQL, NewSQL, in-memory cache, and so on.
+
+=== Event-driven microservices patterns
+
+A common architecture pattern is *event sourcing* using an *append-only event stream* such as Kafka or MapR Streams, which implements Kafka.
+
+With MapR Streams, *events are grouped into logical collections of events called topics*.
+
+* Topics are partitioned for parallel processing.
+* Events are delivered in the order they are received.
+* Unlike a queue, *events are persisted*, even after they are delivered they remain on the partition, available to other consumers.
+* Older messages are automatically deleted based on the stream's time-to-live setting; if the setting is zero, then they will never be deleted.
+* Messages are not deleted from topics when read, and topics can have multiple different consumers. This allows processing of the same messages by different consumers for different purposes.
+
+== Space-based architecture
+
+
