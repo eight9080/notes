@@ -62,4 +62,12 @@ With MapR Streams, *events are grouped into logical collections of events called
 
 == Space-based architecture
 
+The space-based architecture is designed with the aim of empowering software systems to work even under the heavy load of users.
+This is being achieved by splitting up both the processing and the storage between multiple servers. The data is spread out across many nodes.
+The space-based architecture pattern is widely used to address and solve scalability and concurrency issues.
+
+High scalability is achieved by removing the central database constraint and using replicated in-memory data grids instead. Application data is kept in-memory and replicated among all the active processing units.
+* Processing units can be dynamically started up and shut down as the user load increases and decreases, thereby addressing variable scalability. Because there is no central database, the database bottleneck is removed, providing near-infinite scalability within the application.
+
+== Client/Server Multi-Tier Architectural Patterns
 
