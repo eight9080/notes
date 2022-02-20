@@ -204,6 +204,20 @@ MTTR = Mean timee to recovery
 A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable.
 ----
 
+*resilience*
+- the ability of a system to handle unexpected situations:
+
+* without the user noticing it ( best case )
+* with a graceful degradation of a service ( worst case)
+
+=== Isolation 
+
+* System must not fail as a whole
+* split systems in parts and isolate parts against each other 
+* avoid cascading failures
+
+
+
 
 
 
