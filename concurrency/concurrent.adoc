@@ -12,6 +12,31 @@ Stack of layers:
 * System Libraries
 * Operation System Kernel
 
+== Process vs thread
+
+A thread is a lightweight subprocess that represents the smallest executable unit of work of a process. A Java thread has relatively low overhead, and it shares common memory space with other threads. A process can have multiple threads with one main thread.
+
+The main difference between processes and threads is the fact that threads share common memory space while processes don't.
+
+== Concurrency vs Parallelism
+
+Concurrency is the ability of an application to handle the multiple tasks it works on. The program or application can process one task at a time (sequential processing) or process multiple tasks at the same time (concurrent processing).
+
+Parallelism is the ability of an application to handle each individual task. The application can process each task serially, or it can split the task up into subtasks that can be processed in parallel.
+
+Concurrency is about handling (not doing) lots of things at once, while parallelism is about doing lots of things at once.
+
+Concurrency is achieved via multithreading. Multithreading is a technique that enables a program or application to handle more than one task at a time and to also synchronize those tasks. This means that multithreading allows the maximum utilization of a CPU by executing two or more tasks virtually at the same time.
+
+They take advantage of CPU context switching or the time slicing feature of the operating system. In other words, CPU time is shared across all running tasks, and each task is scheduled to run for a certain period of time. Hence, multithreading is the key to multitasking.
+
+image::concurrentvsParallelism.png[Concurrency vs Parallelism]
+
+* Concurrent but not parallel: It executes more than one task at the same time, but no two tasks are executed at the same time.
+* Parallel but not concurrent: It executes multiple subtasks of a task in a multi-core CPU at the same time.
+* Neither parallel nor concurrent: It executes all of the tasks one at a time (sequential execution).
+* Both parallel and concurrent: It executes multiple tasks concurrently in a multi-core CPU at the same time.
+
 == Thread
 
 A thread is defined at the operating system level. +
@@ -49,6 +74,12 @@ There are three reasons for the scheduler to pause a thread, and to run another 
 - A thread might be waiting for some more data. (some input output, reading or writing data to a disk or to a network)
 - a thread might be waiting for another thread to do something. (to release a resource)
 
+=== Thread pool
+
+A set of homogenous worker threads that are assigned to execute tasks is called a thread pool. A worker thread that finishes a task is returned to the pool.
+
+Typically, thread pools are bound to a queue of tasks and can be tuned to the size of the threads they hold. Commonly, for optimal performance, the size of a thread pool is equal to the number of CPU cores.
+
 === Race condition
 
 A race condition deals with the *access of data concurrently*.
@@ -77,6 +108,10 @@ public class Singleton{
 To prevent this -> Synchonization
 
 == Synchronization
+
+The synchronization of a multithreaded environment is achieved via locking. Locking is used to orchestrate and limit access to a resource in a multithreaded environment.
+
+If multiple threads can access the same resource without causing errors or unpredictable behaviors/results, then we are in a thread-safe context. Thread safety can be achieved via various synchronization techniques
 
 Synchronization prevents a block of code to be executed by more than one thread at the same time. +
 From a technical point of view -> it will prevent the *thread scheduler* to give the hand to a thread that wants to execute the synchronized portion of code that has already been executed by another thread.
