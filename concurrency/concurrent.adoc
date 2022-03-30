@@ -206,6 +206,13 @@ If what we really want is to prevent two threads to execute the getName method a
 
 *Locks are reentrant* -  When a thread holds a lock, it can enter a block synchronized on the lock it is holding. (inheritance)
 
+Reentrant locking refers to a process that can acquire a lock multiple times without deadlocking itself.
+
+A reentrant lock can be acquired by another thread or recursively by the same thread.
+
+A reentrant lock acts like this: when the thread enters the lock for the first time, a hold count is set to one. Before unlocking, the thread can re-enter the lock causing the hold count to be incremented by one for each entry.
+Each unlock request decrements the hold count by one, and, when the hold count is zero, the locked resource is opened.
+
 === Deadlock
 
 Mary and John instances of the person class, a synchronized method that is calling another synchronized method. +
