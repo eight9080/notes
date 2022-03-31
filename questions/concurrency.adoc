@@ -54,6 +54,8 @@ However, it may happen in the following scenarios
 Low priority threads will get less CPU compared to high priority threads. Lower priority thread can starve away waiting to get more CPU space to perform calculations.
 The thread may be waiting indefinitely for a lock on object’s monitor but notify() may repeatedly be awakening some other threads. In that case, also thread starves away.
 
+The best way to avoid thread starvation is to use fair locks, such as Java ReentrantLock. A fair lock grants access to the thread that has been waiting the longest. Having multiple threads run at once while preventing starvation can be accomplished via Java Semaphore. A fair Semaphore guarantees the granting of permits under contention using FIFO.
+
 == What is context-switching in multi-threading?
 
 It is the process of storing and restoring of CPU state. This helps to resume thread execution from the same point at a later point in time. It is one of the essential features for multitasking operating system and support for the multi-threaded environment.
