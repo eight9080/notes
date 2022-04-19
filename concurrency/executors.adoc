@@ -11,6 +11,8 @@ The main difference between the Executor framework and ForkJoinPool is that the 
 
 image::executorFrameworkDiagram.png[Executor Framwwork]
 
+image::ExecutorServiceInternals.png[ExecutorService Internals]
+
 == ForkJoinPool vs Executor Framework
 1. The main difference between ForkJoinPool and ThreadPoolExecutor is that ForkJoinPool is designed to accept and execute ForkJoinTask, which is a lightweight version of FutureTask, +
 while ThreadPoolExecutor is designed to provide a normal thread pool which executes each submitted task using one of possibly several pooled threads.

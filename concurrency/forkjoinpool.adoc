@@ -62,6 +62,8 @@ Clients insert new fork-join tasks onto a fork-join pool's shared queued, which 
 
 image::forkJoinPoolDiagram.png[ForkJoinPool]
 
+image::ForkJoinPoolInternals.png[ForkJoinPoll Internals]
+
 |===
 |void | `execute(ForkJoinTask<T>)`| async execution
 |T    | `invoke(ForkJoinTask<T>)`| performs the given task, returning its result upon completion

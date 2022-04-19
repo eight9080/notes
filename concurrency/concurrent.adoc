@@ -64,6 +64,10 @@ CPU is able to do two things at the same time. +
 On a multi-core CPU, things are really happening at the same time. +
 CPU is able to run several tasks at the same time.
 
+Threads are *expensive*
+
+ * they have their own runtime-stack, memory, registers and more.
+
 === CPU Time Sharing Using a Thread Scheduler
 
 A thread-scheduler is going to share evenly, the CPU timeline, divided into time slices, to all the tasks that need to be run.
@@ -79,6 +83,11 @@ There are three reasons for the scheduler to pause a thread, and to run another 
 A set of homogenous worker threads that are assigned to execute tasks is called a thread pool. A worker thread that finishes a task is returned to the pool.
 
 Typically, thread pools are bound to a queue of tasks and can be tuned to the size of the threads they hold. Commonly, for optimal performance, the size of a thread pool is equal to the number of CPU cores.
+
+Scope:
+
+* CPU Intensive tasks => ThreadPool Size = No of Cores
+* I/O task => ThreadPool Size > No of Cores
 
 === Race condition
 
