@@ -185,10 +185,10 @@ ImmutableSet<String> result = givenList.stream()
 ----
 
 
-
-
-
-
-
 Source: https://www.baeldung.com/java-8-collectors[Collectors]
+
+== Parallel vs Sequential
+
+Stream uses last method used in the pipeline.
+The last method type used will be used for the whole pipeline
 
