@@ -1,0 +1,35 @@
+= High Availability
+
+== High Availability (HA) in SQL Server
+Source: https://www.geeksforgeeks.org/high-availability-ha-in-sql-server/[HA Sql Server]
+
+* Replication
+* Log Shipping
+* Mirroring
+* Clustering (Failover Cluster)
+* AlwaysON Availability Groups (AG)
+
+Replication :
+Source server is called Publisher. Destination server is called Subscriber. There’s an optional server that stores replicated data for the subscriber called Distributor.
+
+The source data are copied to the destination through replication agents (jobs). Replication’s main purpose is to repeat and distribute information from one database to a different one.
+
+Varieties of replication:
+
+* Snapshot replication
+* Transactional replication
+* Merge replication
+* Peer to Peer replication
+
+*Snapshot*
+
+Snapshot replication happens when a snapshot is taken of the database, and snapshot is copied to the subscriber. Snapshot replication could be used as an initial data set in circumstances to begin subsequent replication processes that has minimal changes.
+
+*Transactional*
+Transactional replication begins with a snapshot of the publisher database that’s applied to the subscriber. Once the snapshot is in place all transactions that occur on the publisher are going to be replicated to the subscriber.
+
+*Merge*
+Merge replication begins with a snapshot of the publisher database that’s applied to the subscriber. Changes made at the publisher and subscriber are shadowed offline. Once the publisher and subscriber are back online simultaneously, the subscriber synchronizes with the publisher and the other way around.
+
+*Peer to Peer*
+Peer to Peer replication is often used as transactions occur they’re executed on all of the nodes involved in replication in order to keep the data in sync in near real time.
