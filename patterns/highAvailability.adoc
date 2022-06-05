@@ -9,7 +9,8 @@ Source: https://www.geeksforgeeks.org/high-availability-ha-in-sql-server/[HA Sql
 * Clustering (Failover Cluster)
 * AlwaysON Availability Groups (AG)
 
-Replication :
+=== Replication
+
 Source server is called Publisher. Destination server is called Subscriber. There’s an optional server that stores replicated data for the subscriber called Distributor.
 
 The source data are copied to the destination through replication agents (jobs). Replication’s main purpose is to repeat and distribute information from one database to a different one.
@@ -33,3 +34,43 @@ Merge replication begins with a snapshot of the publisher database that’s appl
 
 *Peer to Peer*
 Peer to Peer replication is often used as transactions occur they’re executed on all of the nodes involved in replication in order to keep the data in sync in near real time.
+
+=== Log Shipping
+
+Source server is called Primary server. Destination server is called Secondary server. There is an optional server and will be monitored by log shipping status is called Monitorserver.
+
+The secondary databases are restored from the primary database with no recovery leaving the database inaccessible to end users by using the SQL Server Agent and job schedules at a definite interval. While it’s nice that log shipping supports multiple secondary servers, it’s probably the smallest amount used for HA because before the fail-over can occur, the secondary database must be brought fully up to date by manually applying not restored log backups.
+
+=== Mirroring
+Source server is called Principal server. Destination server is called Mirror server. There is an optional server that is used to make automatic fail-over is called Witness server.
+
+Database are inaccessible to the end-users when the mirror database is restored from the principal with no recovery. Once mirroring is enabled, all transactions happening at the principal are copied to the mirror. Fail-over with this option usually only takes seconds to finish. If the principal server was down the mirror server would automatically become the principal.
+
+=== Clustering(Failover Cluster)
+The node where SQL Services are running is called Active node. The node where SQL Services are not running is called Passive node.
+
+*Prerequisite to setup Clustering*
+Windows Clustering setup with shared storage.
+
+==== Clustering
+It involves a minimum of two servers. Clustering will allow one physical server to require over the responsibilities of another physical server that has failed. This is often used in crucial environments that require near 100% up-time. When a server’s resources fail, the other server will automatically obtain where the failed server left off causing little or no downtime.
+
+The 2 kinds of clustering are:
+
+* Active/Active
+
+When running in Active/Active mode, SQL Server is running actively on both servers. If one among the SQL Server’s fail then the opposite SQL Server will fail-over.
+
+* Active/Passive
+
+When running in Active/Passive mode, SQL Server runs on one server while the opposite server waits just in case of a failure. This can be the foremost popular choice because it doesn’t affect performance.
+
+=== AlwaysON Availability Groups :
+Source server is called Primary replica. Destination server is called Secondary replica.
+
+*Prerequisite to setup AlwaysON*
+Windows Clustering setup without shared storage.
+
+==== AlwaysON
+
+Availability Group is a new feature introduced with SQL Server 2012. It uses groups called Availability Groups, which are groups that contain selected databases that will fail over together if a failure should occur. It consists of one primary replica, in which the databases will be available to read-write connections, and up to eight secondary replicas, that can be used to read-only connections for reporting purposes. To make it easier for the database users to connect to the availability group, an Availability Group Listener can be created. An availability group listener is a virtual name, that consists of a unique DNS name, virtual IPs, and a TCP port number, which provides a direct connection to the replica on that availability group
