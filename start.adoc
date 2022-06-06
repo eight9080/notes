@@ -1,3 +1,6 @@
+Diagrams
+https://mermaid-js.github.io/mermaid/#/
+
 Cache
 https://docs.microsoft.com/en-us/azure/architecture/patterns/cache-aside
 
