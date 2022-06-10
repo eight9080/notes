@@ -1,0 +1,14 @@
+= Container vs VMs
+
+== What are “containers” and “VMs”?
+
+* to isolate an application and its dependencies into a self-contained unit that can run anywhere.
+
+*Virtual Machines*
+
+* an emulation of a real computer that executes programs like a real computer.
+* VMs run on top of a physical machine using a “hypervisor”.
+* A hypervisor, in turn, runs on either a host machine or on “bare-metal”.
+
+A *hypervisor* is a piece of software, firmware, or hardware that VMs run on top of. The hypervisors themselves run on physical computers, referred to as the “host machine”. The host machine provides the VMs with resources, including RAM and CPU.
+
