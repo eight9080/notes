@@ -1,5 +1,12 @@
 = Advanced questions
 
+Sources
+
+* https://arc.dev/developer-blog/java-interview-questions/
+* https://www.fullstack.cafe/blog/advanced-java-interview-questions
+* https://www.edureka.co/blog/interview-questions/java-interview-questions/
+
+
 == General
 
 STAR -> Situation, Task, Action and Result
@@ -19,6 +26,16 @@ STAR -> Situation, Task, Action and Result
 
 == Security
 
+*  What is the difference between encryption, encoding, and hashing?
+
+* Encryption is used for changing plain text into cipher text so that only authorized entities can understand it. Encryption deals with keys which are used to encrypt and decrypt the data. These keys are used to transform a simple text into a cypher text and the vice versa.
+
+* Encoding is used for changing the data into a special format which makes it usable by external processes. Unlike encryption, the intention of encoding is not related to security. The message is encoded by using an algorithm or scheme.
+
+* In hashing, the data is converted to a message digest or hash, which is usually a number generated from a string of text. Hashing is not reversible as encryption and encoding. The data is converted to a message digest or hash, which is usually a number generated from a string of text. These digests are important as one can easily match the hash of sent and received messages to ensure that both are the same and no tempering is done with the data.
+
+Source: http://www.differencebetween.info/difference-between-encryption-encoding-and-hashing
+
 * What’s the difference between Symmetric and Asymmetric encryption and which is better?
 
 Symmetric encryption uses the same key for encryption and decryption. Asymmetric encryption, on the other hand, uses different keys. Symmetric is usually faster but the key must be transferred over an unencrypted channel. Asymmetric is more secure but it’s slower. The best approach would combine the two, setting up a channel using asymmetric encryption and then sending the data using a symmetric process.
@@ -30,6 +47,42 @@ Cross-site scripting is a JavaScript vulnerability. The simplest way to explain 
 * What's the difference between HTTP and HTTPS?
 
 HTTP is an unencrypted protocol that doesn't use TLS (SSL), where HTTP requests and responses occur without security. This means anyone who monitors the internet connection can read this content in plaintext. HTTPS is an encrypted protocol, meaning it does use TLS to secure requests and responses. This means people monitoring the connection can't see the content, only random characters instead of plaintext.
+
+* Name the elements of PKI
+
+A typical PKI includes the following key elements:
+
+* A trusted party, called a certificate authority (CA), acts as the root of trust and provides services that authenticate the identity of individuals, computers and other entities
+* A registration authority, often called a subordinate CA, certified by a root CA to issue certificates for specific uses permitted by the root
+* A certificate database, which stores certificate requests and issues and revokes certificates
+* A certificate store, which resides on a local computer as a place to store issued certificates and private keys
+
+== Collections
+
+* When to use LinkedList over ArrayList in Java?
+
+LinkedList implements it with a doubly-linked list.
+
+*LinkedList<E>* allows for constant-time insertions or removals using iterators, but only sequential access of elements. In other words, you can walk the list forwards or backwards, but finding a position in the list takes time proportional to the size of the list.
+
+*ArrayList<E>* allow fast random read access, so you can grab any element in constant time. But adding or removing from anywhere but the end requires shifting all the latter elements over, either to make an opening or fill the gap.
+
+* Why ArrayList are preferable in many more use-cases than LinkedList
+
+A: Any indexed operation requires a traversal, i.e. has O(n) performance. -> leading to algorithms O(n) slower than if ArrayList was used.
+Getting good performance is tricky.
+
+* What differences exist between HashMap and Hashtable
+
+*Hashtable* is synchronized, whereas HashMap is not. This makes HashMap better for non-threaded applications, as unsynchronized Objects typically perform better than synchronized ones.
+
+*Hashtable* does not allow null keys or values. HashMap allows one null key and any number of null values.
+
+One of HashMap's subclasses is LinkedHashMap, so in the event that you'd want predictable iteration order (which is insertion order by default), you could easily swap out the HashMap for a LinkedHashMap. This wouldn't be as easy if you were using Hashtable.
+
+* What is difference between fail-fast and fail-safe
+
+The Iterator's fail-safe property works with the clone of the underlying collection and thus, it is not affected by any modification in the collection. All the collection classes in java.util package are fail-fast, while the collection classes in java.util.concurrent are fail-safe. Fail-fast iterators throw a ConcurrentModificationException, while fail-safe iterator never throws such an exception.
 
 == Garbage Collector & Memory
 
@@ -47,11 +100,74 @@ The JVM has a heap that is the runtime data area from which memory for all class
 *Answer*
 The throughput garbage collector uses a parallel version of the young generation collector and is meant to be used with applications that have medium to large data sets. On the other hand, the serial collector is usually adequate for most small applications (those requiring heaps of up to approximately 100MB on modern processors).
 
+* What's the difference between SoftReference and WeakReference in Java?
+*Answer*
+
+*Strong reference* - normal reference that protects the referred object from collection by GC. i.e. Never garbage collects.
+*Soft reference* - eligible for collection by garbage collector, but probably won't be collected until its memory is needed. i.e. garbage collects before OutOfMemoryError.
+*Weak reference* - a reference that does not protect a referenced object from collection by GC. i.e. garbage collects when no Strong or Soft refs.
+*Phantom reference* - a reference to an object is phantomly referenced after it has been finalized, but before its allocated memory has been reclaimed.
+
+== Design patterns
+
+* an efficient way to implement a singleton pattern in Java
+
+After Java 5
+----
+public enum COLOR {
+    INSTANCE;
+    private final String[] favoriteColors =
+            { "green", "blue" };
+    public void printFavorites() {
+        System.out.println(Arrays.toString(favoriteColors));
+    }
+}
+----
+* equivalent to the public field approach, except that it is more concise, provides the serialization machinery for free, and provides an ironclad guarantee against multiple instantiation, even in the face of sophisticated serialization or reflection attacks.
+
+== Concurrency
+
+* What does synchronized mean?
+
+The synchronized keyword is all about different threads reading and writing to the same variables, objects and resources. The synchronized keyword is one of the tools that make your code thread safe.
+So simply speaking when you have two threads that are reading and writing to the same 'resource', say a variable named foo, you need to ensure that these threads access the variable in an atomic way. Without the synchronized keyword, your thread 1 may not see the change thread 2 made to foo, or worse, it may only be half changed. This would not be what you logically expect.
 
 
+== Caching
+
+* What is Caching
+
+a cache is a high-speed data storage layer which stores a subset of data, typically transient in nature, so that future requests for that data are served up faster than is possible by accessing the data’s primary storage location. Caching allows you to efficiently reuse previously retrieved or computed data.
+
+* Cache Writing Strategies
+
+*Pre-caching data* - for small pieces of data, usually during the application initialization, before any request.
+*On-demand* - checking first if the requested data is in the cache (if the data is found, it is called a cache hit), using it, improving the performance of the application. Whenever the requested data has not been written to the cache (cache miss), the application will need to retrieve it from the slower source, then writing the results in the cache, thus saving time on subsequent requests for the same data.
+
+* What is Cache Invalidation
+
+Cache invalidation gives you the best of both worlds: you can have very long TTLs, so when content changes little, it can be served from the cache because no requests to your application are required. At the same time, when data does change, that change is reflected without delay in the web representations.
+
+*Purge* - Removes content from cache immediately. When the client requests the data again, it is fetched from the application and stored in the cache. This method removes all variants of the cached content.
+
+*Refresh* - Fetches requested content from the application, even if cached content is available. The content previously stored in the cache is replaced with a new version from the application. This method affects only one variant of the cached content.
+
+*Ban* - A reference to the cached content is added to a blacklist (or ban list). Client requests are then checked against this blacklist, and if a request matches, new content is fetched from the application, returned to the client, and added to the cache. This method, unlike purge, does not immediately remove cached content from the cache. Instead, the cached content is updated after a client requests that specific information.
+
+* What usually should be cached?
+
+** Long-running queries on databases,
+** high-latency network requests (for external APIs),
+** computation-intensive processing
 
 
+== Microservices
 
+* API Gateway pattern
+
+An API Gateway is a server that is the single entry point into the system. It is similar to the Facade pattern from object‑oriented design. The API Gateway encapsulates the internal system architecture and provides an API that is tailored to each client. It might have other responsibilities such as authentication, monitoring, load balancing, caching, request shaping and management, and static response handling.
+
+Therefore, the API gateway sits between the client apps and the microservices. It acts as a reverse proxy, routing requests from clients to services. It can also provide other cross-cutting features such as authentication, SSL termination, and cache.
 
 
 
