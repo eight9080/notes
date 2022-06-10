@@ -1,0 +1,58 @@
+= Advanced questions
+
+== General
+
+STAR -> Situation, Task, Action and Result
+
+* Describe the last project you worked on, including any obstacles and your contributions to its success.
+
+* What are your most used design patterns and in what contexts do you use them?
+
+* What is “Agile” software development and what are your thoughts on it?
+
+* What are your thoughts on software testing?
+
+* Describe a difficult bug you were tasked with fixing in a large application. How did you debug the issue?
+
+* What scaling issues have you had to deal with on past projects? How could it have been avoided and how did you solve it?
+
+
+== Security
+
+* What’s the difference between Symmetric and Asymmetric encryption and which is better?
+
+Symmetric encryption uses the same key for encryption and decryption. Asymmetric encryption, on the other hand, uses different keys. Symmetric is usually faster but the key must be transferred over an unencrypted channel. Asymmetric is more secure but it’s slower. The best approach would combine the two, setting up a channel using asymmetric encryption and then sending the data using a symmetric process.
+
+* What is Cross-site Scripting (XSS) and how will you mitigate it?
+
+Cross-site scripting is a JavaScript vulnerability. The simplest way to explain it is when a user enters a script in the input fields and the input is processed without being validated. This can lead to untrusted data being saved and executed upon on the client side. To mitigate this vulnerability, you can add input validation or implement a content security policy.
+
+* What's the difference between HTTP and HTTPS?
+
+HTTP is an unencrypted protocol that doesn't use TLS (SSL), where HTTP requests and responses occur without security. This means anyone who monitors the internet connection can read this content in plaintext. HTTPS is an encrypted protocol, meaning it does use TLS to secure requests and responses. This means people monitoring the connection can't see the content, only random characters instead of plaintext.
+
+== Garbage Collector & Memory
+
+* How does Garbage Collection prevent a Java application from going out of memory?
+
+*A*: Garbage Collection simply cleans up unused memory when an object goes out of scope and is no longer needed. However an application could create a huge number of large objects that causes an OutOfMemoryError.
+
+* What is structure of Java Heap?
+
+*Answer*:
+The JVM has a heap that is the runtime data area from which memory for all class instances and arrays is allocated. It is created at the JVM start-up. Heap memory for objects is reclaimed by an automatic memory management system which is known as a garbage collector. Heap memory consists of live and dead objects. Live objects are accessible by the application and will not be a subject of garbage collection. Dead objects are those which will never be accessible by the application, but have not been collected by the garbage collector yet. Such objects occupy the heap memory space until they are eventually collected by the garbage collector.
+
+* What is the difference between Serial and Throughput Garbage collector?
+
+*Answer*
+The throughput garbage collector uses a parallel version of the young generation collector and is meant to be used with applications that have medium to large data sets. On the other hand, the serial collector is usually adequate for most small applications (those requiring heaps of up to approximately 100MB on modern processors).
+
+
+
+
+
+
+
+
+
+
