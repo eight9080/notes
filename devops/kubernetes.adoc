@@ -135,23 +135,31 @@ kubectl proxy
 ----
 
 == Pods
+*A pod is a group of one or more containers, with shared storage/network, and a specification for how to run the containers.*
 
 A Pod is the basic execution unit of a Kubernetes application, the smallest and simplest unit in the Kubernetes object model that you create or deploy. +
 Pods act as an environment for containers.
 
 NOTE: A single process per container, and oftentimes *a single container per Pod*
 
-A Pod has an IP address, memory, volumes, and all of that can be shared across multiple containers within the Pod if needed.
-So if Kubernetes sees a Pod that's unhealthy or sick, it can automatically remove that and then replace it. +
-Pods can be horizontally scaled. -> replicas - Kubernetes can load balance between those +
-Kubernetes will monitor that and can automatically take it out and then put something back that's a healthy Pod.
-
-Pods within a node are going to have a unique IP address, ** cluster IP address**, and then the containers within Pods can then have their own unique ports. +
-Pod containers share the same network namespace, they share the same IP.
-They use the same loopback network interface within a Pod -> localhost
-Now containers processed within the same Pod need to have a different port.
+[sidebar]
+--
+* A Pod has an IP address, memory, volumes, and all of that can be shared across multiple containers within the Pod if needed.
+* Pods within a node are going to have a unique IP address, ** cluster IP address**, and then the containers within Pods can then have their own unique ports. +
+* Pod containers share the same network namespace, they share the same IP.
+* They use the same loopback network interface within a Pod -> localhost
+* Now containers processed within the same Pod need to have a different port.
 
 Multiple containers within a Pod -> a container and then another one is very tightly coupled -> *sidecar container*
+--
+
+[IMPORTANT]
+====
+* So if Kubernetes sees a Pod that's unhealthy or sick, it can automatically remove that and then replace it. +
+*  Pods can be horizontally scaled. -> replicas - Kubernetes can load balance between those +
+* Kubernetes will monitor that and can automatically take it out and then put something back that's a healthy Pod.
+====
+
 
 === Creating a Pod
 
