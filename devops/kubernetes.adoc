@@ -6,11 +6,11 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 Kubernetes, K8s, is an open‑source system for automating deployment, scaling, and management of containerized applications.
 
-management of the containers, eliminate single points of failure in our application, scale containers easily, and update containers without actually even bringing down the running application
+* management of the containers, eliminate single points of failure in our application, scale containers easily, and update containers without actually even bringing down the running application
 
-robust networking infrastructure so that containers can talk to other containers, even across different machines.
+* robust networking infrastructure so that containers can talk to other containers, even across different machines.
 
-some storage options across machines
+* some storage options across machines
 
 === Key features
 * Service discovery/ Load balancing
@@ -133,7 +133,7 @@ kubectl proxy
 A Pod is the basic execution unit of a Kubernetes application, the smallest and simplest unit in the Kubernetes object model that you create or deploy. +
 Pods act as an environment for containers.
 
-A single process per container, and oftentimes *a single container per Pod*
+NOTE: A single process per container, and oftentimes *a single container per Pod*
 
 A Pod has an IP address, memory, volumes, and all of that can be shared across multiple containers within the Pod if needed.
 So if Kubernetes sees a Pod that's unhealthy or sick, it can automatically remove that and then replace it. +

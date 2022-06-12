@@ -108,6 +108,63 @@ So, even if you destroy, update, or rebuild your container, the data volumes wil
 
 image::images/DockerContainerLayers.png[Docker Container layers]
 
+== Inside containers
+
+=== Namespaces
+
+Namespaces provide containers with their own view of the underlying Linux system, limiting what the container can *see and access*.
+
+Types of namespaces:
+
+* NET: Provides a container with its own view of the network stack of the system (e.g. its own network devices, IP addresses, IP routing tables, /proc/net directory, port numbers, etc.).
+
+* PID: PID stands for Process ID. The PID namespace gives containers their own scoped view of processes they can view and interact with, including an independent init (PID 1)
+
+* MNT: Gives a container its own view of the “mounts” on the system.
+
+* UTS: UTS stands for UNIX Timesharing System. It allows a process to identify system identifiers (i.e. hostname, domainname, etc.). UTS allows containers to have their own hostname and NIS domain name that is independent of other containers and the host system.
+
+* IPC: IPC stands for InterProcess Communication. IPC namespace is responsible for isolating IPC resources between processes running inside each container.
+
+* USER: This namespace is used to isolate users within each container. It functions by allowing containers to have a different view of the uid (user ID) and gid (group ID) ranges, as compared with the host system
+
+=== Control groups (cgroups)
+
+* isolates, prioritizes, and accounts for the resource usage (CPU, memory, disk I/O, network, etc.) of a set of processes.
+* a cgroup ensures that Docker containers only use the resources they need — and, if needed, set up limits to what resources a container *can* use.
+* Cgroups also ensure that a single container doesn’t exhaust one of those resources and bring the entire system down.
+
+== Docker vs Virtual machines
+
+A container image is a lightweight, stand-alone, executable package of a piece of software that includes everything needed to run it.
+
+Docker is the service to run multiple containers on a machine (node) which can be on a vitual machine or on a physical machine.
+
+A virtual machine is an entire operating system (which normally is not lightweight).
+
+Docker Containers have the following benefits:
+
+* Light-weight
+* Applications run in isolation
+* Occupies less space
+* Easily portable and highly secure
+* Short boot-up time
+
+Docker is a container-based model where containers are software packages used for executing an application on any operating system
+In Docker, the containers share the host OS kernel
+Here, multiple workloads can run on a single OS
+
+A virtual machine (VM) is a computing environment or software that aids developers to access an operating system via a physical machine.
+they use user space along with the kernel space of an OS
+
+It does not share the host kernel
+
+Each workload needs a complete OS or hypervisor
+
+Since VM uses a separate OS; it causes more resources to be used
+
+Virtual machines don’t start quickly and lead to poor performance
+
 
 
 
