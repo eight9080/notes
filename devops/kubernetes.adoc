@@ -142,8 +142,8 @@ Pods act as an environment for containers.
 
 NOTE: A single process per container, and oftentimes *a single container per Pod*
 
-[sidebar]
---
+.Characteristics
+****
 * A Pod has an IP address, memory, volumes, and all of that can be shared across multiple containers within the Pod if needed.
 * Pods within a node are going to have a unique IP address, ** cluster IP address**, and then the containers within Pods can then have their own unique ports. +
 * Pod containers share the same network namespace, they share the same IP.
@@ -151,7 +151,7 @@ NOTE: A single process per container, and oftentimes *a single container per Pod
 * Now containers processed within the same Pod need to have a different port.
 
 Multiple containers within a Pod -> a container and then another one is very tightly coupled -> *sidecar container*
---
+****
 
 [IMPORTANT]
 ====
