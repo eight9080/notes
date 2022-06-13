@@ -72,6 +72,46 @@ Components:
 * The scheduler should have an idea of the total resources available as well as resources allocated to existing workloads on each node
 
 
+What are namespaces?::
+
+* allow you split your cluster into virtual clusters where you can group your applications in a way that makes sense and is completely separated from the other groups (so you can for example create an app with the same name in two different namespaces).
+
+* When using the default namespace alone, it becomes hard over time to get an overview of all the applications you manage in your cluster. Namespaces make it easier to organize the applications into groups that makes sense, like a namespace of all the monitoring applications and a namespace for all the security applications, etc.
+
+Namespaces can also be useful for managing Blue/Green environments where each namespace can include a different version of an app and also share resources that are in other namespaces (namespaces like logging, monitoring, etc.).
+
+Another use case for namespaces is one cluster, multiple teams. When multiple teams use the same cluster, they might end up stepping on each others toes. For example if they end up creating an app with the same name it means one of the teams overriden the app of the other team because there can't be too apps in Kubernetes with the same name (in the same namespace).
+
+What does it mean that "pods are ephemeral"?::
+
+* Pods are ephemeral. They are not designed to run forever, and when a Pod is terminated it cannot be brought back. In general, Pods do not disappear until they are deleted by a user or by a controller.
+
+* Pods do not "heal" or repair themselves. For example, if a Pod is scheduled on a node which later fails, the Pod is deleted. Similarly, if a Pod is evicted from a node for any reason, the Pod does not replace itself.
+
+What happens when a master fails? What happens when a worker fails?::
+
+Kubernetes is designed to be *resilient* to any individual node failure, master or worker.
+
+* When a master fails the nodes of the cluster will keep operating, but there can be no changes including pod creation or service member changes until the master is available.
+* When a worker fails, the master stops receiving messages from the worker. If the master does not receive status updates from the worker the node will be marked as NotReady. If a node is *NotReady* for 5 minutes, the master reschedules all pods that were running on the dead node to other available nodes.
+
+What is a StatefulSet in Kubernetes?::
+When using Kubernetes, most of the time you don’t care how your pods are scheduled, but sometimes you care that pods are deployed in order, that they have a persistent storage volume, or that they have a unique, stable network identifier across restarts and reschedules. In those cases, StatefulSets can help you accomplish your objective.
+
+* It manages the deployment and scaling of a set of Pods, and provides guarantees about the ordering and uniqueness of these Pods.
+
+StatefulSets are valuable for applications that require one or more of the following:
+
+* Stable, unique network identifiers.
+* Stable, persistent storage.
+* Ordered, graceful deployment and scaling.
+* Ordered, automated rolling updates.
+
+Source: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+
+
+
+
 
 
 
