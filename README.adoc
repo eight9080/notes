@@ -3,7 +3,23 @@
 
 = Notes
 
+== Questions
+
+=== link:devops/01_Questions.adoc[Devops Questions]
+=== link:patterns/01_Questions.adoc[General Concepts Questions]
+
 == Concurrency
+=== link:concurrency/concurrent.adoc[Concurrent]
+=== link:concurrency/parallelConcepts.adoc[Parallel Concepts]
+=== link:concurrency/javaConcurrency.adoc[Java Concurrency]
+=== link:concurrency/concurrentCollections.adoc[Concurrent Collections]
+=== link:concurrency/Synchronizers.adoc[Synchronizers]
+=== link:concurrency/forkjoinpool.adoc[Fork join pool]
+=== link:concurrency/executors.adoc[Executors]
+=== link:concurrency/CompletableFuture.adoc[CompletableFuture]
+=== link:concurrency/blockingQueue.adoc[Blocking Queue]
+=== link:concurrency/rxJava.adoc[rxJava]
+=== link:concurrency/threadDump.adoc[threadDump]
 === link:concurrency/akka.adoc[Akka]
 
 
@@ -15,7 +31,8 @@
 === link:devops/helm.adoc[helm]
 
 
-== Questions
+== Data structure
+=== link:datastuctures/map.adoc[Map]
+=== link:datastuctures/list.adoc[List]
 
-=== link:devops/01_Questions.adoc[Devops Questions]
-=== link:patterns/01_Questions.adoc[General Concepts Questions]
+
