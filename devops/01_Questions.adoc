@@ -71,6 +71,7 @@ Components:
 * The scheduler is responsible for workload utilization and allocating pod to a new node
 * The scheduler should have an idea of the total resources available as well as resources allocated to existing workloads on each node
 
+<<<
 
 What are namespaces?::
 
