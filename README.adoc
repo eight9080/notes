@@ -9,19 +9,26 @@
 === link:patterns/01_Questions.adoc[General Concepts Questions]
 
 == Concurrency
-=== link:concurrency/concurrent.adoc[Concurrent]
-=== link:concurrency/parallelConcepts.adoc[Parallel Concepts]
-=== link:concurrency/javaConcurrency.adoc[Java Concurrency]
-=== link:concurrency/concurrentCollections.adoc[Concurrent Collections]
+
+=== General
+==== link:concurrency/concurrent.adoc[Concurrent]
+==== link:concurrency/parallelConcepts.adoc[Parallel Concepts]
+==== link:concurrency/javaConcurrency.adoc[Java Concurrency]
+==== link:concurrency/concurrentCollections.adoc[Concurrent Collections]
 === link:concurrency/Synchronizers.adoc[Synchronizers]
-=== link:concurrency/forkjoinpool.adoc[Fork join pool]
-=== link:concurrency/executors.adoc[Executors]
-=== link:concurrency/CompletableFuture.adoc[CompletableFuture]
-=== link:concurrency/blockingQueue.adoc[Blocking Queue]
-=== link:concurrency/rxJava.adoc[rxJava]
 === link:concurrency/threadDump.adoc[threadDump]
+
+=== Executors
+==== link:concurrency/forkjoinpool.adoc[Fork join pool]
+==== link:concurrency/executors.adoc[Executors]
+==== link:concurrency/CompletableFuture.adoc[CompletableFuture]
+
+==== Executors libs
+=== link:concurrency/rxJava.adoc[rxJava]
 === link:concurrency/akka.adoc[Akka]
 
+=== Data Structures
+==== link:concurrency/blockingQueue.adoc[Blocking Queue]
 
 == Devops
 === link:devops/containerVsVms.adoc[Container vs VMs]
