@@ -1,7 +1,7 @@
 = Azure
 == Azure DevOps Git
 
-=== Source control fundamentals
+== Source control fundamentals
 Make changes to files and keep the history
 
 Types of Source control systems:

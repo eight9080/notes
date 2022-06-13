@@ -1,3 +1,11 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
 = Kubernetes Architecture
 
 == Overview
@@ -74,4 +82,69 @@ IMPORTANT: The Kubernetes master runs the Scheduler, Controller Manager, API Ser
 
 ==== etcd
 
+* Consistent and highly-available key value store used as Kubernetes’ backing store for all cluster data.
+
+* etcd reliably stores the configuration data of the Kubernetes cluster, representing the state of the cluster (what nodes exist in the cluster, what pods should be running, which nodes they are running on, and a whole lot more) at any given point of time.
+
+* Etcd is written in Go and uses the Raft consensus algorithm to manage a highly-available replicated log. Raft is a consensus algorithm designed as an alternative to Paxos. The Consensus problem involves multiple servers agreeing on values; a common problem that arises in the context of replicated state machines. Raft defines three different roles (Leader, Follower, and Candidate) and achieves consensus via an elected leader.
+
+[IMPORTANT]
+====
+Etcd also implements a watch feature, which provides an event-based interface for asynchronously monitoring changes to keys.
+
+* Once a key is changed, its “watchers” get notified.
+* This is a crucial feature in the context of Kubernetes, as the API Server component heavily relies on this to get notified and call the appropriate business logic components to move the current state towards the desired state.
+====
+
+==== kube-controller-manager
+
+* Component (on the master) for running controllers
+* Kube-controller-manager runs controllers, which are the background threads that handle routine tasks in the cluster.
+* Logically, each controller is a separate process, but to reduce complexity, they are all compiled into a single binary and run in a single process.
+* Besides, the Controller Manager performs lifecycle functions such as namespace creation and lifecycle, event garbage collection, terminated-pod garbage collection, cascading-deletion garbage collection, node garbage collection, etc.
+
+These controllers include:
+
+Node Controller:: Responsible for noticing and responding when nodes go down.
+Replication Controller:: Responsible for maintaining the correct number of pods for every replication controller object in the system.
+Endpoints Controller:: Populates the Endpoints object (that is, joins Services & Pods).
+Service Account & Token Controllers:: Create default accounts and API access tokens for new namespaces.
+
+==== kube-scheduler
+
+* Component on the master that watches newly created pods that have no node assigned, and selects a node for them to run on.
+
+* Factors taken into account for scheduling decisions include individual and collective resource requirements, hardware/software/policy constraints, affinity and anti-affinity specifications, data locality, inter-workload interference and deadlines.
+
+* The Scheduler watches for unscheduled pods and binds them to nodes via the /binding pod subresource API, according to the availability of the requested resources, quality of service requirements, affinity and anti-affinity specifications, and other constraints. Once the pod has a node assigned, the regular behavior of the Kubelet is triggered and the pod and its containers are created
+
+=== Node components
+
+NOTE: Node components run on every node, maintaining running pods and providing the Kubernetes runtime environment.
+
+==== kubelet
+
+* An agent that runs on each node in the cluster. It makes sure that containers are running in a pod.
+
+* The kubelet takes a set of *PodSpecs* that are provided through various mechanisms and ensures that the containers described in those PodSpecs are running and healthy. The kubelet doesn’t manage containers which were not created by Kubernetes.
+
+Kubelet is the primary node agent. It watches for pods that have been assigned to its node (either by apiserver or via local configuration file) and:
+
+* Mounts the pod’s required volumes.
+* Downloads the pod’s secrets.
+* Runs the pod’s containers via docker (or, experimentally, rkt).
+* Periodically executes any requested container liveness probes.
+* Reports the status of the pod back to the rest of the system, by creating a mirror pod if necessary.
+* Reports the status of the node back to the rest of the system.
+
+==== kube-proxy
+* kube-proxy is a *network proxy* that runs on each node in your cluster, implementing part of the Kubernetes Service concept.
+
+* kube-proxy maintains *network rules* on nodes. These network rules allow network communication to your Pods from network sessions inside or outside of your cluster.
+
+* kube-proxy uses the operating system packet filtering layer if there is one and it’s available. Otherwise, kube-proxy forwards the traffic itself.
+
+==== Container Runtime
+
+The container runtime is the software that is responsible for running containers
 

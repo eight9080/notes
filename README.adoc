@@ -1,0 +1,20 @@
+:imagesdir: ./images
+:toc:
+
+= Notes
+
+== Concurrency
+=== link:concurrency/akka.adoc[Akka]
+
+
+== Devops
+=== link:devops/containerVsVms.adoc[Container vs VMs]
+=== link:devops/docker.adoc[Docker]
+=== link:devops/kubernetes.adoc[Kubernetes]
+=== link:devops/kubernetesArchitecture.adoc[Kubernetes Architecture]
+=== link:devops/helm.adoc[helm]
+
+
+== Questions
+
+=== link:devops/01_Questions.adoc[Devops Questions]
