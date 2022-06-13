@@ -18,3 +18,4 @@
 == Questions
 
 === link:devops/01_Questions.adoc[Devops Questions]
+=== link:patterns/01_Questions.adoc[General Concepts Questions]

@@ -1,0 +1,91 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+
+= Concepts
+
+Source: https://www.fromdev.com/2013/07/architect-interview-questions-and-answers.html [Questions]
+
+== Load Balancing
+
+What Is Load Balancing?::
+
+*  distributing workloads across multiple machines or clusters. +
+Example: Round Robin ->  the request is divided in circular order ensuring all machines get equal number of requests and no single machine is overloaded or underloaded.
+
+The Purpose of load balancing is to:
+
+* Optimize resource usage (avoid overload and under-load of any machines)
+* Achieve Maximum Throughput
+* Minimize response time
+
+Most common load balancing techniques in web based applications are:
+
+* Round robin
+* Session affinity or sticky session
+* IP Address affinity
+
+<<<
+
+What Is Sticky Session (session Affinity) Load Balancing? What Do You Mean By 'session Affinity'?::
+Sticky session or a session affinity technique another popular load balancing technique that requires a user session to be always served by an allocated machine.
+
+
+Why Sticky Session?::
+
+* In a load balanced server application where user information is stored in the session, it will be required to keep the session data available to all machines. This can be avoided by always serving a particular user session request from one machine.
+
+* The machine is associated with a session as soon as the session is created. All the requests in a particular session are always redirected to the associated machine. This ensures the user data is only at one machine and load is also shared.
+
+* In the Java world, this is typically done by using a jsessionid cookie. The cookie is sent to the client for the first request and every subsequent request by a client must be containing that same cookie to identify the session.
+
+What Are The Issues With Sticky Session?::
+
+* The client browser may not support cookies, and your load balancer will not be able to identify if a request belongs to a session. This may cause strange behavior for users who use no cookie based browsers.
+* In case one of the machines fails or goes down, the user information (served by that machine) will be lost and there will be no way to recover user session.
+
+What Is IP Address Affinity Technique For Load Balancing?::
+
+* IP address affinity is another popular way to do load balancing. In this approach, the client IP address is associated with a server node. All requests from a client IP address are served by one server node.
+
+* This approach can be really easy to implement since the IP address is always available in an HTTP request header and no additional settings need to be performed.
+
+* This type of load balancing can be useful if your clients are likely to have disabled cookies.
+
+* However, there is a downside to this approach. If any of your users are behind a NATed IP address then all of them will end up using the same server node. This may cause an uneven load on your server nodes.
+
+* NATed IP address is really common, in fact, anytime you are browsing from an office network its likely that you and all your coworkers are using same NATed IP address.
+
+What Is Session Replication?::
+
+* Session replication is used in application server clusters to achieve session failover.
+* A user session is replicated to other machines of a cluster, every time the session data changes.
+* If a machine fails, the load balancer can simply send incoming requests to another server in the cluster.
+* The user can be sent to any server in the cluster since all machines in a cluster have a copy of the session.
+* Session replication may allow your application to have session failover but it may require you to have extra cost in terms of memory and network bandwidth.
+
+== Fail over
+
+What Is Fail Over?::
+* switching to another machine when one of the machines fails.
+
+* an important technique in achieving high availability. Typically a load balancer is configured to fail over to another machine when the main machine fails.
+
+* To achieve the least downtime, most load balancers support a feature of heartbeat check. This ensures that the target machine is responding. As soon as a heartbeat signal fails, load balancer stops sending the request to that machine and redirects to other machines or cluster.
+
+What Are Different Mechanism Of Session Replication?::
+
+* Using session persistence, and saving the session to a shared file system (PersistenceManager + FileStore). This will allow all machines in a cluster to be able to access the persisted session from the shared file system.
+* Using session persistence, and saving the session to a shared database (PersistenceManager + JDBCStore) - This will allow all machines in a cluster to be able to access the persisted session from the shared database system.
+* Using in-memory-replication, This will create an in-memory copy of the session in all the cluster nodes.
+
+
+
+
+
+
