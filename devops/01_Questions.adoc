@@ -53,9 +53,11 @@ Components:
 * Scheduler
 * API Server
 
-
+[sidebar]
 .ETCD (Cluster store)
 ****
+sidebar:
+    border-width: 10
 * This component stores the configuration details and essential values
 * It communicates with all other components to receive the commands and work in order to perform an action
 * It also manages network rules and posts forwarding activity
