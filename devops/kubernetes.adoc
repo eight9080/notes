@@ -307,8 +307,21 @@ spec:
 
 == Deployments
 
-A ReplicaSet is a declarative way to manage Pods. +
-A Deployment is a declarative way to manage Pods using a ReplicaSet.
+A *ReplicaSet* is a declarative way to manage Pods. +
+
+NOTE: A Replica Set ensures that a specified number of pod replicas are running at any one time. In other words, a Replica Set makes sure that a pod or a homogeneous set of pods is always up and available.
+
+A *Deployment* is a declarative way to manage Pods using a ReplicaSet.
+
+[NOTE]
+====
+A Deployment controller provides declarative updates for Pods and ReplicaSets.
+
+* describe a desired state in a Deployment object, and the Deployment controller changes the actual state to the desired state at a controlled rate.
+* can define Deployments to create new ReplicaSets, or to remove existing Deployments and adopt all their resources with new Deployments.
+* include Pod(s) and Replica Set.
+* to update the resources when you deploy new version.
+====
 
 Deployment and ReplicaSets ensure Pods stay running and can be used to scale Pods.
 
@@ -370,7 +383,7 @@ kubectl scale -f file.deployment.yml --replicas=5
 
 == Services
 
-A Service provides a single point of entry for accessing one or more Pods.
+A Service provides a single point of entry for accessing one or more Pods and is *an abstraction which defines a logical set of Pods and a policy by which to access them*
 
 Roles:
 
@@ -384,12 +397,15 @@ Roles:
 === Service Types
 
 * Cluster IP - expose the service on a cluster-internal IP (default) +
-Only Pods within the cluster can talk to the service.
+Only Pods within the cluster can talk to the service. By having a single IP address it enables the service to be load balanced across multiple Pods.
+
 * NodePort -  Expose the service on each Node's IP at a static port +
 External caller can call the service. Each Node proxies the allocated port.
+
 * Load Balancer - provision an external IP to act as a load balancer for the service +
 Exposes a Service externally. +
 NodePort and ClusterIP Services are created.
+
 * ExternalName - Maps a service to a DNS name +
 service that acts as an alias for an external service.
 
@@ -424,6 +440,18 @@ kubectl delete service [service-name]
 
 kubectl exec [pod-name] -- curl -s http://podIP
 ----
+
+=== Ingress
+
+Ingress exposes HTTP and HTTPS *routes from outside the cluster to services* within the cluster. Traffic routing is controlled by rules defined on the Ingress resource.
+
+[NOTE]
+====
+* Ingress enables externally-reachable urls, load balance traffic, terminate SSL, offer name based virtual hosting for a Kubernetes cluster.
+* Ingress rules can be based on a request host (domain), or the path of the request, or a combination of both
+* is a collection of routing rules that govern how external users access services running in a Kubernetes cluster.
+====
+
 
 
 
