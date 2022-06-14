@@ -96,6 +96,35 @@ What Is Shared Nothing Architecture? How Does It Scale?::
 * This approach is highly scalable since it avoids the existence of a single bottleneck in the system.
 * In theory, A shared nothing system can scale almost infinitely simply by adding nodes in the form of inexpensive machines.
 
+What Is CAP Theorem?::
+* it is not possible for a distributed computer system to simultaneously provide all three of the following guarantees:
+
+* *Consistency* (all nodes see the same data even at the same time with concurrent updates )
+* *Availability* (a guarantee that every request receives a response about whether it was successful or failed)
+* *Partition tolerance* (the system continues to operate despite arbitrary message loss or failure of part of the system)
+
+
+_*only two of these three conditions can be guaranteed to be met by a system*_
+
+What Is Sharding?::
+
+* Sharding is an architectural approach that distributes a single logical database system into a cluster of machines.
+
+* Sharding is _*Horizontal partitioning design scheme*_.
+* In this database design rows of a database table are stored separately, instead of splitting into columns (like in normalization and vertical partitioning). Each partition is called a shard, which can be independently located on a separate database server or physical location.
+
+* Sharding makes a database system highly scalable. The total number of rows in each table in each database is reduced since the tables are divided and distributed into multiple servers. This reduces the index size, which generally means improved search performance.
+
+* The most common approach for creating shards is by the use of consistent hashing of a unique id in the application (e.g. user id).
+
+The downsides of sharding are,
+[WARNING]
+====
+* It requires the application to be aware of the data location.
+* Any addition or deletion of nodes from the system will require some rebalance to be done in the system.
+* If you require a lot of cross-node join queries then your performance will be really bad. Therefore, knowing how the data will be used for querying becomes really important.
+* A wrong sharding logic may result in worse performance. Therefore make sure you shard based on the application need.
+====
 
 == Transactions
 
@@ -114,6 +143,13 @@ Basically available:: indicates that the system is guaranteed to be available
 
 Eventual consistency:: indicates that the system will become consistent over time, given that the system doesn't receive input during that time.
 
+What Do You Mean By Eventual Consistency? ::
+* Unlike relational database property of Strict consistency, eventual consistency property of a system ensures that any transaction will eventually (not immediately) bring the database from one valid state to another.
 
+* This means there can be intermediate states that are not consistent between multiple nodes.
+
+* Eventually, consistent systems are useful at scenarios where absolute consistency is not critical. For example in case of a Twitter status update, if some users of the system do not see the latest status from a particular user its may not be very devastating for a system.
+
+* Eventually, consistent systems cannot be used for use cases where absolute/strict consistency is required. For example, a banking transactions system cannot be using eventual consistency since it must consistently have the state of a transaction at any point in time.
 
 
