@@ -85,6 +85,34 @@ What Are Different Mechanism Of Session Replication?::
 * Using in-memory-replication, This will create an in-memory copy of the session in all the cluster nodes.
 
 
+== Scaling
+
+What Is Shared Nothing Architecture? How Does It Scale?::
+
+*  a distributed computing approach in which each node is independent and self-sufficient, and there is *no single point of contention* required across the system.
+* no resources are shared between nodes (No shared memory, No shared file storage)
+* The nodes are able to work independently without depending on each other for any work.
+* Failure on one node affects only the users of that node, however other nodes continue to work without any disruption.
+* This approach is highly scalable since it avoids the existence of a single bottleneck in the system.
+* In theory, A shared nothing system can scale almost infinitely simply by adding nodes in the form of inexpensive machines.
+
+
+== Transactions
+
+What Is ACID Property Of A System?::
+The properties of a relational database system:
+
+Atomicity:: if one part of the transaction fails, the entire transaction will fail, and the database state will be left unchanged.
+Consistency:: any transaction will bring the database from one valid state to another.
+Isolation:: the concurrent execution of transactions results in a system state that would be obtained if transactions were executed serially.
+Durable:: means that once a transaction has been committed, it will remain so, even in the event of power loss.
+
+What Is BASE Property Of A System?::
+BASE properties are the common properties of recently evolved NoSQL databases. According to CAP theorem, a BASE system does not guarantee consistency.
+
+Basically available:: indicates that the system is guaranteed to be available
+
+Eventual consistency:: indicates that the system will become consistent over time, given that the system doesn't receive input during that time.
 
 
 

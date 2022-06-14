@@ -51,3 +51,5 @@ https://www.fullstack.cafe/blog/system-design-interview-questions
 
 https://searchapparchitecture.techtarget.com/tip/3-microservices-resiliency-patterns-for-better-reliability
 
+https://www.allthingsdistributed.com/
+
