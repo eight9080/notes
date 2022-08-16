@@ -1,6 +1,6 @@
 = Architecture contracts
 
-IMPORTANT: Joint agreements between development partners and sponsors on the deliverables, quality, and fitness-for-purpose of an architecture
+IMPORTANT: *Joint agreements between development partners and sponsors on the deliverables, quality, and fitness-for-purpose of an architecture*
 
 By implementing a governed approach to the management of contracts:
 
