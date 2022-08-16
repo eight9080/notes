@@ -1,0 +1,29 @@
+= Architecture Board
+
+== Role
+Architecture Boards typically comprise representatives from the organization at a minimum of two levels:
+
+* Local (domain experts, line responsibility)
+* Global (organization-wide responsibility)
+
+Each board will be established with identifiable and articulated:
+
+* Responsibilities and decision-making capabilities
+* Remit and authority limits
+
+== Responsibilities
+
+* Providing the basis for all decision-making with regard to the architectures
+* Consistency between sub-architectures
+* Establishing targets for re-use of components
+*  Flexibility of the Enterprise Architecture:
+    ** To meet changing business needs
+    ** To leverage new technologies
+* Enforcement of Architecture Compliance
+* Improving the maturity level of architecture discipline within the organization
+* Ensuring that the discipline of architecture-based development is adopted
+* Supporting a visible escalation capability for out-of-bounds decisions
+
+
+
+
