@@ -1,0 +1,3 @@
+= Architecture compliance
+
+image:images/architectureConformance.png[Architecture compliance]
