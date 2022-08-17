@@ -1,0 +1,159 @@
+= Architectural Artifacts
+
+*Architectural artifacts are created in order to describe a system, solution, or state of the enterprise.*
+
+== Basic Concepts
+
+
+The "environment" of a system:: is the context determining the setting and circumstances of all influences upon a system. The environment of a system includes developmental, technological, business, operational, organizational, political, economic, legal, regulatory, ecological, and social influences.
+
+A "system":: is a combination of interacting elements organized to achieve one or more stated purposes.
+
+The "architecture" of a system:: is the fundamental concepts or properties of a system in its environment embodied in its elements, relationships, and in the principles of its design and evolution.
+
+An "Architecture Description":: is a work product used to express an architecture; a collection of architecture views and models that together document the architecture.
+
+"Stakeholders":: are individuals, teams, organizations, or classes thereof, having an interest in a system.
+
+"Concerns":: are interests in a system relevant to one or more of its stakeholders. Concerns may pertain to any aspect of the system’s functioning, development, or operation, including considerations such as performance, reliability, security, distribution, and evolvability and may determine the acceptability of the system.
+
+An "architecture view":: is a representation of a system from the perspective of a related set of concerns. It consists of one or more architecture models of the system.
+
+An "Architecture Model":: is a representation of a subject of interest. A model provides a smaller scale, simplified, and/or abstract representation of the subject matter.
+
+An "architecture viewpoint":: is a specification of the conventions for a particular kind of architecture view. It can also be called the definition or schema for that kind of architecture view. It establishes the conventions for constructing, interpreting, and using an architecture view to address a specific concern (or set of concerns) about a system-of-interest.
+
+A "Model Kind":: establishes conventions for a type of modeling.
+
+*An architecture viewpoint references one or more model kinds; an architecture view incorporates one or more models.*
+
+A "viewpoint library":: is a collection of the specifications of architecture viewpoints contained in the Reference Library portion of the Architecture Repository.
+
+== Architectural Artifacts by ADM Phase
+
+
+=== PreliminaryPhase
+
+*Principles Catalog*
+
+=== Phase A: Architecture Vision
+
+*Stakeholder Map Matrix*
+
+* identify the stakeholders for the architecture engagement, their influence over the engagement, and their key questions, issues, or concerns that must be addressed by the architecture framework.
+
+*Value Chain Diagram*
+
+* a high-level orientation view of an enterprise and how it interacts with the outside world
+
+*Solution Concept Diagram*
+
+* a high-level orientation of the solution that is envisaged in order to meet the objectives of the architecture engagement
+
+*Business Model Diagram*
+
+* A model describing the rationale for how an enterprise creates, delivers, and captures value.
+
+*Business Capability Map*
+
+* A family of diagrams representing a definitive listing of a particular ability that a business may possess or exchange to achieve a specific purpose.
+
+*Value Stream Map*
+
+* A family of diagrams representing a definitive listing of an end-to-end collection of value- adding activities that create an overall result for a customer, stakeholder, or end user.
+
+=== Phase B: Business Architecture
+
+*Organization/Actor Catalog*
+
+* a definitive listing of all participants that interact with IT, including users and owners of IT systems.
+
+*Driver/Goal/Objective Catalog*
+
+* a cross-organizational reference of how an organization meets its drivers in practical terms through goals, objectives, and (optionally) measures.
+
+*Role Catalog*
+
+* a listing of all authorization levels or zones within an enterprise.
+
+*Business Service/Function Catalog*
+
+* identify capabilities of an organization and to understand the level that governance is applied to the functions of an organization.
+
+*Location Catalog*
+
+* a listing of all locations where an enterprise carries out business operations
+
+*Process/Event/Control/Product Catalog*
+
+* a hierarchy of processes, events that trigger processes, outputs from processes, and controls applied to the execution of processes.
+
+*Contract/Measure Catalog*
+
+*  a listing of all agreed service contracts
+
+*Business Capabilities Catalog*
+
+*Value Stream Catalog*
+
+*Business Interaction Matrix*
+
+* to depict the relationship interactions between organizations and business functions across the enterprise.
+
+Actor/Role Matrix
+
+..
+
+*Business Use-Case Diagram*
+
+*Process Flow Diagram*
+
+*Business Capability Map*
+
+*Value Stream Map*
+
+=== Phase C: Data Architecture
+
+*Data Entity/Data Component Catalog*
+
+*Data Entity/Business Function Matrix*
+
+*Application/Data Matrix*
+
+Conceptual Data Diagram
+
+Logical Data Diagram
+
+Data Migration Diagram
+
+=== Phase C: Application Architecture
+
+*Application Portfolio Catalog*
+
+*Interface Catalog*
+
+*Application/Organization Matrix*
+
+*Application/Function Matrix*
+
+*Application Migration Diagram*
+
+
+=== Phase D: Technology Architecture
+
+*Technology Standards Catalog*
+
+*Platform Decomposition Diagram*
+
+
+=== Phase E: Opportunities and Solutions
+
+Project Context Diagram
+
+Benefits Diagram
+
+=== RequirementsManagement
+
+Requirements Catalog
+
+
