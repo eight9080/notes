@@ -1,0 +1,44 @@
+= Interoperability Requirements
+
+IMPORTANT: *interoperability is "the ability to share information and services"*
+
+The determination of interoperability is present throughout the Architecture Development Method (ADM) as follows:
+
+* In the Architecture Vision (Phase A), the nature and security considerations of the information and service exchanges are first revealed within the business scenarios
+* In the Business Architecture (Phase B), the information and service exchanges are further defined in business terms
+* In the Data Architecture (Phase C), the content of the information exchanges is detailed using the corporate data and/or information exchange model
+* In the Application Architecture (Phase C), the way that the various applications are to share the information and services is specified
+* In the Technology Architecture (Phase D), the appropriate technical mechanisms to permit the information and service exchanges are specified
+* In Opportunities & Solutions (Phase E), the actual solutions (e.g., Commercial Off-The- Shelf (COTS) packages) are selected
+* In Migration Planning (Phase F), the interoperability is logically implemented
+
+Categorize interoperability:
+
+* *Operational or Business Interoperability* defines how business processes are to be shared
+* *Information Interoperability* defines how information is to be shared
+* *Technical Interoperability* defines how technical services are to be shared or at least connect to one another
+
+Enterprise Application Integration (EAI):
+
+Presentation Integration/Interoperability:: is where a common look-and-feel approach through a common portal-like solution guides the user to the underlying functionality of the set of systems
+
+Information Integration/Interoperability:: is where the corporate information is seamlessly shared between the various corporate applications to achieve, for example, a common set of client information
+
+Application Integration/Interoperability:: is where the corporate functionality is integrated and shareable so that the applications are not duplicated (e.g., one change of address service/component; not one for every application) and are seamlessly linked together through functionality such as workflow
+
+Technical Integration/Interoperability:: includes common methods and shared services for the communication, storage, processing, and access to data primarily in the application platform and communications infrastructure domains
+
+== Enterprise Operating Model
+
+The corporate operating model will normally indicate what type of interoperability approach will be appropriate. This model should be determined in Phase A (Architecture Vision) if not in Phase B (Business Architecture), and definitely by Phase E (Opportunities & Solutions).
+
+== Refining Interoperability
+
+Implementing interoperability requires the creation, management, acceptance, and enforcement of realistic standards that are *SMART* (Specific, Measurable, Actionable, Realistic, and Time- bound). Clear measures of interoperability are key to success.
+
+* Degree 1: Unstructured Data Exchange involves the exchange of human-interpretable unstructured data, such as the free text found in operational estimates, analysis, and papers
+*  Degree 2: Structured Data Exchange involves the exchange of human-interpretable structured data intended for manual and/or automated handling, but requires manual compilation, receipt, and/or message dispatch
+* Degree 3: Seamless Sharing of Data involves the automated sharing of data amongst systems based on a common exchange model
+* Degree 4: Seamless Sharing of Information is an extension of Degree 3 to the universal interpretation of information through data processing based on co-operating applications
+
+
