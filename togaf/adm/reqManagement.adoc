@@ -1,0 +1,33 @@
+= Architecture Requirements Management
+
+* Ensure that the Requirements Management process is sustained and operates for all relevant ADM phases
+* Manage architecture requirements identified during any execution of the ADM cycle or a phase
+* Ensure that relevant architecture requirements are available for use by each phase as the phase is executed
+
+== Inputs
+
+Inputs to the Requirements Management phase are:
+
+* A populated Architecture Repository 
+* Organizational Model for Enterprise Architecture including:
+    ** Scope of organizations impacted
+    ** Maturity assessment, gaps, and resolution approach
+    ** Roles and responsibilities for architecture team(s)
+    ** Constraints on architecture work
+    ** Budget requirements
+    ** Governance and support strategy
+
+* Tailored Architecture Framework including:
+    ** Tailored architecture method
+    ** Tailored architecture content (deliverables and artifacts)
+    ** Configured and deployed tools
+* Statement of Architecture Work
+* Architecture Vision
+* Architecture requirements, populating an Architecture Requirements Specification
+* Requirements Impact Assessment
+
+== Outputs
+
+* Requirements Impact Assessment
+* Updated Architecture Requirements Specification
+
