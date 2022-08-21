@@ -6,4 +6,70 @@ The objectives of Phase H are to:
 * Ensure that the Architecture Governance Framework is executed
 * Ensure that the Enterprise Architecture Capability meets current requirements
 
+== Approach
+Goal:
+
+* ensure that the architecture achieves its original target business value.
+* continual monitoring of such things as governance requests, new developments in technology, and changes in the business environment
+
+The value and change management process, once established, will determine:
+
+* The circumstances under which the Enterprise Architecture, or parts of it, will be permitted to change after deployment, and the process by which that will happen
+* The circumstances under which the architecture development cycle will be initiated again to develop a new architecture
+
+NOTE: In Phase H it is critical that the governance body establish criteria to judge whether a Change Request warrants just an architecture update or whether it warrants starting a new cycle of the Architecture Development Method (ADM)
+
+An *Architecture Compliance* report should state whether the change is compliant to the current architecture.
+
+If it is *non-compliant*, an exemption may be granted with valid rationale. If the change has high impact on the architecture, then a strategy to manage its impact should be defined.
+
+=== Drivers for Change
+
+There are three ways to change the existing infrastructure that have to be integrated:
+
+* Strategic, top-down directed change to enhance or create new capability (capital)
+* Bottom-up changes to correct or enhance capability (operations and maintenance) for infrastructure under operations management
+* Experiences with the previously delivered project increments in the care of operations management, but still being delivered by ongoing projects
+
+The *Architecture Board* assesses and approves *Requests for Change* (RFC).
+An RFC is typically in response to known problems but can also include improvements.
+
+Technology-related drivers for architecture Change Requests:
+
+* New technology reports
+* Asset management cost reductions
+* Technology withdrawal
+* Standards initiatives
+
+Business drivers for architecture change
+
+* Business-as-usual developments
+* Business exceptions
+* Business innovations
+* Business technology innovations
+* Strategic change
+
+== Enterprise Architecture Change Management Process
+
+*Simplification change*: a simplification change can normally be handled via change management techniques
+*Incremental change*: an incremental change may be capable of being handled via change management techniques, or it may require partial re-architecting, depending on the nature of the change
+*Re-architecting change*: a re-architecting change requires putting the whole architecture through the architecture development cycle again
+
+=== Guidelines for Maintenance versus Architecture Redesign
+
+* If the change impacts *two stakeholders* or more, then it is likely to require an *architecture redesign* and re-entry to the ADM
+* If the change impacts only *one stakeholder*, then it is more likely to be a candidate for *change management*
+■ If the change can be allowed under a *dispensation*, then it is more likely to be a candidate for *change management*
+
+Examples:
+
+* If the impact is significant for the business strategy, then there may be a need to redo the whole Enterprise Architecture — thus a re-architecting approach
+* If a new technology or standards emerge, then there may be a need to refresh the Technology Architecture, but not the whole Enterprise Architecture — thus an incremental change
+* If the change is at an infrastructure level — for example, ten systems reduced or changed to one system — this may not change the architecture above the physical layer, but it will change the Baseline Description of the Technology Architecture; this would be a simplification change handled via change management techniques
+
+A refreshment cycle (partial or complete re-architecting) may be required if:
+
+* The *Foundation Architecture* needs to be re-aligned with the business strategy
+* *Substantial* *change* is required to components and guidelines for use in deployment of the architecture
+* *Significant standards* used in the product architecture are changed which have significant end-user impact; e.g., regulatory changes
 
