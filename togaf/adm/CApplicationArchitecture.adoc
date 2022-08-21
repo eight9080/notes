@@ -1,0 +1,18 @@
+= Phase C: Information Systems Architectures — Application Architecture
+
+* Develop the Target Application Architecture that enables the Business Architecture and the Architecture Vision, in a way that addresses the Statement of Architecture Work and stakeholder concerns
+
+* Identify candidate Architecture Roadmap components based upon gaps between the Baseline and Target Application Architectures
+
+== Approach
+
+=== Architecture Repository
+
+Consider what relevant Application Architecture resources are available in the Architecture Repository:
+
+* Generic business models relevant to the organization’s industry "vertical" sector; for example:
+** The Object Management Group (OMG) — www.omg.org — has a number of vertical Domain Task Forces developing software models relevant to specific vertical domains such as Healthcare, Transportation, Finance, etc.
+** The Open Group has developed a detailed application architecture reference model for the IT segment of organizations (the IT4IT Reference Architecture)
+** The TM Forum — www.tmforum.org — has developed detailed applications models relevant to the Telecommunications industry
+
+* Application models relevant to common high-level business functions, such as electronic commerce, supply chain management, etc.
