@@ -1,0 +1,40 @@
+= Phase G: Implementation Governance
+
+* Ensure conformance with the Target Architecture by implementation projects
+* Perform appropriate Architecture Governance functions for the solution and any implementation-driven architecture Change Requests
+
+== Output
+
+* Architecture Contract (signed)
+
+* Compliance Assessments
+
+* Change Requests
+
+*  Architecture-compliant solutions
+
+
+== Approach
+
+* Establish an implementation program that will enable the delivery of the Transition Architectures agreed for implementation during the Migration Planning phase
+
+* Adopt a *phased deployment schedule* that reflects the business priorities embodied in the Architecture Roadmap
+
+* Follow the organization’s standard for corporate, IT, and Architecture Governance
+
+* Use the organization’s established portfolio/program management approach, where this
+exists
+
+* Define an *operations framework* to ensure the effective long life of the deployed solution
+
+Project details are developed, including:
+
+* Name, description, and objectives
+* Scope, deliverables, and constraints
+* Measures of effectiveness
+* Acceptance criteria
+* Risks and issues
+
+
+
+
