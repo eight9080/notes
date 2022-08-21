@@ -1,0 +1,24 @@
+= Phase D: Technology Architecture
+
+* Develop the Target Technology Architecture that enables the Architecture Vision, target business, data, and application building blocks to be delivered through technology components and technology services, in a way that addresses the Statement of Architecture Work and stakeholder concerns
+
+* Identify candidate Architecture Roadmap components based upon gaps between the Baseline and Target Technology Architectures
+
+== Approach
+
+=== Emerging Technologies
+
+* The Technology Architecture needs to capture the transformation opportunities available to the enterprise through the adoption of new technology.
+
+=== Architecture Repository
+
+The architecture team will need to consider what relevant Technology Architecture resources are available in the Architecture Repository
+
+* Existing IT services as documented in the IT repository or IT service catalog
+* The adopted technical reference model, if applicable
+
+* Generic technology models relevant to the organization’s industry "vertical" sector
+
+* Technology models relevant to *Common Systems Architectures*
+— The Open Group has a Reference Model for Integrated Information Infrastructure (III-RM) — see the TOGAF® Series Guide: The TOGAF *Integrated Information Infrastructure Reference Model (III-RM)* — that focuses on the application-level components and underlying services necessary to provide an integrated information infrastructure
+
