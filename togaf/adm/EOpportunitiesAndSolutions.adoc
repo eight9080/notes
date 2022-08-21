@@ -1,0 +1,21 @@
+= Phase E: Opportunities & Solutions
+
+* Generate the initial complete version of the Architecture Roadmap, based upon the gap analysis and candidate Architecture Roadmap components from Phases B, C, and D
+
+* Determine whether an incremental approach is required, and if so identify Transition Architectures that will deliver continuous business value
+
+* Define the overall solution building blocks to finalize the Target Architecture based on the Architecture Building Blocks (ABBs)
+
+== Approach
+
+Phase E is the initial step on the creation of the Implementation and Migration Plan which is completed in Phase F.
+
+The following four concepts are key to transitioning from developing to delivering a Target Architecture:
+
+* Architecture Roadmap -> lists individual work packages in a timeline that will realize the Target Architecture.
+* Work Packages -> Each work package identifies a logical group of changes necessary to realize the Target Architecture.
+* Transition Architectures -> describes the enterprise at an architecturally significant state between the Baseline and Target Architectures.
+* Implementation and Migration Plan -> provides a schedule of the projects that will realize the Target Architecture.
+
+
+
