@@ -1,0 +1,15 @@
+= Phase F: Migration Planning
+
+*  Finalize the *Architecture Roadmap* and the supporting Implementation and Migration Plan
+
+* Ensure that the Implementation and Migration Plan is co-ordinated with the enterprise’s approach to managing and implementing change in the enterprise’s overall change portfolio
+
+* Ensure that the business value and cost of work packages and Transition Architectures is understood by key stakeholders
+
+== Approach
+
+* In Phase F this Roadmap and the Implementation and Migration Plan are integrated with the enterprise’s other change activity.
+
+* Activities include assessing the *dependencies, costs, and benefits* of the various migration projects within the context of the enterprise’s other activity.
+
+
