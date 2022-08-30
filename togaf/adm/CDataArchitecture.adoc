@@ -1,0 +1,36 @@
+= Phase C: Information Systems Architectures — Data Architecture
+
+* Develop the Target Application Architecture that enables the Business Architecture and the Architecture Vision, in a way that addresses the Statement of Architecture Work and stakeholder concerns
+
+* Identify candidate Architecture Roadmap components based upon gaps between the Baseline and Target Application Architectures
+
+== Approach
+
+=== Data Management
+
+
+* A clear definition of which application components in the landscape will serve as the system of record or reference for enterprise master data
+
+* Will there be an enterprise-wide standard that all application components, including software packages, need to adopt?
+(In the main, packages can be prescriptive about the data models and may not be flexible.)
+* Clearly understand how data entities are utilized by business functions, processes, and services
+
+* Clearly understand how and where enterprise data entities are created, stored, transported, and reported
+* What is the level and complexity of data transformations required to support the information exchange needs between applications?
+
+* What will be the requirement for software in supporting data integration with the enterprise’s customers and suppliers
+
+=== Data Migration
+
+The Data Architecture should identify data migration requirements and also provide indicators as to the level of transformation, weeding, and cleansing that will be required to present data in a format that meets the requirements and constraints of the target application.
+
+Another key consideration is to ensure that an enterprise-wide common data definition is established to support the transformation.
+
+=== Data Governance
+
+* *Structure*: this dimension pertains to whether the enterprise has the necessary organizational structure and the standards bodies to manage data entity aspects of the transformation
+
+* *Management System*: here enterprises should have the necessary management system and data-related programs to manage the governance aspects of data entities throughout its lifecycle
+
+* *People*: this dimension addresses what data-related skills and roles the enterprise requires for the transformation
+
