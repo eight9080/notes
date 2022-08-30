@@ -1,1 +1,3 @@
 = Architecture Integration
+
+image:../images/integration.png[Integration]
