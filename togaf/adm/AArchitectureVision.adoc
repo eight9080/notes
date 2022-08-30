@@ -1,0 +1,46 @@
+= Phase A: Architecture Vision
+
+* Develop a *high-level* aspirational vision of the capabilities and business value to be delivered as a result of the proposed Enterprise Architecture
+* Obtain *approval* for a Statement of Architecture Work that defines a program of works to develop and deploy the architecture outlined in the Architecture Vision
+
+== Approach
+
+* Phase A starts with receipt of a Request for Architecture Work from the sponsoring organization to the architecture organization.
+
+Phase A also defines what is in and what is outside the scope of the architecture effort and the constraints that must be dealt with.
+
+Scoping decisions need to be made on the basis of a practical assessment of resource and competence availability, and the value that can realistically be expected to accrue to the enterprise from the chosen scope of architecture work.
+
+=== Creating the Architecture Vision
+
+The Architecture Vision provides the sponsor with a key tool to sell the benefits of the proposed capability to stakeholders and decision-makers within the enterprise.
+
+NOTE: Architecture Vision describes how the new capability will meet the business goals and strategic objectives and address the stakeholder concerns when implemented.
+
+Clarifying and agreeing the purpose of the architecture effort is one of the key parts of this activity, and the purpose needs to be clearly reflected in the vision that is created.
+
+This exercise should examine and search for existing materials on fundamental Business Architecture concepts such as:
+
+* *Business Capabilities*, which represent a particular ability or capacity that a business may possess or exchange to achieve a specific purpose or outcome
+
+* *Value Streams*, which represent an end-to-end collection of value-adding activities that create an overall result for a customer, stakeholder, or end user
+
+* *Organization Maps*, which depict the relationships between the primary entities that make up the enterprise, its partners, and stakeholders
+
+Example domains may include:
+* Information
+* Security
+* Digital
+* Network Management
+* Knowledge
+* Industry-specific
+* Services
+* Partnership
+* Cybersecurity
+
+The Architecture Vision phase includes the conduct of a business assessment (using, for example, business scenarios) where critical factors are documented and various courses of action are assessed.
+
+High-level advantages and disadvantages, including risks and opportunities, are documented and the best course of action selected to serve as the basis for the Architecture Vision.
+
+The Architecture Vision provides a first-cut, high-level description of the Baseline and Target Architectures, covering the business, data, application, and technology domains.
+
