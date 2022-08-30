@@ -1,0 +1,55 @@
+= Phase B: Business Architecture
+
+* Develop the Target Business Architecture that describes how the enterprise needs to operate to achieve the business goals, and respond to the strategic drivers set out in the Architecture Vision, in a way that addresses the Statement of Architecture Work and stakeholder concerns
+
+* Identify candidate Architecture Roadmap components based upon gaps between the Baseline and Target Business Architectures
+
+
+== Approach
+
+=== General
+
+The business strategy defines the goals and drivers and metrics for success, but not necessarily how to get there. That is the role of the Business Architecture, defined in detail in Phase B.
+
+For the architecture team to research, verify, and gain buy-in to the key business objectives and processes that the architecture is to support. This may be done as a free- standing exercise, either preceding architecture development, or as part of Phase A.
+
+=== Developing the Baseline Description
+
+If no Architecture Descriptions exist, information should be gathered and Business Architecture models developed.
+
+=== Applying Business Capabilities
+
+The business capability map found or developed in the Architecture Vision phase provides a self-contained view of the business that is independent of the current organizational structure, business processes, information systems and applications, and the rest of the product or service portfolio.
+
+Those business capabilities should be mapped back to the organizational units, value streams, information systems, and strategic plans within the scope of the Enterprise Architecture project.
+
+Another common analysis technique involves heat mapping, which can be used to show a range of different perspectives on the same set of core business capabilities. These include maturity, effectiveness, performance, and the value or cost of each capability to the business.
+
+=== Applying Value Streams
+
+* Value streams provide valuable stakeholder context into why the organization needs business capabilities, while business capabilities provide what the organization needs for a particular value stage to be successful.
+
+A new or existing value stream can be analyzed within the scope of the project through heat mapping (by value stream stage) or by developing use-cases around a complete definition of the value stream (see Baseline Example in the TOGAF® Series Guide: Value Streams).
+
+The most substantive benefits come from mapping relationships between the stages in a value stream to business capabilities, then performing a gap analysis for capabilities (such as heat mapping) in the context of the business value achieved by the value stream for a specific stakeholder
+
+=== Applying the Organization Map
+
+An organization map shows the key organizational units, partners, and stakeholder groups that make up the enterprise ecosystem.
+
+The map should also depict the working relationship between those entities, as distinct from an organizational chart that only shows hierarchical reporting relationships.
+
+=== Applying Modeling Techniques
+
+*Activity Models (also called Business Process Models)* describe the functions associated with the enterprise’s business activities, the data and/or information exchanged between activities (internal exchanges), and the data and/or information exchanged with other activities that are outside the scope of the model (external exchanges)
+
+
+*Use-Case Models* can describe either business processes or systems functions, depending on the focus of the modeling effort
+A use-case model describes the business processes of an enterprise in terms of use-cases and actors corresponding to business processes and organizational participants (people, organizations, etc.). The use-case model is described in use-case diagrams and use-case specifications.
+
+
+*Class Models* are similar to logical data models +
+A class model describes static information and relationships between information. A class model also describes informational behaviors.
+
+
+
