@@ -1,5 +1,7 @@
 = Architecture Repository
 
+image::images/repo.png[repo]
+
 Classes of architectural information:
 
 Architecture Metamodel:: describes the organizationally tailored application of an architecture framework, including a method for architecture development and a metamodel for architecture content
