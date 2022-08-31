@@ -1,0 +1,36 @@
+= Scoping the Architecture
+
+Four dimensions are typically used in order to define and limit the scope of an architecture:
+
+* *Breadth*: what is the full extent of the enterprise, and what part of that extent will this architecting effort deal with?
+
+* *Depth*: to what level of detail should the architecting effort go?
+
+* *Time Period*: what is the time period that needs to be articulated for the Architecture Vision, and does it make sense (in terms of practicality and resources) for the same period to be covered in the detailed Architecture Description?
+
+* *Architecture Domains*: a complete Enterprise Architecture description should contain all four architecture domains (business, data, application, technology), but the realities of resource and time constraints often mean there is not enough time, funding, or resources to build a top-down, all-inclusive Architecture Description encompassing all four architecture domains, even if the enterprise scope is chosen to be less than the full extent of the overall enterprise
+
+== Breadth
+
+For large complex enterprises, federated architectures — independently developed, maintained, and managed architectures that are subsequently integrated within an integration framework — are typical.
+
+Such a framework specifies the principles for interoperability, migration, and conformance.
+
+This allows specific business units to have architectures developed and governed as stand-alone architecture projects.
+
+These Enterprise Architectures focus on particular timeframes, business segments or functions, and specific organizational requirements. In such a case we need to create the overarching Enterprise Architecture as a "federation" of these Enterprise Architectures.
+
+An effective way of managing and exploiting these Enterprise Architectures is to adopt a publish-and-subscribe model that allows architecture to be brought under a governance framework.
+
+== Depth
+
+The depth and detail of the Enterprise Architecture needs to be sufficient for its purpose, and no more.
+
+== Time Period
+
+One architecture instance will represent the current enterprise state (the "as-is", or baseline). Another architecture instance, perhaps defined only partially, will represent the ultimate target end-state (the "vision"). In-between, intermediate or "Transition Architecture" instances may be defined, each comprising its own set of Target Architecture Descriptions.
+
+== Architecture Domains
+
+Architecture descriptions will normally be built with a specific purpose in mind — a specific set of business drivers that drive the architecture development — and clarifying the specific issue(s) that the Architecture Description is intended to help explore, and the questions it is expected to help answer, is an important part of the initial phase of the ADM.
+
