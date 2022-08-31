@@ -7,6 +7,12 @@
 
 == Approach
 
+Knowledge of the Business Architecture is a prerequisite for architecture work in the other domains (Data, Applications, Technology), therefore that is the first activity that needs to be undertaken.
+
+* Business Strategy defines what to achieve
+* Business Architecture describes how to achieve it
+* It is required to demonstrate business value of subsequent work to key stakeholders.
+
 === General
 
 The business strategy defines the goals and drivers and metrics for success, but not necessarily how to get there. That is the role of the Business Architecture, defined in detail in Phase B.

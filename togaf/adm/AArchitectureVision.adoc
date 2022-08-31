@@ -11,7 +11,16 @@ Phase A also defines what is in and what is outside the scope of the architectur
 
 Scoping decisions need to be made on the basis of a practical assessment of resource and competence availability, and the value that can realistically be expected to accrue to the enterprise from the chosen scope of architecture work.
 
+* Constraints are articulated by principles, business goals and strategic drivers
+
 === Creating the Architecture Vision
+
+The Architecture Vision document is being formulated
+
+* Clarifying and agreeing the purpose of the architecture
+* Demonstrating how it will be achieved
+* A first-cut high-level description of the Baseline and Target architectures
+* The business scenarios technique can be used to develop the Architecture Vision
 
 The Architecture Vision provides the sponsor with a key tool to sell the benefits of the proposed capability to stakeholders and decision-makers within the enterprise.
 
