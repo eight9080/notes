@@ -1,0 +1,17 @@
+= General
+
+== First Section
+
+STAR -> Situation, Task, Action and Result
+
+* Describe the last project you worked on, including any obstacles and your contributions to its success.
+
+* What are your most used design patterns and in what contexts do you use them?
+
+* What is “Agile” software development and what are your thoughts on it?
+
+* What are your thoughts on software testing?
+
+* Describe a difficult bug you were tasked with fixing in a large application. How did you debug the issue?
+
+* What scaling issues have you had to deal with on past projects? How could it have been avoided and how did you solve it?

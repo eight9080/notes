@@ -1,0 +1,33 @@
+
+= Security
+
+*  What is the difference between encryption, encoding, and hashing?
+
+* Encryption is used for changing plain text into cipher text so that only authorized entities can understand it. Encryption deals with keys which are used to encrypt and decrypt the data. These keys are used to transform a simple text into a cypher text and the vice versa.
+
+* Encoding is used for changing the data into a special format which makes it usable by external processes. Unlike encryption, the intention of encoding is not related to security. The message is encoded by using an algorithm or scheme.
+
+* In hashing, the data is converted to a message digest or hash, which is usually a number generated from a string of text. Hashing is not reversible as encryption and encoding. The data is converted to a message digest or hash, which is usually a number generated from a string of text. These digests are important as one can easily match the hash of sent and received messages to ensure that both are the same and no tempering is done with the data.
+
+Source: http://www.differencebetween.info/difference-between-encryption-encoding-and-hashing
+
+* What’s the difference between Symmetric and Asymmetric encryption and which is better?
+
+Symmetric encryption uses the same key for encryption and decryption. Asymmetric encryption, on the other hand, uses different keys. Symmetric is usually faster but the key must be transferred over an unencrypted channel. Asymmetric is more secure but it’s slower. The best approach would combine the two, setting up a channel using asymmetric encryption and then sending the data using a symmetric process.
+
+* What is Cross-site Scripting (XSS) and how will you mitigate it?
+
+Cross-site scripting is a JavaScript vulnerability. The simplest way to explain it is when a user enters a script in the input fields and the input is processed without being validated. This can lead to untrusted data being saved and executed upon on the client side. To mitigate this vulnerability, you can add input validation or implement a content security policy.
+
+* What's the difference between HTTP and HTTPS?
+
+HTTP is an unencrypted protocol that doesn't use TLS (SSL), where HTTP requests and responses occur without security. This means anyone who monitors the internet connection can read this content in plaintext. HTTPS is an encrypted protocol, meaning it does use TLS to secure requests and responses. This means people monitoring the connection can't see the content, only random characters instead of plaintext.
+
+* Name the elements of PKI
+
+A typical PKI includes the following key elements:
+
+* A trusted party, called a certificate authority (CA), acts as the root of trust and provides services that authenticate the identity of individuals, computers and other entities
+* A registration authority, often called a subordinate CA, certified by a root CA to issue certificates for specific uses permitted by the root
+* A certificate database, which stores certificate requests and issues and revokes certificates
+* A certificate store, which resides on a local computer as a place to store issued certificates and private keys

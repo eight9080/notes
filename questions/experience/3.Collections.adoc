@@ -1,0 +1,28 @@
+
+
+= Collections
+
+* When to use LinkedList over ArrayList in Java?
+
+LinkedList implements it with a doubly-linked list.
+
+*LinkedList<E>* allows for constant-time insertions or removals using iterators, but only sequential access of elements. In other words, you can walk the list forwards or backwards, but finding a position in the list takes time proportional to the size of the list.
+
+*ArrayList<E>* allow fast random read access, so you can grab any element in constant time. But adding or removing from anywhere but the end requires shifting all the latter elements over, either to make an opening or fill the gap.
+
+* Why ArrayList are preferable in many more use-cases than LinkedList
+
+A: Any indexed operation requires a traversal, i.e. has O(n) performance. -> leading to algorithms O(n) slower than if ArrayList was used.
+Getting good performance is tricky.
+
+* What differences exist between HashMap and Hashtable
+
+*Hashtable* is synchronized, whereas HashMap is not. This makes HashMap better for non-threaded applications, as unsynchronized Objects typically perform better than synchronized ones.
+
+*Hashtable* does not allow null keys or values. HashMap allows one null key and any number of null values.
+
+One of HashMap's subclasses is LinkedHashMap, so in the event that you'd want predictable iteration order (which is insertion order by default), you could easily swap out the HashMap for a LinkedHashMap. This wouldn't be as easy if you were using Hashtable.
+
+* What is difference between fail-fast and fail-safe
+
+The Iterator's fail-safe property works with the clone of the underlying collection and thus, it is not affected by any modification in the collection. All the collection classes in java.util package are fail-fast, while the collection classes in java.util.concurrent are fail-safe. Fail-fast iterators throw a ConcurrentModificationException, while fail-safe iterator never throws such an exception.
