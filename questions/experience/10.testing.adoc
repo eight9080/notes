@@ -7,3 +7,8 @@ A: If you want to unit test a private method, something may be wrong. Unit tests
 If the method you'd like to test is really worth testing, it may be worth to move it into its own class.
 Add more tests to the public methods that call the private method, testing the private method's functionality. (As the commentators indicated, you should only do this if these private methods's functionality is really a part in with the public interface. If they actually perform functions that are hidden from the user (i.e. the unit test), this is probably bad).
 
+== What do you understand by Contract Testing?
+According to Martin Flower, contract test is a test at the boundary of an external service which verifies that it meets the contract expected by a consuming service.
+
+Also, contract testing does not test the behavior of the service in depth. Rather, it tests that the inputs & outputs of service calls contain required attributes and the response latency, throughput is within allowed limits.
+

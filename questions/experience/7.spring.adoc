@@ -1,0 +1,63 @@
+= Spring
+
+== General
+
+=== Name the different modules of the Spring framework.
+Some of the important Spring Framework modules are:
+
+* Spring Context – for dependency injection.
+* Spring AOP – for aspect oriented programming.
+* Spring DAO – for database operations using DAO pattern
+* Spring JDBC – for JDBC and DataSource support.
+* Spring ORM – for ORM tools support such as Hibernate
+* Spring Web Module – for creating web applications.
+* Spring MVC – Model-View-Controller implementation for creating web applications, web services etc.
+
+=== List some of the important annotations in annotation-based Spring configuration.
+
+The important annotations are:
+
+@Required
+@Autowired
+@Qualifier
+@Resource
+@PostConstruct
+@PreDestroy
+
+=== Explain Bean in Spring and List the different Scopes of Spring bean.
+
+Beans are objects that form the backbone of a Spring application. They are managed by the Spring IoC container. In other words, a bean is an object that is instantiated, assembled, and managed by a Spring IoC container.
+
+There are five Scopes defined in Spring beans.
+
+Singleton:: Only one instance of the bean will be created for each container. This is the default scope for the spring beans. While using this scope, make sure spring bean doesn’t have shared instance variables otherwise it might lead to data inconsistency issues because it’s not thread-safe.
+Prototype:: A new instance will be created every time the bean is requested.
+Request:: This is same as prototype scope, however it’s meant to be used for web applications. A new instance of the bean will be created for each HTTP request.
+Session:: A new bean will be created for each HTTP session by the container.
+Global-session:: This is used to create global session beans for Portlet applications.
+
+=== Explain the role of DispatcherServlet and ContextLoaderListener.
+
+*DispatcherServlet* is basically the front controller in the Spring MVC application as it loads the spring bean configuration file and initializes all the beans that have been configured. If annotations are enabled, it also scans the packages to configure any bean annotated with @Component, @Controller, @Repository or @Service annotations.
+
+image::images/dispatcherServlet.png[Dispatcher serlet]
+Source: https://www.edureka.co/blog/interview-questions/java-interview-questions/#Spring
+
+
+*ContextLoaderListener*, on the other hand, is the listener to start up and shut down the WebApplicationContext in Spring root. Some of its important functions includes tying up the lifecycle of Application Context to the lifecycle of the ServletContext and automating the creation of ApplicationContext.
+
+image::images/contextLoader.png[context loader]
+
+=== How to handle exceptions in Spring MVC Framework?
+Spring MVC Framework provides the following ways to help us achieving robust exception handling.
+
+Controller Based::
+We can define exception handler methods in our controller classes. All we need is to annotate these methods with @ExceptionHandler annotation.
+
+Global Exception Handler::
+Exception Handling is a cross-cutting concern and Spring provides @ControllerAdvice annotation that we can use with any class to define our global exception handler.
+
+HandlerExceptionResolver implementation::
+For generic exceptions, most of the times we serve static pages. Spring Framework provides HandlerExceptionResolver interface that we can implement to create global exception handler. The reason behind this additional way to define global exception handler is that Spring framework also provides default implementation classes that we can define in our spring bean configuration file to get spring framework exception handling benefits.
+
+

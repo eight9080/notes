@@ -1,0 +1,83 @@
+= Microservices
+
+== General
+
+=== List down the advantages of Microservices Architecture.
+
+Independent Development::	All microservices can be easily developed based on their individual functionality
+Independent Deployment::	Based on their services, they can be individually deployed in any application
+Fault Isolation::	Even if one service of the application does not work, the system still continues to function
+Mixed Technology Stack::	Different languages and technologies can be used to build different services of the same application
+Granular Scaling::	Individual components can scale as per need, there is no need to scale all components together
+
+=== Best practices to design Microservices
+
+* separate data store for each microservice
+* keep code at a similar level of maturity
+* separate build for each microservice
+* deploy into containers
+* treat servers as stateless
+
+=== Pros/cons
+
+|===
+|Pros of Microservice Architecture |Cons of Microservice Architecture
+
+|Freedom to use different technologies
+|Increases troubleshooting challenges
+
+|Each microservices focuses on single capability
+|Increases delay due to remote calls
+
+|Supports individual deployable units
+|Increased efforts for configuration and other operations
+
+|Allow frequent software releases
+|Difficult to maintain transaction safety
+
+|Ensures security of each service
+|Tough to track data across various boundaries
+
+|Mulitple services are parallelly developed and deployed
+|Difficult to code between services
+
+|===
+
+
+== Transactions
+
+=== What do you understand by Distributed Transaction?
+Distributed Transaction is any situation where a single event results in the mutation of two or more separate sources of data which cannot be committed atomically. In the world of microservices, it becomes even more complex as each service is a unit of work and most of the time multiple services have to work together to make a business successful.
+
+=== Why would one use sagas over 2PC and vice versa?
+
+There are two approaches which I know are used to implement distributed transactions:
+
+* 2-phase commit (2PC)
+* Sagas
+
+2PC is a protocol for applications to transparently utilize global ACID transactions by the support of the platform. Being embedded in the platform, it is transparent to the business logic and the application code as far as I know.
+
+Sagas, on the other hand, are series of local transactions, where each local transaction mutates and persist the entities along with some flag indicating the phase of the global transaction and commits the change. In the other words, state of the transaction is part of the domain model. Rollback is the matter of committing a series of "inverted" transactions. Events emitted by the services triggers these local transactions in either case.
+
+* Typically, 2PC is for immediate transactions.
+* Typically, Sagas are for long running transactions.
+
+* Saga capable of doing what 2PC can do, but they have the overhead of implementing the *redo mechanism*. Opposite is not accurate. I think Sagas are universal, while 2PC involves platform/vendor lockdown and lacks platform independence.
+
+* Saga is a domain modeling (i.e., technology-agnostic) concept, while 2PC is a technology-specific notion with some (maybe many) vendors implementing it. For an analogy, it's the same if we compare the domain events (bare objects) with message brokers (such as RabbitMQ for example).
+
+* 2PC can be a good choice if you are anyway married to platforms that implement such a protocol. Not all do, and thus I call this a limitation. I see that people found an argument that Saga is more limiting because it's harder to implement, but that's like saying orange is juicier than apple is sweet. Two different things.
+
+=== What is the most accepted transaction strategy for microservices?
+
+Microservices introduce *eventual consistency issues* because of their laudable insistence on decentralized data management. With a monolith, you can update a bunch of things together in a single transaction. Microservices require multiple resources to update, and distributed transactions are frowned upon (for good reason). So now, developers need to be aware of consistency issues, and figure out how to detect when things are out of sync before doing anything the code will regret.
+
+Think how transactions occur and what kind make sense for your services then, you can implement a rollback mechanism that un-does the original operation, or a 2-phase commit system that reserves the original operation until told to commit for real.
+
+Financial services do this kind of thing all the time - if I want to move money from my bank to your bank, there is no single transaction like you'd have in a DB. You don't know what systems either bank is running, so must effectively treat each like your microservices. In this case, my bank would move my money from my account to a holding account and then tell your bank they have some money, if that send fails, my bank will refund my account with the money they tried to send.
+
+
+
+
+

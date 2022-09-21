@@ -1,0 +1,14 @@
+= Releasing devops
+
+== Types of releases
+
+=== What is Canary Releasing?
+
+Canary Releasing is a technique to reduce the risk of introducing a new software version in production. This is done by slowly rolling out the change to a small subset of users before giving it out to the entire infrastructure, i.e. making it available to everybody.
+
+== Deployments
+
+=== What is the use of Container in Microservices?
+
+Containers are a good way to manage microservice based application to develop and deploy them individually. You can encapsulate your microservice in a container image along with its dependencies, which then can be used to roll on-demand instances of microservice without any additional efforts required.
+

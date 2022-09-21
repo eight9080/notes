@@ -1,0 +1,9 @@
+= Rest
+
+== API
+
+=== What is an Idempotence and where it is used?
+Idempotence is the property of being able to do something twice in such a way that the end result will remain the same i.e. as if it had been done once only.
+
+Usage: Idempotence is used at the remote service, or data source so that, when it receives the instruction more than once, it only processes the instruction once.
+
