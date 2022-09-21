@@ -6,6 +6,16 @@ Sources
 * https://www.fullstack.cafe/blog/advanced-java-interview-questions
 * https://www.edureka.co/blog/interview-questions/java-interview-questions/
 
+== Topics
+
+* https://www.fullstack.cafe/blog/hashing-interview-questions[Hashing]
+* https://www.fullstack.cafe/blog/dependency-injection-interview-questions[Dependency injection]
+* https://www.fullstack.cafe/blog/microservices-interview-questions[Microservices]
+* https://www.fullstack.cafe/blog/data-structures-interview-questions[Data structures]
+Which data structure will you choose to model a ranges number?
+* https://www.fullstack.cafe/blog/domain-driven-design-interview-questions[DDD]
+* https://www.fullstack.cafe/blog/kubernetes-interview-questions[kubernetes]
+
 
 
 
