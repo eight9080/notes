@@ -1,0 +1,9 @@
+The functional requirements of the distributed task scheduler are as follows:
+
+Submit tasks: The system should allow the users to submit their tasks for execution.
+Allocate resources: The system should be able to allocate the required resources to each task.
+Remove tasks: The system should allow the users to cancel the submitted tasks.
+Monitor task execution: The task execution should be adequately monitored and rescheduled if the task fails to execute.
+Efficient resource utilization: The resources (CPU and memory) must be used efficiently in terms of time, cost, and fairness. Efficiency means that we do not waste resources. For example, if we allocate a heavy resource to a light task that can easily be executed on a cheap resource, it means that we have not efficiently utilized our resources. Fairness is all tenants’ ability to get the resources with equally likely probability in a certain cost class.
+Release resources: After successfully executing a task, the system should take back the resources assigned to the task.
+Show task status: The system should show the users the current status of the task.
