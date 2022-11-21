@@ -2,6 +2,16 @@
 
 == General
 
+=== Advantages of using Spring framework
+
+* Dependency injection makes it possible to write loosely coupled code which is easy to modify and maintain.
+* Spring architecture is modular which makes it a lightweight framework. The developer has the choice to pick and choose only those modules which are needed for the application.
+* Spring also provides excellent integration with a number of frameworks like Hibernate, Struts, EJB etc.
+* The autoconfiguration feature reduces the development time where the developer only focuses on the business logic while Spring takes care of the configuration details.
+* Spring supports AOP, which separates business logic from system services.
+* Spring provides an API for translating technology-specific exceptions into unchecked exceptions.
+* Spring supports testable code and test driven development (TDD).
+
 === Name the different modules of the Spring framework.
 Some of the important Spring Framework modules are:
 
@@ -12,6 +22,18 @@ Some of the important Spring Framework modules are:
 * Spring ORM – for ORM tools support such as Hibernate
 * Spring Web Module – for creating web applications.
 * Spring MVC – Model-View-Controller implementation for creating web applications, web services etc.
+
+=== Describe some standard Spring events
+
+Events provide a way of communication between loosely coupled components. ApplicationContext in Spring publishes certain events during the lifecycle of a Spring application.
+
+Standard Spring events include:
+
+ContextStartedEvent:: triggered when the context is started.
+ContextRefreshedEvent:: triggered when the context is either initialized or refreshed using the refresh() method.
+ContextStoppedEvent:: triggered when the context is stopped using the stop() method.
+ContextClosedEvent:: triggered when the close() method is called on the ApplicationContext.
+RequestHandledEvent:: triggered to let all beans know that an HTTP request has been handled.
 
 === List some of the important annotations in annotation-based Spring configuration.
 
