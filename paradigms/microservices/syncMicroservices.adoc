@@ -1,0 +1,60 @@
+= Synchronous Microservices
+
+== Benefits
+
+* All services can access the same dataset, so there are fewer consistency problems.
+
+* Synchronous communication is a natural approach if the system is to offer an API. Any microservice can implement part of the API.
+
+* easier to migrate into such an architecture
+
+* Calling methods, procedures, or functions in a program is usually synchronous.
+
+== Challenges
+
+=== Low performance
+
+The communication with other microservices during request processing causes the latencies for responses of other microservices and the communication times via the network to add up.
+
+=== Failure propagation
+
+When a synchronous microservice calls a failed microservice, the calling microservice may crash and the failure propagates. This makes the system very vulnerable.
+
+The vulnerability of the microservices and the additional waiting times can prevent the reliable operation of microservices systems with synchronous communication
+
+=== Higher level of dependency
+In addition, synchronous communication can create a higher level of dependency in the domain logic. Asynchronous communication often focuses on events
+
+== Solutions
+
+=== Service discovery
+
+Service discovery serves to find the port and IP address of a service.
+
+Service discovery should be dynamic:
+
+* Microservices can be scaled. Then there are new IP addresses at which additional instances of a microservice are available.
+* In addition, a microservice can fail. Then it is not available anymore at the known IP address.
+
+=== Resilience
+
+When communication is synchronous, microservices have to be prepared for the failure of other microservices. It has to be prevented that the calling microservice fails as well.
+
+=== Load balancing
+
+Each microservice should be scalable independently of the other microservices. Load has to be distributed between microservices.
+
+This does not only pertain to access from the outside, but also to internal communication. Therefore, there has to be a load balancing for each microservice.
+
+=== Routing
+
+every access from the outside should be forwarded to the responsible microservices. This requires routing.
+
+=== API gateways
+
+For complex APIs, complex routing of requests to the microservices might be needed. API Gateways offer additional features:
+
+* Most of the API gateways can perform user authentication.
+* They can throttle the network traffic for individual users to support a high number of users at the same time. This can be supplemented by centralized logging of all requests or caching.
+* API gateways can also solve aspects like monitoring, documentation, or mocking.
+
