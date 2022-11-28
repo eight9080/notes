@@ -1,0 +1,72 @@
+= Java Threads
+
+== Task types
+
+* IO Bound
+* CPU Bound
+
+* Process per request
+* Thread per request
+
+Each user request blocks a thread from a thread pool.
+
+=== Thread per User Request
+
+* Thread is lightweight  - but has its own stack
+* can handle larger number of concurrent users
+* can share data or communicate between threads
+* improved performance - no extra process to deal with
+* easy to debug (ish)
+
+== Concurrency vs Parallelism
+=== Concurrency
+
+* multiple independent tasks are making progress but may not execute at the same time
+* appearance of parallelism
+* CPU  time slicing
+
+=== Parallelism
+
+* multiple dependent sub tasks are executing at the same time
+* multiple cores needed
+* no parallelism in a single core
+
+== Java Platform Threads
+
+* the stack size of 1 MB - common
+
+* every java thread is a wrapper around an OS Thread (OS thread is an expensive resource)
+* Stack memory size can be set `-Xss`
+* Heap Memory can be set `-Xmx, -Xms`
+
+=== Threads and Scalability
+
+* default stack size 1M
+* there is a max limit to the maz threads
+    ** much more soket connections can be supported
+* IO bound tasks
+    ** paralyzes the OS thread for a longer time than necessary
+
+=== Scalability Solutions
+
+==== Vertical Scaling
+
+* Increase resources: CPU Memory Disk Space
+* Limit to scaling
+* Increases costs
+
+==== Horizontal Scaling
+* increase number of application nodes
+* no limit
+* Costly
+
+=== Non Blocking IO
+
+A new Callback handler is called to handle the results.
+
+
+
+
+
+
+
