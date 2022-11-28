@@ -1,0 +1,60 @@
+= Project Loom
+
+== Creating virtual threads
+
+```
+Runnable task = () -> System.out.println("Hello, world");
+
+// Platform thread
+(new Thread(task)).start();
+Thread platformThread = new Thread(task);
+platformThread.start();
+
+// Virtual thread
+Thread virtualThread = Thread.startVirtualThread(task);
+Thread ofVirtualThread = Thread.ofVirtual().start(task);
+
+// Virtual thread created with a factory
+ThreadFactory factory = Thread.ofVirtual().factory();
+Thread virtualThreadFromAFactory = factory.newThread(task);
+virtualThreadFromAFactory.start();
+
+Runnable task = () -> System.out.println("Hello, world");
+ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+executorService.execute(task);
+```
+
+Virtual thread - it is a daemon thread by default
+
+Virtual thread is associated with different Platform threads.
+
+IMPORTANT: Each Platform Thread is associated with an OS Thread.
+
+IMPORTANT: Each Virtual thread can be associated with multiple Platform Threads at different times.
+
+== Completable future
+
+When we use CompletableFuture we try to chain our actions as much as possible before we call get, because calling it would block the thread. With virtual threads calling get won't block the (OS) thread anymore. Without the penalty for using get you can use it whenever you like and don't have to write asynchronous code. This makes writing and reading Java code a lot easier.
+
+
+== Advantages virtual threads
+
+* Light-Weight Thread
+    ** fast creation time
+    ** exhibits same behaviour as Platform Threads
+    ** scales to millions of instances
+
+* No need for thread pool
+* can block an IO with no scalability issues
+* optimal concurrency
+
+== Limitations virtual threads
+
+Control memory per stack - starts with zero and adds along the way
+ * reduce thread locals
+ * no deep recursions
+
+
+
+
+
