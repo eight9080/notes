@@ -1,0 +1,23 @@
+= Continuations
+
+== Coroutines
+
+Methods - acts as subroutines
+
+*Subroutines* - fixed entry point
+
+*Coroutine*
+
+Coroutines are a general control structure whereby flow control is cooperatively passed between two different routines without returning.
+
+The 'yield' statement in Python is a good example. It creates a coroutine.
+
+* When the 'yield ' is encountered the current state of the function is saved and control is returned to the calling function.
+* The calling function can then transfer execution back to the yielding function and its state will be restored to the point where the 'yield' was encountered and execution will continue.
+
+IMPORTANT: Coroutines are "collaborative". Even in multi-core system, there is only one coroutine running at any given time (but multiple threads can run in parallel). There is non-preemptive between coroutines, the running coroutine must relinquish the execution explicitly.
+
+Source: https://stackoverflow.com/questions/553704/what-is-a-coroutine[What is]
+
+
+
