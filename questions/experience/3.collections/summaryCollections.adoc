@@ -1,0 +1,83 @@
+= Collections
+
+== Set
+
+=== EnumSet
+
+* specialized Set collection to work with enum classes
+* Enum sets are represented internally as *bit vectors*
+
+==== RegularEnumSet
+
+RegularEnumSet uses a *single long to represent the bit vector*. Each bit of the long element represents a value of the enum. The i-th value of the enum will be stored in the i-th bit, so it’s quite easy to know whether a value is present or not. Since long is a 64-bit data type, this implementation can store up to 64 elements.
+
+==== JumboEnumSet
+
+JumboEnumSet uses an array of long elements as a bit vector. This lets this implementation store more than 64 elements.
+
+* works like the RegularEnumSet but making some extra calculations to find the array index where the value is stored.
+
+* the first long element of the array will store the 64 first values of the enum
+* the second element the next 64, and so on.
+
+=== HashSet
+
+* backed by a *hash table* (actually a HashMap instance).
+* no guarantees as to the iteration order of the set; in particular, it does not guarantee that the order will remain constant over time.
+* permits the null element.
+
+=== LinkedHashSet
+
+* predictable iteration order.
+* maintains a doubly-linked list running through all of its entries.
+* defines the iteration ordering, which is the order in which elements were inserted into the set (insertion-order).
+
+NOTE: that insertion order is not affected if an element is re-inserted into the set.
+
+=== CopyOnWriteArraySet
+
+* A Set that uses an internal *CopyOnWriteArrayList* for all of its operations.
+
+* It is thread-safe.
+
+* It is best suited for applications in which set *sizes generally stay small*, read-only operations vastly outnumber mutative operations, and you need to prevent interference among threads during traversal.
+
+* Mutative operations (add, set, remove, etc.) are expensive since they usually entail copying the entire underlying array.
+* Iterators do not support the mutative remove operation.
+
+* Traversal via iterators is fast and cannot encounter interference from other threads.
+* Iterators rely on unchanging snapshots of the array at the time the iterators were constructed. Additional operations are provided to take advantage of the ordering.
+* All elements inserted into a sorted set must implement the Comparable interface
+
+=== SortedSet
+
+A sorted set allows iteration of its entries in ascending order.
+
+=== NavigableSet
+
+A SortedSet extended with navigation methods reporting closest matches for given search targets.
+
+* Methods lower(), floor(), ceiling(), and higher() return elements respectively less than, less than or equal, greater than or equal, and greater than a given element, returning null if there is no such element.
+
+=== TreeSet
+
+* The iterators returned by this class's *iterator method are fail-fast*.
+* TreeSet uses a *self-balancing binary search tree* (RedBlack tree) as the backing data-structure.
+* It's *not thread safe* and stores keys in ascending order rather than in their insertion order.
+
+* The elements are ordered using their natural ordering, or by a Comparator provided at set creation time.
+* This implementation provides guaranteed *log(n) time cost for add, remove and contains operations*.
+
+=== ConcurrentSkipListSet
+
+* Skiplist is a data structure used for *fast search*.
+* It stores sorted list of items, very much like a binary search tree. It consists of a base list holding the elements, together with a tower of lists maintaining a linked hierarchy of subsequences, each skipping over fewer elements.
+* Create multiple layers so that we can skip some nodes. Iterators are weakly consistent, returning elements reflecting the state of the set at some point at or since the creation of the iterator.
+
+== Queues
+
+
+
+
+
+
