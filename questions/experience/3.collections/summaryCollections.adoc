@@ -76,6 +76,66 @@ A SortedSet extended with navigation methods reporting closest matches for given
 
 == Queues
 
+=== ArrayDeque
+
+* a double-ended queue that supports addition or removal of elements from either end of the data structure.
+* can be used as a *queue* (first-in-first-out/FIFO) or as a *stack* (last-in-first-out/LIFO).
+* Array deques have no capacity restrictions; they grow as necessary to support usage.
+
+=== PriorityQueue
+
+* are based on the heap data-structure.
+* The elements of the priority queue are *ordered according to their natural ordering*, or by a Comparator provided at queue construction time.
+* The queue can be made to behave like a max heap using the passed in comparator.
+* The head of this queue is the least element with respect to the specified ordering. If multiple elements are tied for least value, the head is one of those elements and ties are broken arbitrarily.
+
+=== ConcurrentLinkedQueue
+
+An unbounded thread-safe queue based on linked nodes. This queue orders elements FIFO
+
+=== BlockingQueue
+
+IMPORTANT: A blocking queue is a queue that blocks when you try to dequeue from it and the queue is empty, or if you try to enqueue items to it and the queue is already full.
+
+* are designed to be used primarily for producer-consumer queues. BlockingQueue implementations are thread-safe.
+* All queuing methods achieve their effects atomically using internal locks or other forms of concurrency control.
+* the bulk Collection operations addAll, containsAll, retainAll and removeAll are not necessarily performed atomically unless specified otherwise in an implementation.
+
+=== PriorityBlockingQueue
+
+PriorityBlockingQueue defines an ordering on its elements in the same manner as a priority heap and additionally exposes blocking insert and retrieval operations on the queue.
+
+* It implements the BlockingQueue interface.
+
+=== LinkedBlockingQueue
+
+A blocking queue based on linked nodes. New elements are added at the tail.
+
+=== ArrayBlockingQueue
+
+A array based blocking queue.
+
+* This is a classic bounded buffer, in which a fixed-sized array holds elements inserted by producers and extracted by consumers.
+
+=== DelayQueue
+
+A delay queue is a blocking queue but when a consumer wants to take an element off of the queue, it is only allowed to do so when the delay for that particular element has expired.
+
+=== SynchronousQueue
+
+* has two supported operations: take() and put(), and both of them are blocking.
+* For instance, when we want to add an element to the queue, we need to call the put() method. That method will block until some other thread calls the take() method, signaling that it is ready to take an element.
+
+IMPORTANT: Although the SynchronousQueue has an interface of a queue, we should think about it as an exchange point for a single element between two threads, in which one thread is handing off an element, and another thread is taking that element.
+
+=== BlockingDeque
+
+It is a Deque that additionally supports blocking operations that wait for the deque to become non-empty when retrieving an element, and wait for space to become available in the deque when storing an element.
+
+
+
+
+
 
 
 
