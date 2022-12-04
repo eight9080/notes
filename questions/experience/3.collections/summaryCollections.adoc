@@ -133,6 +133,26 @@ IMPORTANT: Although the SynchronousQueue has an interface of a queue, we should 
 It is a Deque that additionally supports blocking operations that wait for the deque to become non-empty when retrieving an element, and wait for space to become available in the deque when storing an element.
 
 
+== List
+
+=== ArrayList
+
+* This is a unsynchronized resizable array based implementation of the List interface.
+* As elements are added to an ArrayList, its capacity grows automatically.
+* Iterators returned for this class are fail fast.
+
+=== LinkedList
+
+* This is a unsynchronized doubly-linked list implementation of the Deque and List interfaces.
+* Returned iterators for this list are fail fast.
+
+=== CopyOnWriteArrayList
+
+* This is a thread-safe variant of the ArrayList.
+* Any write operations trigger a fresh copy of the underling array to be created.
+
+== Map
+
 
 
 
