@@ -153,6 +153,69 @@ It is a Deque that additionally supports blocking operations that wait for the d
 
 == Map
 
+=== HashMap
+
+* Unsynchronized hash table based implementation of the Map interface.
+* This class makes no guarantees as to the order of the map
+
+=== LinkedHashMap
+
+* Hash table and linked list implementation of the Map interface, with *predictable iteration order*.
+* maintains a doubly-linked list running through all of its entries.
+* This linked list defines the iteration ordering, which is normally the order in which keys were inserted into the map
+
+=== WeakHashMap
+
+* an implementation of the Map interface.
+* WeakHashMap is almost same as HashMap except in case of WeakHashMap, if object is specified as key doesn't contain any references- it is eligible for garbage collection even though it is associated with WeakHashMap.
+
+=== IdentityHashMap
+
+* This class implements the Map interface with a hash table, using reference-equality in place of object-equality when comparing keys (and values).
+* In other words, in an IdentityHashMap, two keys k1 and k2 are considered equal if and only if (k1==k2)
+* designed for use only in the rare cases wherein reference-equality semantics are required.
+* Iterators returned for this class are failfast.
+
+=== EnumMap
+
+* A specialized unsynchronized Map implementation for use with enum type keys.
+* All of the keys in an enum map must come from a single enum type that is specified, explicitly or implicitly, when the map is created.
+* Enum maps are represented internally as arrays. This representation is extremely compact and efficient.
+* Iterators returned for this class are weakly consistent i.e. they may or may not show the effects of any modifications to the map that occur while the iteration is in progress.
+* Keys appear in the map in the order in which the enum constants are declared.
+
+=== SortedMap
+
+* A Map that further provides a total ordering on its keys.
+* The map is ordered according to the natural ordering of its keys, or by a Comparator typically provided at sorted map creation time.
+* All keys inserted into a sorted map must implement the Comparable interface.
+
+=== NaigableMap
+
+* A SortedMap extended with navigation methods returning the closest matches for given search targets.
+* Methods lowerEntry, floorEntry, ceilingEntry, and higherEntry return Map.Entry objects associated with keys respectively less than, less than or equal, greater than or equal, and greater than a given key, returning null if there is no such key.
+* A NavigableMap may be accessed and traversed in either ascending or descending key order.
+
+=== TreeMap
+
+* A Red-Black tree based unsynchronized NavigableMap implementation.
+* This implementation provides guaranteed log(n) time cost for the containsKey, get, put and remove operations.
+* The map is sorted according to the natural ordering of its keys, or by a Comparator provided at map creation time, depending on which constructor is used.
+
+=== ConcurrentHashMap
+
+* A hash table supporting full concurrency of retrievals and high expected concurrency for updates.
+* This class obeys the same functional specification as Hashtable, and includes versions of methods corresponding to each method of Hashtable.
+* However, even though all operations are thread-safe, retrieval operations do not entail locking, and there is not any support for locking the entire table in a way that prevents all access.
+* This class is fully interoperable with Hashtable in programs that rely on its thread safety but not on its synchronization details.
+
+=== ConcurrentNavigableMap
+
+A ConcurrentMap supporting NavigableMap operations, and recursively so for its navigable sub-maps.
+
+=== ConcurrentSkipListMap
+
+A ConcurrentSkipListMap stores the Map in the natural order of its keys (or some other key order you define). So it'll have slower get/put/contains operations than a HashMap, but to offset this it supports the SortedMap and NavigableMap interfaces.
 
 
 
