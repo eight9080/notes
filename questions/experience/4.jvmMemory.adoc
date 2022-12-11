@@ -19,6 +19,30 @@ The throughput garbage collector uses a parallel version of the young generation
 *Answer*
 
 *Strong reference* - normal reference that protects the referred object from collection by GC. i.e. Never garbage collects.
+
+The object on the heap is not garbage collected while there is a strong reference pointing to it, or if it is strongly reachable through a chain of strong references.
+
 *Soft reference* - eligible for collection by garbage collector, but probably won't be collected until its memory is needed. i.e. garbage collects before OutOfMemoryError.
+
+Soft reference objects, which are cleared at the discretion of the garbage collector in response to memory demand. Soft references are most often used to implement memory-sensitive caches.
+
+These types of references are used for more memory-sensitive scenarios since those are going to be garbage collected only when your application is running low on memory. Therefore, as long as there is no critical need to free up some space, the garbage collector will not touch softly reachable objects. Java guarantees that all soft referenced objects are cleaned up before it throws an OutOfMemoryError.
+
 *Weak reference* - a reference that does not protect a referenced object from collection by GC. i.e. garbage collects when no Strong or Soft refs.
+
+A weakly referenced object is cleared by the Garbage Collector when it’s weakly reachable. Weak reachability means that an object has neither strong nor soft references pointing to it. The object can be reached only by traversing a weak reference.
+
 *Phantom reference* - a reference to an object is phantomly referenced after it has been finalized, but before its allocated memory has been reclaimed.
+
+Phantom references are most often used for scheduling pre-mortem cleanup actions in a more flexible way than is possible with the Java finalization mechanism. Unlike soft and weak references, phantom references are not automatically cleared by the garbage collector as they are enqueued. An object that is reachable via phantom references will remain so until all such references are cleared or themselves become unreachable.
+
+Before Java 9
+Whilst Weak and Soft references are put in the queue after the object is finalized, Phantom references are put in the queue before the object is finalized. If for any reason you don’t poll the queue, the actual objects referenced by the PhantomReference will not be finalized, and you can incur an OutOfMemory error. Consider the same program from the previous question where instead of a weak reference we'll use a phantom reference.
+
+Java 9 and After
+Phantom references are automatically cleared (set to null) in Java 9 and after.
+
+* What is the difference between Weak reference and Soft reference?
+
+The difference between WeakReference and SoftReference is that the Garbage collector can collect an object if only weak references are pointing to it i.e. a weak reference is eagerly collected. On the other hand, objects with SoftReference are only collected when the JVM absolutely needs memory.
+
