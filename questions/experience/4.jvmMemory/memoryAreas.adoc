@@ -1,0 +1,77 @@
+= Memory Areas
+
+== What kinds of memory does the JVM manage?
+
+The JVM manages 2 kind of memory:
+
+* heap
+* non-heap - all memory the JVM allocated for purposes oher than the heap
+
+== What are Java Runtime Data areas?
+
+The JVM defines various runtime data areas that are used during execution of a program.
+
+* some are created on JVM start-up and are destroyed only when JVM exits
+* other areas are per thread. Per-thread data areas are created when a thread is created and destroyed when the thread exits.
+
+=== JVM Stack
+
+* holding references to heap objects and for storing value types ( primitive types)
+* Stack memory in Java is allocated per Thread
+* a thread cannot access another thread’s stack memory.
+
+=== Heap
+
+* stores the actual object in memory
+* only one heap memory (heap) for each running JVM process
+* a shared part of memory regardless of how many threads are running
+* The heap memory is periodically garbage collected
+
+=== Program Counter (PC) Register
+
+* The PC register holds the address of the *current instruction*.
+* If the current method is native then the PC is undefined
+* All CPUs have a PC, typically the PC is incremented after each instruction and holds the address of the next instruction to be executed.
+* The JVM uses the PC to keep track of where it is executing instructions, the PC will in fact be pointing at a *memory address in the Method Area*.
+
+=== Method area and Runtime constant pool
+
+* JVM has a common method area across all threads.
+* contains per-class elements like constant pool, fields, method local data, method code, constructor codes etc. which are used in class and initialization of objects/interfaces.
+* Since Java 1.8, HotSpot now stores the Method Area in a separated native memory space called the *Metaspace*, the max available space is the total available system memory.
+
+=== Native Stack
+
+Methods written in languages other than Java programming languages such as C, C++ are called native methods.
+NOTE: When a thread calls a Java method, a new frame is created and is being pushed onto the Java stack.
+
+IMPORTANT: When a thread calls a native method, the thread switches from Java stack to native method stack.
+The parameters(if any) are pushed on native method stack.
+
+* If a native method calls back a Java method, the thread leaves the native method stack and enters in Java stack again.
+
+image::jvmRuntimeDataAreas.png[JVM Run time Data Areas]
+Source: https://www.programcreek.com/2013/04/jvm-run-time-data-areas/[JVM Runtime data areas]
+
+== Explain the different parts of the Heap?
+
+Java’s heap memory consists of the following areas:
+
+* Eden Space
+* First Survivor Space
+* Second Survivor Space
+* Old Generation
+
+The first three areas are grouped under young generation and the fourth area is called old generation.
+
+image::heapParts.png[Heap parts]
+
+
+
+
+
+
+
+
+
+
