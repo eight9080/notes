@@ -66,6 +66,47 @@ The first three areas are grouped under young generation and the fourth area is 
 
 image::heapParts.png[Heap parts]
 
+== What is PermGen space?
+
+NOTE: The permanent generation is defined as the pool containing all the reflective data of the virtual machine itself, such as class and method objects. Note it is part of the HotSpot JVM only.
+
+* The permanent generation is special because it holds meta-data describing user classes (classes that are not part of the Java language).
+* The JVM keeps track of loaded class metadata in the PermGen.
+* Additionally, the JVM stores all the static content in this memory section. This includes all the static methods, primitive variables, and references to the static objects.
+* it contains data about bytecode, names and JIT information
+
+NOTE: Before Java 7 (same as Java 1.7), the String Pool was also part of this memory.
+
+With Java 1.8, metaspace has replaced permgen as its successor.
+
+The garbage collection of the permanent generation would be tied to the garbage collection of the old generation, so whenever either gets full, both the permanent generation and the old generation would be collected
+
+* -XX:PermSize is the initial or minimum size of the PermGen space
+
+* -XX:MaxPermSize is the maximum size
+
+
+
+
+== What is Metaspace?
+
+The metadata has now moved to native memory to an area known as the Metaspace.
+
+* The JDK 8 HotSpot JVM is now using native memory for the representation of class metadata similar to the Oracle JRockit and IBM JVM's.
+
+Each garbage collector in HotSpot needed specialized code for dealing with metadata in the PermGen. Detaching metadata from PermGen not only allows the seamless management of Metaspace, but also allows for improvements such as simplification of full garbage collections and future concurrent de-allocation of class metadata.
+
+== What is the difference between PermGen and Metaspace?
+
+IMPORTANT: while PermGen is contiguous to the Java heap memory, Metaspace is not part of Heap. Rather Metaspace is part of Native Memory (process memory) which is only limited by the Host Operating System.
+
+PermGen always has a fixed maximum size but Metaspace by default auto increases its size depending on the underlying OS.
+
+image::metaspace.png[Metaspace]
+
+
+
+
 
 
 
