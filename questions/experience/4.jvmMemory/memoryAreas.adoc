@@ -104,6 +104,47 @@ PermGen always has a fixed maximum size but Metaspace by default auto increases 
 
 image::metaspace.png[Metaspace]
 
+== What is native memory?
+
+* memory allocated within a process's address space that is not within the heap.
+* the JVM also uses memory for its internal operations
+
+* Native memory can also be allocated in applications (via JNI calls to malloc() and similar methods, or when using New I/O, or NIO).
+
+IMPORTANT: The total of native and heap memory used by the JVM yields the total footprint of an application.
+
+Memory areas:
+
+* Metaspace (where class metadata resides)
+
+* Code Cache (storage for JIT-compiled methods and all the generated code)
+
+* Direct ByteBuffers
+
+* Memory-mapped files, including files mapped by JVM, e.g. all JAR files on the classpath
+
+* Thread stacks
+
+* JVM code itself and all the dynamic libraries loaded by Java Runtime
+
+* Other internal JVM structures
+
+The JVM has a feature called *Native Memory Tracking* that can be used to get the detailed breakdown of memory areas used by JVM.
+
+== What is the code cache in Java HotSpot?
+
+In order to run JVM bytecode on different platforms, it needs to be converted to machine instructions. The JIT compiler is responsible for this compilation as the program is executed.
+
+When the JVM compiles bytecode to assembly instructions, it stores those instructions in a special non-heap data area called Code Cache.
+
+== What is string internment?
+
+* store one copy of each unique String and make others refer to the stored copy
+* Since the JVM can only intern compile time string constants, we can manually call the intern() method on strings we intend to intern.
+
+* JVM stores interned strings in a special native fixed-sized hashtable called the string table, also known as the String Pool. We can configure the table size (i.e. the number of buckets) via the `-XX:StringTableSize` tuning flag.
+
+
 
 
 
