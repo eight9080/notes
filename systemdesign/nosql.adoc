@@ -1,0 +1,79 @@
+= NoSql database
+
+Source:https://designgurus.org/blog/no-slq-database[no sql databases]
+== Definition
+
+* any non-relationakl database
+* allow users to store data with a flexible schema
+
+== Why should you usse a NoSql database
+
+* high-performant, scalable and flexible
+
+Scalability:: scales out by using distributed clusters of hardware 
+Flexibility:: flexible schemas - enable faster and more iterative development, idea of semi-structiured and unstructured data
+High-performance:: optimized for specific data models and access patterns
+
+=== Types of databases
+
+==== Key-value databases
+
+* store data in pairs 
+* unique id and a data value
+* flexible storage structure
+
+Use cases:: session management user preferences, product recommendations
+
+Examples: Amazon DynamidB, Azure Costmos DB, Riak
+
+==== In-memory key-value databases
+
+* eliminating disk access -> minimal response times
+* risk losing data upon a process or server failure
+* can persist data on disk by storing each operation in a log or by taking snapshots
+
+Examples: Redis, Memcached, Amazon Elasticache
+
+==== Document databases
+
+* keys and values are stored in documents written in a markup language like JSoN, XML or YAML
+
+Use cases:: user profiles, product catalogues, content management
+
+Examples: MongoDB, Amazon DocumentDB, Couch DB
+
+==== Wide-column databases
+
+* based on column - without a strict column format
+* rows do not need a value in every column
+* segments of rowa and columns containing diffenret data formats can be combined
+
+Use cases: Telemetry, analytics data, messaging and time-series data
+
+Examples: Cassandra, accumulo, Azure Table Storage, HBase
+
+==== Graph databases
+
+* map relationships between data using nodes and edges
+
+Use cases:: socual graphs, recommendation engines, fraud detection
+
+Examples: Neo4j, Amazon Neptune, Cosmos DB
+
+==== Time series databases
+
+* stores data in time-ordered streams
+* data is sorted by the time of collecltion, ingestion or other timestamps
+
+Use cases:: industrial teklemtry, Devops, IOT apps
+
+Examples: Graphite, Prometheus, Amazon Timestream
+
+==== Ledger databases
+
+* based on logs that record events related to data values
+* store data changes - verify data integrity
+
+Use cases:: Banking systems, registrations, supply chains, systems of record
+
+Examples: Amazon Quantum ledger Database (QLDB)
