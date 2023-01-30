@@ -34,4 +34,16 @@ image::images/atLeastOnceDelivery.png[At least once]
 * enable.auto.commit = true & synchronous processing of batches
 * enable.auto.commit = false & manual commit of offsets
 
+== Consumer Offset Reset Behaviour
+
+* A consumer is expected to read from a log continuously
+* if kafka has a retention of 7 days, and your consumer is down for more than 7 days, the offsets are invalid
+
+* auto.offset.reset=latest -> read from the end of the log
+* auto.offset.reset=earliest -> read from the start of the log
+* auto.offset.reset=none -> throw an exception if no offset is found
+
+broker setting -> offset.retention.minutes
+
+
 
