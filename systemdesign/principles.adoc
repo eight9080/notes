@@ -57,7 +57,7 @@ Sharding is a very important concept which helps the system to keep data into di
 
 The scaling operation can be achieved by adding resources to meet the smaller expectation in the current system, or by adding a new system in the existing one, or both.
 
-image::scaleDB.png[Scale DB]
+image::images/scaleDB.png[Scale DB]
 
 Source: https://www.geeksforgeeks.org/horizontal-and-vertical-scaling-in-databases/
 
