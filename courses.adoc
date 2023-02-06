@@ -1,0 +1,64 @@
+= Courses
+
+== Spring
+
+=== Spring core
+
+* Spring 5 - core
+https://app.pluralsight.com/library/courses/spring-framework-spring-fundamentals/table-of-contents[Spring Framework: Spring 5 Fundamentals]
+without xml config
+
+* general https://app.pluralsight.com/library/courses/spring-big-picture/table-of-contents [Big picture] - optional
+
+
+=== Spring MVC
+
+* https://app.pluralsight.com/library/courses/spring-framework-spring-mvc-fundamentals/table-of-contents[Spring Framework: Spring MVC 5 Fundamentals] jsp part can be skipped
+* https://app.pluralsight.com/library/courses/spring-rest/table-of-contents[Spring REST: Getting Started] - a bit old
+
+=== Spring Boot
+* https://app.pluralsight.com/library/courses/spring-boot-fundamentals/table-of-contents[Spring Boot Fundamentals]
+* https://app.pluralsight.com/library/courses/spring-boot-2-big-picture/table-of-contents[Spring Boot 2]
+* https://app.pluralsight.com/library/courses/creating-first-spring-boot-application/table-of-contents[Spring Framework 2: Creating Your First Spring Boot Application]
+
+
+=== Spring JPA
+* https://app.pluralsight.com/library/courses/spring-jpa-hibernate/table-of-contents[Spring Framework: Spring Data JPA 5 with Hibernate]
+* older version https://app.pluralsight.com/library/courses/spring-data-jpa-getting-started/table-of-contents[Spring jpa 4]
+* https://app.pluralsight.com/library/courses/data-transactions-spring/table-of-contents[Data Transactions with Spring]
+
+== Java
+
+=== Collections/Streams
+* https://app.pluralsight.com/library/courses/arrays-collections-java-se-11-developer-certification-1z0-819/table-of-contents[Working with Arrays and Collections in Java (Java SE 11 Developer Certification 1Z0-819)]
+
+* https://app.pluralsight.com/library/courses/streams-lambda-expressions-java-se-11-developer-certification-1z0-819/table-of-contents[Working with Streams and Lambda Expressions in Java (Java SE 11 Developer Certification 1Z0-819)]
+
+
+=== Core
+* https://app.pluralsight.com/library/courses/java-functional-programming/table-of-contents[Java functional programming]
+
+* https://app.pluralsight.com/paths/certificate/java-se-11-developer-certification-1z0-819[Path java 11]
+
+* https://app.pluralsight.com/library/courses/java-fundamentals-core-platform/table-of-contents[Java 8 Fundamentals: The Core Platform]
+
+=== Code practices
+* https://app.pluralsight.com/library/courses/solid-software-design-principles-java/table-of-contents[SOLID]
+
+=== Java 17
+* https://app.pluralsight.com/library/courses/java-se-17-asynchronous-programming/table-of-contents[Asynchronous Programming in Java SE 17]
+
+* https://app.pluralsight.com/paths/skills/java-se-17[Path java 17]
+
+== Microservices
+
+* https://app.pluralsight.com/library/courses/microservices-fundamentals/table-of-contents[Microservices Architecture Fundamentals]
+
+
+== Devops
+
+=== Docker
+
+* https://app.pluralsight.com/library/courses/getting-started-docker/table-of-contents[Getting Started with Docker]
+
+
