@@ -1,0 +1,19 @@
+= Concurrency
+
+== What is the meaning of the term “Thread-Safe”?
+
+Does it mean that two threads can't change the underlying data simultaneously? Or does it mean that the given code segment will run with predictable results when multiple threads are executing that code segment?
+
+A:
+
+* Thread-safe code is code that will work even if many Threads are executing it simultaneously within the same process. This often means, that internal data-structures or operations that should run uninterrupted are protected against different modifications at the same time.
+* Another definition may be like - a class is thread-safe if it behaves correctly when accessed from multiple threads, regardless of the scheduling or interleaving of the execution of those threads by the runtime environment, and with no additional synchronisation or other coordination on the part of the calling code.
+
+== What is the difference between Race Condition and Data Races? Are they the same?
+
+* A data race occurs when 2 instructions from different threads access the same memory location, at least one of these accesses is a write and there is no synchronization that is mandating any particular order among these accesses.
+* A race condition is a semantic error. It is a flaw that occurs in the timing or the ordering of events that leads to erroneous program behavior. Many race conditions can be caused by data races, but this is not necessary.
+
+The Race Condition and Data Races are not the same thing. They are not a subset of one another. They are also neither the necessary, nor the sufficient condition for one another.
+
+
