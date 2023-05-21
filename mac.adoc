@@ -1,0 +1,3 @@
+Notes
+
+https://codetinkering.com/switch-homebrew-arm-x86/
