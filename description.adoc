@@ -1,0 +1,36 @@
+= Description
+== Your day-to-day
+
+* Design & document complex, secure and resilient systems which can cover business needs, consolidating multiple driving factors, using advanced knowledge of system design, analysis and development;
+* Empowering teams to contribute to the discovery of the best requirements, designs and architectures;
+* Maintain the current state architecture for the area that you are responsible of.
+* Coordinate the designs, advise and present (target) architectures and roadmaps and the architecture guidance and validations. Define and align architecture standards.
+* Facilitate simplicity, staying lean and helping remove/preventing waste;
+* Coordinate architecture activities for incremental changes (maintaining and extending existing solutions) and innovative changes (conceiving new solutions for emerging opportunities) for GR&BB domain.
+* Use different patterns and elaborate designs to cover the non-functional requirements especially on the resilience and performance areas.
+* Select appropriate technologies from the many open source, commercial on-premises, and cloud-based offerings available
+* Create flexible but robust designs that prepares the company for the future.
+* Deep dive into both new, cutting edge and legacy technologies helping build POCs and advising on best strategies;
+* Align with the central architecture team to create designs that satisfy the local requirements.
+* Work together with other domain architects and development teams for cross domain topics.
+* Design the technical solutions consumed by different parts of the organization.
+* Help prevent technical atrophy, technical debt and maintain technical currency through architectural governance;
+* What you bring to the team
+
+* Empathy, integrity and a solid ethical sense;
+* Strong engineering skills, thorough knowledge of content and architecture of multiple domains and/or platforms (technologies, applications, infrastructure, business processes).
+* Passion and natural inclination towards understanding systems in their entirety and devising strategies to improve them;
+* A natural talent for spotting patterns;
+* Ability to grasp and master new concepts quickly;
+* Vision and well backed up ideas about the future, with a strong understanding of the past;
+* Persuasiveness and ability to sell and argument own ideas;
+* Ability to create clear and impactful presentations and diagrams;
+* Strong stakeholder & vendor management skills;
+* Mastery of at least one domain of the Software Development Lifecycle;
+* Exposure to multiple domains of the Software Development Lifecycle.
+* Ability to understand requirements from various stakeholders,
+* Experience working with tools that enable free-format and ad hoc discovery for structured discovery and tools that automate complex tasks such as data preparation is a plus.
+* Ability to work within budget, schedules, technology availability constraints.
+* Ability to understand and consider not only the functional requirements, but also the non-functional attributes of platform quality such as performance, availability, scalability, security and usability.
+* Familiar with DevOps best practices and automation of processes like build stage, configuration management, deployment, documentation, testing, and monitoring.
+* Experience with Case Management, BPMS or (micro)services orchestration solutions is a plus
