@@ -15,7 +15,8 @@
 * Work together with other domain architects and development teams for cross domain topics.
 * Design the technical solutions consumed by different parts of the organization.
 * Help prevent technical atrophy, technical debt and maintain technical currency through architectural governance;
-* What you bring to the team
+
+== What you bring to the team
 
 * Empathy, integrity and a solid ethical sense;
 * Strong engineering skills, thorough knowledge of content and architecture of multiple domains and/or platforms (technologies, applications, infrastructure, business processes).
