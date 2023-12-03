@@ -1,0 +1,196 @@
+:toc:
+:toclevels: 5
+
+= MacOS
+
+== Terminal
+
+=== Shortcuts
+|===
+|Control+A }|Moves cursor to the beginning of the line
+
+|Control+E |Moves cursor to the end of the line
+
+|Control+W |Removes the word before cursor
+
+|Control+R |Finds the previous shell command
+
+|Control+C |Interrupts the running command
+
+|Control+Z |Puts the running command to sleep
+
+|Control+L |Clears the screen
+
+|Control+U |Clears the whole line
+
+|Control+D |Forward deletes, If the line is empty, it will log you out
+
+|Control+S |Stops screen updating
+
+|Control+Q |Enables screen updating
+
+|Control+P or Up arrow |Steps backward through previous commands
+
+|Control+n or down arrow |Steps forward through previous commands
+|===
+
+=== Meta Directories
+
+|===
+|. |Current directory
+
+|.. |Parent directory
+
+|~ |Users home directory
+|===
+
+=== Moving Around the Filesystem
+
+----
+pwd
+cd /
+cd ~
+cd .
+cd ..
+----
+
+=== Inspecting Directories
+
+-h option with the ls command to convert the file size into understandable file sizes, like kilobytes and megabytes
+
+----
+ls -lh
+----
+
+=== Directory Operations
+
+==== Creating Directories
+
+----
+ mkdir -v house
+----
+
+* create subdirectories at the same time with the parent (-p) option
+
+----
+% mkdir -p house/kitchen/fridge/milk
+----
+
+==== Deleting Directories
+
+* Removing empty folders is very simple, with the remove directory command (rmdir).
+
+----
+% rmdir house/kitchen/fridge/milk
+----
+
+If the directories you want to delete are empty, you can use the same -p option with rmdir that we used with mkdir. When using -p, rmdir will try to delete every directory. If you pass house/kitchen/fridge/milk, then all the directories will be removed.
+
+If you want to delete the fridge directory and everything in it, you must issue the remove command (rm). By default, the remove command will not work on directories, but you can fix that by issuing the recursive option (-r) option to rm.
+----
+% rm -r fridge
+----
+
+=== File Operations
+
+==== Creating files
+----
+% touch <filename>
+----
+
+==== Writing Files
+
+----
+% nano big-quote
+----
+
+==== Reading Files
+
+----
+% cat big-quote
+head big-quote
+% tail big-quote
+----
+
+==== Copying Files
+
+* to copy my big-quote from earlier to the desktop
+
+----
+% cp ~/big-quote ~/Desktop/FortuneMessages
+----
+
+==== Moving Files
+
+* a move command (mv) that takes the same source and destination arguments
+* rename this example FortuneMessages to include the txt file extension.
+
+----
+% mv ~/Desktop/FortuneMessages ~/Desktop/FortuneMessages.txt
+----
+
+WARNING: cp, mv will overwrite any existing files without question.
+
+==== Deleting Files
+
+----
+% rm ~/Desktop/FortuneMessages.txt
+----
+
+=== Editing Text in Terminal
+
+----
+% nano filename
+----
+
+When you have finished editing, press Control+X to exit, and press Y to save your file to disk.
+
+----
+% bbedit big-quote
+----
+
+==== Changing the Default Text Editor
+
+----
+% export EDITOR=/usr/bin/nano
+----
+
+=== Piping
+
+----
+% cat /var/log/system.log | less
+----
+
+==== Redirecting Output
+
+----
+% fortune > ~/quotes.txt
+----
+
+If you use the >> symbol (two greater than symbols), that tells the shell that you would like to append to the file, rather than overwrite it.
+
+----
+% fortune >> ~/quotes.txt
+% cat ~/quotes.txt
+Sattinger's Law:
+    It works better if you plug it in.
+Reputation, adj.:
+    What others are not thinking about you.
+----
+
+If you want to capture an error message to the file, you need to use the error redirect, 2>.
+
+----
+% cat ~/non-existent-file 2> ~/error.msg
+----
+
+
+
+
+
+
+
+
+
+
+
