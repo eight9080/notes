@@ -1,3 +1,7 @@
+
+Conference 
+https://jchampionsconf.com/schedule.html
+
 Diagrams
 https://mermaid-js.github.io/mermaid/#/
 
