@@ -1,3 +1,6 @@
+Workflow engines
+https://github.com/meirwah/awesome-workflow-engines
+
 Reliability patters 
 https://learn.microsoft.com/en-us/azure/well-architected/reliability/design-patterns
 
