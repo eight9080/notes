@@ -1,0 +1,49 @@
+= Topics
+
+Evolutionary Architecture
+
+
+• Enterprise Integration Patterns
+• Integration Challenges
+• Coordination challenges
+• Latency issues
+• The network and security
+• Topology changes
+• Increasing transport costs
+• The network is not heterogenous
+
+
+Architecture and Continuous Delivery
+
+• Letting the architecture evolve
+• Discovering iteratively and learn more about the system
+• Continuous Delivery
+• Operationalizing abstract architecture
+• Mature engineering practices
+• Managing coupling intelligently
+• The Delivery teams
+• Constant flow of new features into production
+• Continuous Integration
+• Fast, automated feedback
+• Deployment Pipeline
+
+
+Data Monitoring
+
+* Monitoring Concepts
+• Introduction to Prometheus stack
+• Prometheus server
+• Metrics collection
+• PromQL
+• Exporters
+• Grafana
+• Alert Manager
+
+Separation of Concerns
+• Layers of isolation
+• Separation of hybrids and variants
+• Layered architecture considerations
+• Good general-purpose architecture
+• Determining a good starting point for most  systems
+• The Architecture sinkhole anti-pattern
+• Coexistence with Monolithic applications
