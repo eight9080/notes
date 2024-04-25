@@ -6,6 +6,8 @@ Articles:
 
 * https://dzone.com/articles/the-impact-of-technical-ignorance?utm_source=Sailthru&utm_medium=email&utm_campaign=DZone_Daily_Digest_02.23.24_Spotlight_Twilio&utm_term=dzone-daily-digest-active[The Impact of Technical Ignorance]
 
+* https://blog.cybersecuritycoalition.be/wp-content/uploads/CSC-whitepaper-ESA-2024.pdf
+
 Workflow engines
 https://github.com/meirwah/awesome-workflow-engines
 
