@@ -1,5 +1,9 @@
 Resources:
 
+Concurrency limits
+* https://reliablesystems.io/handling-overload-with-concurrency-control-and-load-shedding-part-2-6b8b594d4405[overload handling]
+* https://netflixtechblog.medium.com/performance-under-load-3e6fa9a60581[performance under load]
+
 https://github.com/ddd-crew/free-ddd-learning-resources[DDD resources]
 
 Articles:
